@@ -4,8 +4,9 @@ from datetime import datetime, timedelta
 from typing import List, Dict, Any, Optional
 from dotenv import load_dotenv
 from PIL import Image
+from uuid import uuid4
 from qdrant_client import QdrantClient
-from qdrant_client.models import PointStruct, VectorParams, Distance, Filter, FieldCondition, MatchValue
+from qdrant_client.models import PointStruct, VectorParams, Distance, Filter, FieldCondition, MatchValue, ScalarQuantization, ScalarQuantizationConfig, ScalarType, HnswConfigDiff
 from transformers import CLIPProcessor, CLIPModel
 from sentence_transformers import SentenceTransformer
 
@@ -20,7 +21,6 @@ class Config:
         self.qdrant_port = int(os.getenv("QDRANT_PORT", 6333))
         self.text_embed_dim = int(os.getenv("TEXT_EMBED_DIM", 1024))
         self.visual_embed_dim = int(os.getenv("VISUAL_EMBED_DIM", 512))
-        self.mistral_api_key = os.getenv("MISTRAL_API_KEY", "Ub4Cfhj5ZDnRjCeZB663XgL7bzaD8vWd")
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.qdrant = QdrantClient(host=self.qdrant_host, port=self.qdrant_port)
         

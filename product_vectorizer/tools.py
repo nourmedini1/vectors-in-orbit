@@ -39,7 +39,6 @@ class Config:
         self.text_embed_dim = int(os.getenv("TEXT_EMBED_DIM", 1024))
         self.visual_embed_dim = int(os.getenv("VISUAL_EMBED_DIM", 512))
 
-        self.mistral_api_key = os.getenv("MISTRAL_API_KEY", "1NvLgTmXU4DmLi2HRC0VJKQzGNcRWTC1")
         self.clip_model_id = os.getenv("CLIP_MODEL_ID", "laion/CLIP-ViT-B-32-laion2B-s34B-b79K")
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
