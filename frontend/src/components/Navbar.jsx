@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { ShoppingBag, Search, Sparkles } from 'lucide-react';
+import { ShoppingBag, Search, Heart } from 'lucide-react';
 import { StoreContext } from '../context/StoreContext';
 import { motion } from 'framer-motion';
 import { Button } from './ui/Button';
@@ -85,47 +85,32 @@ export const Navbar = ({ variant = 'authenticated' }) => {
         </Link>
 
         {/* Center Nav (Shopper Only) */}
-        {location.pathname === '/shop' && (
           <div className="hidden md:flex items-center gap-6">
-            <button onClick={() => scrollToSection('hot-deals')} className="text-sm font-medium text-slate-500 hover:text-emerald-600 transition-colors">
-              Hot Deals
-            </button>
-            <button onClick={() => scrollToSection('new-arrivals')} className="text-sm font-medium text-slate-500 hover:text-emerald-600 transition-colors">
-              New Arrivals
-            </button>
-            <button onClick={() => scrollToSection('trending')} className="text-sm font-medium text-slate-500 hover:text-emerald-600 transition-colors">
-              Trending
-            </button>
-            <button onClick={() => scrollToSection('all-products')} className="text-sm font-medium text-slate-500 hover:text-emerald-600 transition-colors">
-              All Products
-            </button>
-            <NavLink to="/wishlist" active={location.pathname === '/wishlist'}>
-              <span className="flex items-center gap-1"><Sparkles size={14} className="text-emerald-500" /> AI Requests</span>
+            <NavLink to="/shop" active={location.pathname === '/shop' && !location.search}>
+              Shop
             </NavLink>
-          </div>
-        )}
-        
-        {userRole === 'shopper' && location.pathname !== '/shop' && (
-          <div className="hidden md:flex items-center gap-8">
-            <NavLink to="/shop" active={location.pathname === '/shop'}>Discover</NavLink>
-            <NavLink to="/wishlist" active={location.pathname === '/wishlist'}>
-              <span className="flex items-center gap-1"><Sparkles size={14} className="text-emerald-500" /> AI Requests</span>
+            <NavLink to="/shop?tab=fashion" active={location.search.includes('tab=fashion')}>
+              Fashion
             </NavLink>
+            <NavLink to="/shop?tab=electronics" active={location.search.includes('tab=electronics')}>
+              Electronics
+            </NavLink>
+            <NavLink to="/shop?tab=baby" active={location.search.includes('tab=baby')}>
+              Baby Products
+            </NavLink>
+          {userRole === 'shopper' && (
+            <NavLink to="/wishlist" active={location.pathname === '/wishlist'}>
+              My Wishlist
+            </NavLink>
+          )}
           </div>
-        )}
+
 
         {/* Actions */}
         <div className="flex items-center gap-4">
           {userRole === 'shopper' && (
             <>
-              <div className="hidden lg:flex relative w-64">
-                <Search className="absolute left-3 top-2.5 text-slate-400" size={16} />
-                <input 
-                  type="text" 
-                  placeholder="Search products..." 
-                  className="w-full bg-slate-100 border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-emerald-500 transition-all"
-                />
-              </div>
+
               <Link to="/cart" className="relative p-2 hover:bg-slate-100 rounded-full transition-colors">
                 <ShoppingBag size={20} className="text-slate-700" />
                 {cart.length > 0 && (

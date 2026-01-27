@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, ShoppingCart, Package, Star, Truck } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Package, Star, Truck, ThumbsUp, CheckCircle, Edit, Trash2, Heart } from 'lucide-react';
 import { Navbar } from '../../components/Navbar';
 import { useCart } from '../../context/CartContext';
 
@@ -14,13 +14,21 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [addedToCart, setAddedToCart] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
-  const [reviewData, setReviewData] = useState({ rating: 5, comment: '' });
+  const [reviewData, setReviewData] = useState({ rating: 5, title: '', comment: '' });
+  const [reviews, setReviews] = useState([]);
+  const [reviewStats, setReviewStats] = useState(null);
+  const [loadingReviews, setLoadingReviews] = useState(true);
+  const [editingReview, setEditingReview] = useState(null);
+  const [userReview, setUserReview] = useState(null);
+  const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const API_URL = 'http://localhost:8000';
 
   useEffect(() => {
     fetchProduct();
+    fetchReviews();
+    fetchReviewStats();
   }, [id]);
 
   const fetchProduct = async () => {
@@ -34,7 +42,6 @@ const ProductDetail = () => {
       // Track product view event (non-blocking)
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       if (user._id) {
-        // Get source from navigation state, default to 'direct' if not provided
         const source = location.state?.source || 'direct';
         const params = new URLSearchParams({
           product_id: id,
@@ -53,6 +60,39 @@ const ProductDetail = () => {
     }
   };
 
+  const fetchReviews = async () => {
+    try {
+      setLoadingReviews(true);
+      const response = await fetch(`${API_URL}/api/reviews/product/${id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setReviews(data);
+        
+        // Find user's review if exists
+        if (user._id) {
+          const userRev = data.find(r => r.user_id === user._id);
+          setUserReview(userRev);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+    } finally {
+      setLoadingReviews(false);
+    }
+  };
+
+  const fetchReviewStats = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/reviews/product/${id}/stats`);
+      if (response.ok) {
+        const data = await response.json();
+        setReviewStats(data);
+      }
+    } catch (error) {
+      console.error('Error fetching review stats:', error);
+    }
+  };
+
   const handleAddToCart = async () => {
     try {
       await addToCart(product._id, quantity);
@@ -63,7 +103,7 @@ const ProductDetail = () => {
     }
   };
 
-  const handleReviewSubmit = (e) => {
+  const handleReviewSubmit = async (e) => {
     e.preventDefault();
     
     if (!user._id) {
@@ -71,29 +111,169 @@ const ProductDetail = () => {
       return;
     }
 
-    const params = new URLSearchParams({
-      product_id: product._id,
-      user_id: user._id,
-      rating: reviewData.rating.toString(),
-      timestamp: new Date().toISOString(),
-      session_id: `session_${user._id}`
-    });
-
-    if (reviewData.comment) {
-      params.append('comment', reviewData.comment);
+    if (!reviewData.comment.trim()) {
+      alert('Please write a comment');
+      return;
     }
 
-    // Track review event (non-blocking)
-    fetch(`${API_URL}/events/review-submit?${params}`)
-      .then(() => {
+    try {
+      const reviewPayload = {
+        product_id: product._id,
+        user_id: user._id,
+        user_name: user.username || user.email?.split('@')[0] || 'Anonymous',
+        rating: reviewData.rating,
+        title: reviewData.title,
+        comment: reviewData.comment,
+        verified_purchase: false // You can check if user actually purchased
+      };
+
+      const response = await fetch(`${API_URL}/api/reviews`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(reviewPayload)
+      });
+
+      if (response.ok) {
+        // Track review event
+        const params = new URLSearchParams({
+          product_id: product._id,
+          user_id: user._id,
+          rating: reviewData.rating.toString(),
+          timestamp: new Date().toISOString(),
+          session_id: `session_${user._id}`
+        });
+        if (reviewData.comment) params.append('comment', reviewData.comment);
+        
+        fetch(`${API_URL}/events/review-submit?${params}`)
+          .catch(err => console.log('Event tracking failed:', err));
+
         alert('Review submitted successfully!');
         setShowReviewForm(false);
-        setReviewData({ rating: 5, comment: '' });
-      })
-      .catch(err => {
-        console.log('Event tracking failed:', err);
-        alert('Failed to submit review');
+        setReviewData({ rating: 5, title: '', comment: '' });
+        fetchReviews();
+        fetchReviewStats();
+      } else {
+        const error = await response.json();
+        alert(error.detail || 'Failed to submit review');
+      }
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      alert('Failed to submit review');
+    }
+  };
+
+  const handleUpdateReview = async (e) => {
+    e.preventDefault();
+    
+    try {
+      const response = await fetch(`${API_URL}/api/reviews/${editingReview._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          rating: reviewData.rating,
+          title: reviewData.title,
+          comment: reviewData.comment
+        })
       });
+
+      if (response.ok) {
+        alert('Review updated successfully!');
+        setEditingReview(null);
+        setReviewData({ rating: 5, title: '', comment: '' });
+        fetchReviews();
+        fetchReviewStats();
+      } else {
+        alert('Failed to update review');
+      }
+    } catch (error) {
+      console.error('Error updating review:', error);
+      alert('Failed to update review');
+    }
+  };
+
+  const handleDeleteReview = async (reviewId) => {
+    if (!confirm('Are you sure you want to delete this review?')) return;
+    
+    try {
+      const response = await fetch(`${API_URL}/api/reviews/${reviewId}`, {
+        method: 'DELETE'
+      });
+
+      if (response.ok) {
+        alert('Review deleted successfully!');
+        fetchReviews();
+        fetchReviewStats();
+      } else {
+        alert('Failed to delete review');
+      }
+    } catch (error) {
+      console.error('Error deleting review:', error);
+      alert('Failed to delete review');
+    }
+  };
+
+  const handleMarkHelpful = async (reviewId) => {
+    try {
+      const response = await fetch(`${API_URL}/api/reviews/${reviewId}/helpful`, {
+        method: 'POST'
+      });
+
+      if (response.ok) {
+        fetchReviews();
+      }
+    } catch (error) {
+      console.error('Error marking review as helpful:', error);
+    }
+  };
+
+  const handleAddToWishlist = async () => {
+    if (!user._id) {
+      alert('Please login to add items to your wishlist');
+      return;
+    }
+
+    setIsAddingToWishlist(true);
+    
+    try {
+      const imageUrl = product.image_url && product.image_url !== 'nan' && product.image_url !== '' 
+        ? product.image_url 
+        : 'https://placehold.co/600x600/e2e8f0/64748b?text=No+Image+Available';
+
+      const response = await fetch(`${API_URL}/api/wishlist/add/product`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: user._id,
+          product_id: product._id,
+          product_name: product.name,
+          product_price: product.price,
+          product_image_url: imageUrl,
+          priority: 3
+        })
+      });
+
+      if (response.ok) {
+        alert('Added to wishlist!');
+        
+        // Track wishlist event
+        const params = new URLSearchParams({
+          product_id: product._id,
+          user_id: user._id,
+          timestamp: new Date().toISOString(),
+          session_id: `session_${user._id}`
+        });
+        fetch(`${API_URL}/events/wishlist-add?${params}`)
+          .catch(err => console.log('Event tracking failed:', err));
+      } else {
+        const error = await response.json();
+        alert(error.detail || 'Failed to add to wishlist');
+      }
+    } catch (error) {
+      console.error('Error adding to wishlist:', error);
+      alert('Failed to add to wishlist');
+    } finally {
+      setIsAddingToWishlist(false);
+    }
   };
 
   if (loading) {
@@ -257,20 +437,32 @@ const ProductDetail = () => {
               </div>
 
               {/* Add to Cart Button */}
-              <button
-                onClick={handleAddToCart}
-                disabled={product.stock === 0 || addedToCart}
-                className={`w-full py-4 rounded-lg font-semibold text-white flex items-center justify-center gap-2 transition-colors ${
-                  addedToCart
-                    ? 'bg-green-600 hover:bg-green-700'
-                    : product.stock === 0
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-blue-600 hover:bg-blue-700'
-                }`}
-              >
-                <ShoppingCart size={20} />
-                {addedToCart ? 'Added to Cart!' : product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
-              </button>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleAddToCart}
+                  disabled={product.stock === 0 || addedToCart}
+                  className={`flex-1 py-4 rounded-lg font-semibold text-white flex items-center justify-center gap-2 transition-colors ${
+                    addedToCart
+                      ? 'bg-green-600 hover:bg-green-700'
+                      : product.stock === 0
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : 'bg-blue-600 hover:bg-blue-700'
+                  }`}
+                >
+                  <ShoppingCart size={20} />
+                  {addedToCart ? 'Added to Cart!' : product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+                </button>
+                
+                <button
+                  onClick={handleAddToWishlist}
+                  disabled={isAddingToWishlist}
+                  className="px-6 py-4 rounded-lg font-semibold border-2 border-pink-600 text-pink-600 hover:bg-pink-50 transition-colors disabled:opacity-50 flex items-center gap-2"
+                  title="Add to wishlist"
+                >
+                  <Heart size={20} className={isAddingToWishlist ? 'fill-pink-600' : ''} />
+                  Wishlist
+                </button>
+              </div>
 
               {/* Additional Info */}
               <div className="mt-6 pt-6 border-t border-gray-200">
@@ -286,21 +478,40 @@ const ProductDetail = () => {
 
               {/* Review Section */}
               <div className="mt-6 pt-6 border-t border-gray-200">
-                {!showReviewForm ? (
+                {!showReviewForm && !editingReview && !userReview ? (
                   <button
                     onClick={() => setShowReviewForm(true)}
                     className="w-full py-3 border-2 border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
                   >
                     Write a Review
                   </button>
+                ) : (userReview && !editingReview) ? (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <p className="text-sm text-blue-800 mb-2">You have already reviewed this product</p>
+                    <button
+                      onClick={() => {
+                        setEditingReview(userReview);
+                        setReviewData({
+                          rating: userReview.rating,
+                          title: userReview.title || '',
+                          comment: userReview.comment
+                        });
+                      }}
+                      className="text-blue-600 hover:text-blue-700 font-medium text-sm"
+                    >
+                      Edit your review
+                    </button>
+                  </div>
                 ) : (
-                  <form onSubmit={handleReviewSubmit} className="space-y-4">
-                    <h3 className="text-lg font-bold text-gray-900">Write a Review</h3>
+                  <form onSubmit={editingReview ? handleUpdateReview : handleReviewSubmit} className="space-y-4">
+                    <h3 className="text-lg font-bold text-gray-900">
+                      {editingReview ? 'Edit Your Review' : 'Write a Review'}
+                    </h3>
                     
                     {/* Rating */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Rating
+                        Rating *
                       </label>
                       <div className="flex gap-2">
                         {[1, 2, 3, 4, 5].map((star) => (
@@ -308,9 +519,9 @@ const ProductDetail = () => {
                             key={star}
                             type="button"
                             onClick={() => setReviewData({ ...reviewData, rating: star })}
-                            className={`text-2xl ${
+                            className={`text-3xl transition-colors ${
                               star <= reviewData.rating ? 'text-yellow-400' : 'text-gray-300'
-                            }`}
+                            } hover:text-yellow-400`}
                           >
                             ★
                           </button>
@@ -318,16 +529,31 @@ const ProductDetail = () => {
                       </div>
                     </div>
 
+                    {/* Title */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Review Title (optional)
+                      </label>
+                      <input
+                        type="text"
+                        value={reviewData.title}
+                        onChange={(e) => setReviewData({ ...reviewData, title: e.target.value })}
+                        placeholder="Sum up your experience"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                      />
+                    </div>
+
                     {/* Comment */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Comment (optional)
+                        Your Review *
                       </label>
                       <textarea
                         value={reviewData.comment}
                         onChange={(e) => setReviewData({ ...reviewData, comment: e.target.value })}
                         rows="4"
                         placeholder="Share your thoughts about this product..."
+                        required
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                       />
                     </div>
@@ -338,13 +564,14 @@ const ProductDetail = () => {
                         type="submit"
                         className="flex-1 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700"
                       >
-                        Submit Review
+                        {editingReview ? 'Update Review' : 'Submit Review'}
                       </button>
                       <button
                         type="button"
                         onClick={() => {
                           setShowReviewForm(false);
-                          setReviewData({ rating: 5, comment: '' });
+                          setEditingReview(null);
+                          setReviewData({ rating: 5, title: '', comment: '' });
                         }}
                         className="flex-1 py-2 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50"
                       >
@@ -355,6 +582,166 @@ const ProductDetail = () => {
                 )}
               </div>
             </div>
+          </div>
+
+          {/* Reviews Section */}
+          <div className="border-t border-gray-200 p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Customer Reviews</h2>
+
+            {/* Review Statistics */}
+            {reviewStats && reviewStats.total_reviews > 0 && (
+              <div className="bg-gray-50 rounded-lg p-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Overall Rating */}
+                  <div className="flex items-center gap-6">
+                    <div className="text-center">
+                      <div className="text-5xl font-bold text-gray-900 mb-2">
+                        {reviewStats.average_rating.toFixed(1)}
+                      </div>
+                      <div className="flex justify-center mb-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            className={`w-5 h-5 ${
+                              star <= Math.round(reviewStats.average_rating)
+                                ? 'text-yellow-400 fill-yellow-400'
+                                : 'text-gray-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        Based on {reviewStats.total_reviews} reviews
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Rating Distribution */}
+                  <div className="space-y-2">
+                    {[5, 4, 3, 2, 1].map((rating) => {
+                      const count = reviewStats.rating_distribution[rating] || 0;
+                      const percentage = reviewStats.total_reviews > 0 
+                        ? (count / reviewStats.total_reviews) * 100 
+                        : 0;
+                      
+                      return (
+                        <div key={rating} className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-gray-700 w-12">
+                            {rating} star
+                          </span>
+                          <div className="flex-1 bg-gray-200 rounded-full h-2">
+                            <div
+                              className="bg-yellow-400 h-2 rounded-full"
+                              style={{ width: `${percentage}%` }}
+                            />
+                          </div>
+                          <span className="text-sm text-gray-600 w-12 text-right">
+                            {count}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Reviews List */}
+            {loadingReviews ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+              </div>
+            ) : reviews.length === 0 ? (
+              <div className="text-center py-12 bg-gray-50 rounded-lg">
+                <Star className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">No reviews yet</h3>
+                <p className="text-gray-600">Be the first to review this product!</p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {reviews.map((review) => (
+                  <div key={review._id} className="border-b border-gray-200 pb-6">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="flex">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <Star
+                                key={star}
+                                className={`w-4 h-4 ${
+                                  star <= review.rating
+                                    ? 'text-yellow-400 fill-yellow-400'
+                                    : 'text-gray-300'
+                                }`}
+                              />
+                            ))}
+                          </div>
+                          {review.verified_purchase && (
+                            <span className="flex items-center gap-1 text-xs text-green-600 font-medium">
+                              <CheckCircle className="w-3 h-3" />
+                              Verified Purchase
+                            </span>
+                          )}
+                        </div>
+                        
+                        {review.title && (
+                          <h4 className="font-semibold text-gray-900 mb-1">
+                            {review.title}
+                          </h4>
+                        )}
+                        
+                        <p className="text-gray-700 mb-2">{review.comment}</p>
+                        
+                        <div className="flex items-center gap-4 text-sm text-gray-600">
+                          <span className="font-medium">{review.user_name}</span>
+                          <span>•</span>
+                          <span>{new Date(review.created_at).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+                      
+                      {/* User's own review actions */}
+                      {user._id === review.user_id && (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => {
+                              setEditingReview(review);
+                              setReviewData({
+                                rating: review.rating,
+                                title: review.title || '',
+                                comment: review.comment
+                              });
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="Edit review"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteReview(review._id)}
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Delete review"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Helpful button */}
+                    <div className="flex items-center gap-2 mt-3">
+                      <button
+                        onClick={() => handleMarkHelpful(review._id)}
+                        className="flex items-center gap-1 text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                      >
+                        <ThumbsUp className="w-4 h-4" />
+                        <span>Helpful ({review.helpful_count || 0})</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
