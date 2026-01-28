@@ -15,12 +15,15 @@ const SmartWishlist = () => {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const API_URL = 'http://localhost:8000';
 
-  // Form State
+  // Form State - UPDATED
   const [formData, setFormData] = useState({
-    text_description: '',
+    description: '',
     image_url: '',
-    notes: '',
-    priority: 3
+    wishlist_notes: '',
+    urgency_days: 7,
+    budget_min: '',
+    budget_max: '',
+    desired_attributes: '',
   });
 
   useEffect(() => {
@@ -60,31 +63,45 @@ const SmartWishlist = () => {
       let endpoint;
       let payload;
 
+      // Convert desired_attributes from string to array
+      const attributesArray = formData.desired_attributes
+        ? formData.desired_attributes.split(',').map(attr => attr.trim()).filter(attr => attr.length > 0)
+        : null;
+
       if (formType === 'text') {
         endpoint = `${API_URL}/api/wishlist/add/text`;
         payload = {
           user_id: user._id,
-          text_description: formData.text_description,
-          notes: formData.notes,
-          priority: formData.priority
+          description: formData.description,
+          wishlist_notes: formData.wishlist_notes || null,
+          urgency_days: formData.urgency_days,
+          budget_min: formData.budget_min ? parseFloat(formData.budget_min) : null,
+          budget_max: formData.budget_max ? parseFloat(formData.budget_max) : null,
+          desired_attributes: attributesArray
         };
       } else if (formType === 'image') {
         endpoint = `${API_URL}/api/wishlist/add/text-with-image`;
         payload = {
           user_id: user._id,
-          text_description: formData.text_description || 'Image item',
+          description: formData.description || 'Image item',
           image_url: formData.image_url,
-          notes: formData.notes,
-          priority: formData.priority
+          wishlist_notes: formData.wishlist_notes || null,
+          urgency_days: formData.urgency_days,
+          budget_min: formData.budget_min ? parseFloat(formData.budget_min) : null,
+          budget_max: formData.budget_max ? parseFloat(formData.budget_max) : null,
+          desired_attributes: attributesArray
         };
       } else {
         endpoint = `${API_URL}/api/wishlist/add/text-with-image`;
         payload = {
           user_id: user._id,
-          text_description: formData.text_description,
+          description: formData.description,
           image_url: formData.image_url,
-          notes: formData.notes,
-          priority: formData.priority
+          wishlist_notes: formData.wishlist_notes || null,
+          urgency_days: formData.urgency_days,
+          budget_min: formData.budget_min ? parseFloat(formData.budget_min) : null,
+          budget_max: formData.budget_max ? parseFloat(formData.budget_max) : null,
+          desired_attributes: attributesArray
         };
       }
 
@@ -96,7 +113,15 @@ const SmartWishlist = () => {
 
       if (response.ok) {
         setIsFormOpen(false);
-        setFormData({ text_description: '', image_url: '', notes: '', priority: 3 });
+        setFormData({ 
+          description: '', 
+          image_url: '', 
+          wishlist_notes: '', 
+          urgency_days: 7,
+          budget_min: '',
+          budget_max: '',
+          desired_attributes: ''
+        });
         fetchWishlist();
       } else {
         const error = await response.json();
@@ -112,20 +137,36 @@ const SmartWishlist = () => {
     e.preventDefault();
     
     try {
+      // Convert desired_attributes from string to array
+      const attributesArray = formData.desired_attributes
+        ? formData.desired_attributes.split(',').map(attr => attr.trim()).filter(attr => attr.length > 0)
+        : null;
+
       const response = await fetch(`${API_URL}/api/wishlist/item/${editingItem._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          text_description: formData.text_description,
-          image_url: formData.image_url,
-          notes: formData.notes,
-          priority: formData.priority
+          description: formData.description,
+          image_url: formData.image_url || null,
+          wishlist_notes: formData.wishlist_notes || null,
+          urgency_days: formData.urgency_days,
+          budget_min: formData.budget_min ? parseFloat(formData.budget_min) : null,
+          budget_max: formData.budget_max ? parseFloat(formData.budget_max) : null,
+          desired_attributes: attributesArray
         })
       });
 
       if (response.ok) {
         setEditingItem(null);
-        setFormData({ text_description: '', image_url: '', notes: '', priority: 3 });
+        setFormData({ 
+          description: '', 
+          image_url: '', 
+          wishlist_notes: '', 
+          urgency_days: 7,
+          budget_min: '',
+          budget_max: '',
+          desired_attributes: ''
+        });
         fetchWishlist();
       } else {
         alert('Failed to update item');
@@ -174,15 +215,12 @@ const SmartWishlist = () => {
     }
   };
 
-  const getPriorityLabel = (priority) => {
-    const labels = {
-      1: { text: 'Very Low', color: 'bg-gray-100 text-gray-700' },
-      2: { text: 'Low', color: 'bg-blue-100 text-blue-700' },
-      3: { text: 'Medium', color: 'bg-yellow-100 text-yellow-700' },
-      4: { text: 'High', color: 'bg-orange-100 text-orange-700' },
-      5: { text: 'Very High', color: 'bg-red-100 text-red-700' }
-    };
-    return labels[priority] || labels[3];
+  const getUrgencyLabel = (days) => {
+    if (days <= 3) return { text: `${days} days`, color: 'bg-red-100 text-red-700' };
+    if (days <= 7) return { text: `${days} days`, color: 'bg-orange-100 text-orange-700' };
+    if (days <= 14) return { text: `${days} days`, color: 'bg-yellow-100 text-yellow-700' };
+    if (days <= 30) return { text: `${days} days`, color: 'bg-blue-100 text-blue-700' };
+    return { text: `${days} days`, color: 'bg-gray-100 text-gray-700' };
   };
 
   if (!user._id) {
@@ -275,7 +313,6 @@ const SmartWishlist = () => {
                 ? 'Start adding items you love or ideas you want to remember.'
                 : `No ${filter === 'product' ? 'products' : filter === 'text' ? 'ideas' : 'inspiration items'} in your wishlist yet.`}
             </p>
-            <Button onClick={() => { setFormType('text'); setIsFormOpen(true); }}>Add Your First Item</Button>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -289,13 +326,18 @@ const SmartWishlist = () => {
                     setEditingItem(item);
                     setFormType(item.item_type);
                     setFormData({
-                      text_description: item.text_description || '',
+                      description: item.description || item.text_description || '',
                       image_url: item.image_url || '',
-                      notes: item.notes || '',
-                      priority: item.priority
+                      wishlist_notes: item.wishlist_notes || item.notes || '',
+                      urgency_days: item.urgency_days || item.priority || 7,
+                      budget_min: item.budget_min !== null && item.budget_min !== undefined ? item.budget_min : '',
+                      budget_max: item.budget_max !== null && item.budget_max !== undefined ? item.budget_max : '',
+                      desired_attributes: Array.isArray(item.desired_attributes) 
+                        ? item.desired_attributes.join(', ') 
+                        : item.desired_attributes || ''
                     });
                   }}
-                  getPriorityLabel={getPriorityLabel}
+                  getUrgencyLabel={getUrgencyLabel}
                 />
               ))}
             </AnimatePresence>
@@ -316,9 +358,9 @@ const SmartWishlist = () => {
               initial={{ scale: 0.95, opacity: 0, y: 20 }} 
               animate={{ scale: 1, opacity: 1, y: 0 }} 
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-white w-full max-w-lg rounded-2xl shadow-2xl relative z-10 overflow-hidden"
+              className="bg-white w-full max-w-lg rounded-2xl shadow-2xl relative z-10 overflow-hidden max-h-[90vh] overflow-y-auto"
             >
-              <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+              <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 sticky top-0 z-10">
                 <h3 className="text-lg font-bold text-slate-900">
                   {editingItem ? 'Edit Wishlist Item' : `Add ${formType === 'text' ? 'Text Idea' : 'Item with Image'}`}
                 </h3>
@@ -341,8 +383,8 @@ const SmartWishlist = () => {
                       placeholder="e.g., Red running shoes size 42, winter jacket with hood..."
                       className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all resize-none"
                       rows="3"
-                      value={formData.text_description}
-                      onChange={e => setFormData({...formData, text_description: e.target.value})}
+                      value={formData.description}
+                      onChange={e => setFormData({...formData, description: e.target.value})}
                     />
                   </div>
                 )}
@@ -375,19 +417,47 @@ const SmartWishlist = () => {
 
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-1">
-                    Priority
+                    Urgency (Days)
                   </label>
-                  <select 
+                  <input 
+                    type="number"
+                    min="1"
+                    max="365"
                     className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none bg-white"
-                    value={formData.priority}
-                    onChange={e => setFormData({...formData, priority: parseInt(e.target.value)})}
-                  >
-                    <option value="1">Very Low</option>
-                    <option value="2">Low</option>
-                    <option value="3">Medium</option>
-                    <option value="4">High</option>
-                    <option value="5">Very High</option>
-                  </select>
+                    value={formData.urgency_days}
+                    onChange={e => setFormData({...formData, urgency_days: parseInt(e.target.value) || 7})}
+                  />
+                  <p className="text-xs text-slate-500 mt-1">How many days until you need this item?</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">
+                      Max Budget (DT)
+                    </label>
+                    <input 
+                      type="number"
+                      step="0.001"
+                      min="0"
+                      placeholder="e.g., 200"
+                      className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none"
+                      value={formData.budget_max}
+                      onChange={e => setFormData({...formData, budget_max: e.target.value})}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">
+                    Desired Attributes
+                  </label>
+                  <textarea 
+                    placeholder="e.g., red color, size 42, waterproof, brand: Nike..."
+                    className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none resize-none"
+                    rows="2"
+                    value={formData.desired_attributes}
+                    onChange={e => setFormData({...formData, desired_attributes: e.target.value})}
+                  />
                 </div>
 
                 <div>
@@ -398,8 +468,8 @@ const SmartWishlist = () => {
                     placeholder="Add any additional notes or preferences..."
                     className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none resize-none"
                     rows="3"
-                    value={formData.notes}
-                    onChange={e => setFormData({...formData, notes: e.target.value})}
+                    value={formData.wishlist_notes}
+                    onChange={e => setFormData({...formData, wishlist_notes: e.target.value})}
                   />
                 </div>
 
@@ -425,8 +495,8 @@ const SmartWishlist = () => {
   );
 };
 
-const WishCard = ({ wish, onDelete, onEdit, getPriorityLabel }) => {
-  const priorityInfo = getPriorityLabel(wish.priority);
+const WishCard = ({ wish, onDelete, onEdit, getUrgencyLabel }) => {
+  const urgencyInfo = getUrgencyLabel(wish.urgency_days || wish.priority || 7);
   
   return (
     <motion.div 
@@ -438,8 +508,8 @@ const WishCard = ({ wish, onDelete, onEdit, getPriorityLabel }) => {
     >
       <div className="p-5">
         <div className="flex justify-between items-start mb-3">
-          <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${priorityInfo.color}`}>
-            {priorityInfo.text}
+          <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${urgencyInfo.color}`}>
+            {urgencyInfo.text}
           </span>
           <div className="flex gap-1">
             <button
@@ -482,16 +552,42 @@ const WishCard = ({ wish, onDelete, onEdit, getPriorityLabel }) => {
               />
             )}
             <p className="text-sm text-slate-700 leading-relaxed mb-2">
-              {wish.text_description}
+              {wish.description || wish.text_description}
             </p>
           </div>
         )}
 
-        {wish.notes && (
+        {/* Budget Display */}
+        {(wish.budget_min || wish.budget_max) && (
+          <div className="mt-2 mb-2 flex items-center gap-2 text-xs">
+            <span className="font-semibold text-slate-600">Budget:</span>
+            <span className="text-emerald-600 font-medium">
+              {wish.budget_min && wish.budget_max 
+                ? `${wish.budget_min} - ${wish.budget_max} DT`
+                : wish.budget_min 
+                ? `From ${wish.budget_min} DT`
+                : `Up to ${wish.budget_max} DT`}
+            </span>
+          </div>
+        )}
+
+        {/* Desired Attributes */}
+        {wish.desired_attributes && wish.desired_attributes.length > 0 && (
+          <div className="mt-2 mb-2 p-2 bg-blue-50 rounded-lg">
+            <p className="text-xs text-blue-700">
+              <Star size={12} className="inline mr-1" />
+              {Array.isArray(wish.desired_attributes) 
+                ? wish.desired_attributes.join(', ') 
+                : wish.desired_attributes}
+            </p>
+          </div>
+        )}
+
+        {(wish.wishlist_notes || wish.notes) && (
           <div className="mt-3 p-2 bg-slate-50 rounded-lg">
             <p className="text-xs text-slate-600">
               <FileText size={12} className="inline mr-1" />
-              {wish.notes}
+              {wish.wishlist_notes || wish.notes}
             </p>
           </div>
         )}

@@ -21,7 +21,7 @@ const ProductCard = ({ product, source = 'all-products', position }) => {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (user._id) {
       const params = new URLSearchParams({
-        product_id: product._id || product.product_id,
+        product_id: product.product_id,
         user_id: user._id,
         source: source,
         timestamp: new Date().toISOString(),
@@ -33,7 +33,7 @@ const ProductCard = ({ product, source = 'all-products', position }) => {
         .catch(err => console.log('Event tracking failed:', err));
     }
     // Navigate with source info for ProductViewedEvent
-    navigate(`/product/${product._id || product.product_id}`, { state: { source } });
+    navigate(`/product/${product.product_id}`, { state: { source } });
   };
 
   const handleAddToWishlist = async (e) => {
@@ -53,7 +53,7 @@ const ProductCard = ({ product, source = 'all-products', position }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           user_id: user._id,
-          product_id: product._id || product.product_id,
+          product_id:product.product_id,
           product_name: product.name,
           product_price: product.price,
           product_image_url: imageUrl,
@@ -67,7 +67,7 @@ const ProductCard = ({ product, source = 'all-products', position }) => {
         
         // Track wishlist event
         const params = new URLSearchParams({
-          product_id: product._id || product.product_id,
+          product_id:product.product_id,
           user_id: user._id,
           timestamp: new Date().toISOString(),
           session_id: `session_${user._id}`
@@ -888,7 +888,7 @@ const ShopHome = () => {
                             const user = JSON.parse(localStorage.getItem('user') || '{}');
                             if (user._id) {
                               const params = new URLSearchParams({
-                                product_id: product._id || product.product_id,
+                                product_id:product.product_id,
                                 user_id: user._id,
                                 source: 'carousel',
                                 position: index.toString(),
@@ -898,7 +898,7 @@ const ShopHome = () => {
                               fetch(`http://localhost:8000/events/product-click?${params}`)
                                 .catch(err => console.log('Event tracking failed:', err));
                             }
-                            navigate(`/product/${product._id || product.product_id}`, { state: { source: 'carousel' } });
+                            navigate(`/product/${product.product_id}`, { state: { source: 'carousel' } });
                           }}
                           variant="primary"
                           className="!px-4 md:!px-6 !py-2 md:!py-2.5 !text-sm md:!text-base"

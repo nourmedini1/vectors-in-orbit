@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -16,7 +16,9 @@ export const FeaturedCarousel = ({
 }) => {
   const { addToCart } = useContext(StoreContext);
   const navigate = useNavigate();
-
+  useEffect(() => {
+    console.log("🎠 FeaturedCarousel rendered with products:", featuredProducts);
+  }, [featuredProducts]);
   return (
     <div
       className={
@@ -125,7 +127,7 @@ export const FeaturedCarousel = ({
                           );
                           if (user._id) {
                             const params = new URLSearchParams({
-                              product_id: product._id || product.product_id,
+                              product_id: product.product_id,
                               user_id: user._id,
                               source: "carousel",
                               position: index.toString(),
@@ -139,7 +141,7 @@ export const FeaturedCarousel = ({
                             );
                           }
                           navigate(
-                            `/product/${product._id || product.product_id}`,
+                            `/product/${product.product_id}`,
                             { state: { source: "carousel" } },
                           );
                         }}

@@ -99,9 +99,10 @@ export const StoreProvider = ({ children }) => {
       : (product.image || '');
 
     try {
+      console.log("product", product);
       await axios.post(`${API_URL}/api/cart/add`, {
         user_id: userId,
-        product_id: product._id || product.product_id,
+        product_id: product.product_id,
         product_name: product.name,
         price: product.price,
         image_url: imageUrl,
@@ -120,9 +121,18 @@ export const StoreProvider = ({ children }) => {
     if (!userId) return;
 
     try {
+          // Get proper image URL with fallback
+    const imageUrl = (product.image_url && product.image_url !== 'nan' && product.image_url !== '') 
+      ? product.image_url 
+      : (product.image || '');
       await axios.post(`${API_URL}/api/cart/remove`, {
         user_id: userId,
-        product_id: product.product_id || product._id
+        product_id: product.product_id,
+        product_name: product.name,
+        price: product.price,
+        image_url: imageUrl,
+        quantity: 1
+
       });
       await fetchCart(userId);
       console.log('✅ Removed from cart');

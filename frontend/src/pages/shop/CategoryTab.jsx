@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { CategorySidebar } from '../../components/shop/CategorySidebar';
 import { ProductGrid } from '../../components/shop/ProductGrid';
+import { ProductSection } from '../../components/shop/ProductSection';
 import { SearchAndFilters } from '../../components/shop/SearchAndFilters';
-import { sampleProducts } from '../../data/sampleProducts';
 
 // Define subcategories for each category (must match CategorySidebar)
 const CATEGORY_SUBCATEGORIES = {
@@ -11,11 +11,54 @@ const CATEGORY_SUBCATEGORIES = {
   baby: ['Baby-Feeding', 'Baby-Toys', 'Baby-Clothes', 'Baby-Furniture']
 };
 
+const SUBCATEGORY_LABELS = {
+  'Fashion-Men': 'Men\'s Fashion',
+  'Fashion-Women': 'Women\'s Fashion',
+  'Fashion-Kids': 'Kids Fashion',
+  'Electronics-Laptops': 'Laptops',
+  'Electronics-Desktops': 'Desktop Computers',
+  'Electronics-Smartphones': 'Smartphones',
+  'Electronics-Tablets': 'Tablets',
+  'Electronics-Screens': 'Monitors & Screens',
+  'Electronics-Keyboards': 'Keyboards',
+  'Electronics-Mice': 'Mice & Pointing Devices',
+  'Electronics-Chargers': 'Chargers & Cables',
+  'Electronics-Storage': 'Storage Devices',
+  'Electronics-Servers': 'Servers',
+  'Electronics-TV': 'TVs & Home Entertainment',
+  'Electronics-Media': 'Media Devices',
+  'Electronics-Supplies': 'Office Supplies',
+  'Electronics-Other': 'Other Electronics',
+  'Baby-Feeding': 'Feeding & Nursing',
+  'Baby-Toys': 'Toys & Play',
+  'Baby-Clothes': 'Baby Clothing',
+  'Baby-Furniture': 'Nursery Furniture'
+};
+
 export const CategoryTab = ({ category }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(12);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeSearchQuery, setActiveSearchQuery] = useState('');
+    // Restore search state from sessionStorage on mount
+    // Only restore search state, do not re-trigger search API
+    React.useEffect(() => {
+      const saved = sessionStorage.getItem(`searchState-${category}`);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (parsed && parsed.searchQuery) setSearchQuery(parsed.searchQuery);
+          if (parsed && parsed.activeSearchQuery) setActiveSearchQuery(parsed.activeSearchQuery);
+          if (parsed && Array.isArray(parsed.products)) {
+            setProducts(parsed.products);
+            setIsSearchResults(true);
+          }
+        } catch {}
+      } else {
+        setIsSearchResults(false);
+        setActiveSearchQuery('');
+      }
+    }, [category]);
   const [priceRange, setPriceRange] = useState({ min: '', max: '' });
   const [selectedGender, setSelectedGender] = useState('');
   const [selectedCondition, setSelectedCondition] = useState('');
@@ -23,50 +66,64 @@ export const CategoryTab = ({ category }) => {
   const [showDiscountOnly, setShowDiscountOnly] = useState(false);
   const [selectedSubcategories, setSelectedSubcategories] = useState([]);
   const [products, setProducts] = useState([]);
+  const [productsBySubcategory, setProductsBySubcategory] = useState({});
+  const [loading, setLoading] = useState(false);
   const [isSearchResults, setIsSearchResults] = useState(false); // Track if showing search results
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const API_URL = 'http://192.168.1.128:8002';
 
-  // TODO: Replace with API call based on category
+  // Fetch products for each subcategory when not searching
   useEffect(() => {
-    // For now, use sample products filtered by category
-    // Later: fetch(`${API_URL}/api/products/${category}`)
-    const parseProductCategory = (product) => {
-      const metadata = product.metadata || {};
-      let cat = metadata.category || '';
-      let subcategory = metadata.subcategory || null;
-      
-      if (cat.includes('-')) {
-        const parts = cat.split('-');
-        cat = parts[0];
-        subcategory = parts[1] || subcategory;
+    const fetchCategoryProducts = async () => {
+      setLoading(true);
+      const subcategories = CATEGORY_SUBCATEGORIES[category] || [];
+      const productsBySubcat = {};
+
+      try {
+        // Fetch products for each subcategory
+        for (const subcategory of subcategories) {
+          const response = await fetch(`http://192.168.1.128:8000/products/${subcategory}`);
+          if (response.ok) {
+            const data = await response.json();
+            // Transform products
+            console.log("data",data)
+            const transformedProducts = (data.products || []).map(p => {
+              const isDiscounted = p.metadata.is_discounted || false;
+              const discountAmount = p.metadata.discount_percentage || p.metadata.discount_amount || (isDiscounted ? 15 : 0);
+              return {
+                _id: p.id || p.product_id || p._id,
+                product_id: p.id || p.product_id || p._id,
+                name: p.metadata.name,
+                price: p.metadata.price,
+                image_url: p.image || p.metadata.image_url,
+                description: p.metadata.description || '',
+                category: p.metadata.category,
+                brand: p.metadata.brand || '',
+                has_discount: isDiscounted,
+                discount_amount: discountAmount,
+                stock_quantity: p.metadata.stock_quantity || 0,
+                vendor: p.metadata.brand || 'Unknown',
+                metadata: p
+              };
+            });
+            productsBySubcat[subcategory] = transformedProducts;
+          }
+        }
+        setProductsBySubcategory(productsBySubcat);
+        // Flatten all products for filtering
+        const allProducts = Object.values(productsBySubcat).flat();
+        setProducts(allProducts);
+      } catch (error) {
+        console.error('Failed to fetch category products:', error);
+      } finally {
+        setLoading(false);
       }
-      
-      return {
-        ...product,
-        metadata: { ...metadata, category: cat, subcategory },
-        category: cat,
-        name: metadata.name,
-        description: metadata.description,
-        price: metadata.price,
-        image_url: metadata.image_url,
-        has_discount: metadata.is_discounted,
-        brand: metadata.brand,
-        _id: product.product_id
-      };
     };
 
-    const categoryName = category.charAt(0).toUpperCase() + category.slice(1);
-    const filtered = sampleProducts
-      .map(parseProductCategory)
-      .filter(p => p.metadata.category === categoryName);
-    
-    setProducts(filtered);
+    fetchCategoryProducts();
     setSelectedSubcategories([]);
-    setSearchQuery('');
-    setActiveSearchQuery('');
-    setIsSearchResults(false); // Reset search results flag when changing category
+    // Don't reset search state - preserve when navigating back from product detail
   }, [category]);
 
   // Apply filters
@@ -118,7 +175,6 @@ export const CategoryTab = ({ category }) => {
   const handleSearchSubmit = async () => {
     setActiveSearchQuery(searchQuery);
     setCurrentPage(1);
-    
     if (searchQuery) {
       try {
         // Prepare filters - if no subcategories selected, use all subcategories for this category
@@ -127,13 +183,11 @@ export const CategoryTab = ({ category }) => {
         const subcategoriesToSend = selectedSubcategories.length > 0 
           ? selectedSubcategories.map(sub => `${categoryPrefix}-${sub}`)
           : CATEGORY_SUBCATEGORIES[category] || [];
-        
         const filters = {
           category: subcategoriesToSend,
           ...(priceRange.min && { min_price: parseFloat(priceRange.min) }),
           ...(priceRange.max && { max_price: parseFloat(priceRange.max) })
         };
-
         // Send search request
         const searchRequest = {
           user_id: user._id || 'anonymous',
@@ -141,7 +195,6 @@ export const CategoryTab = ({ category }) => {
           filters: filters,
           limit: 20
         };
-        console.log("aaaaaa",searchRequest)
         const response = await fetch(`${API_URL}/search`, {
           method: 'POST',
           headers: {
@@ -151,38 +204,54 @@ export const CategoryTab = ({ category }) => {
         });
         if (response.ok) {
           const data = await response.json();
-          console.log('Search results:', data);
-          
           // Transform search results to match product structure
           if (data.results && Array.isArray(data.results)) {
-            const transformedProducts = data.results.map(result => ({
-              _id: result.product_id,
-              product_id: result.product_id,
-              name: result.name,
-              price: result.price,
-              image_url: result.image_url,
-              description: result.payload?.metadata?.description || '',
-              category: result.payload?.metadata?.category || category,
-              brand: result.payload?.metadata?.brand || '',
-              has_discount: result.payload?.metadata?.is_discounted || false,
-              discount_amount: result.payload?.metadata?.discount_amount || 0,
-              original_price: result.payload?.metadata?.original_price || result.price,
-              match_reason: result.match_reason, // Add match reason for display
-              metadata: result.payload?.metadata || {}
-            }));
+            const transformedProducts = data.results.map(result => {
+              const isDiscounted = result.payload?.metadata?.is_discounted || false;
+              const discountAmount = result.payload?.metadata?.discount_percentage || 
+                                    result.payload?.metadata?.discount_amount || 
+                                    (isDiscounted ? 15 : 0);
+              return {
+                _id: result.product_id,
+                product_id: result.product_id,
+                name: result.name,
+                price: result.price,
+                image_url: result.image_url,
+                description: result.payload?.metadata?.description || '',
+                category: result.payload?.metadata?.category || category,
+                brand: result.payload?.metadata?.brand || '',
+                has_discount: isDiscounted,
+                discount_amount: discountAmount,
+                stock_quantity: result.payload?.metadata?.stock_quantity || 0,
+                vendor: result.payload?.metadata?.brand || 'Unknown',
+                match_reason: result.match_reason,
+                metadata: result.payload?.metadata || {}
+              };
+            });
             setProducts(transformedProducts);
             setIsSearchResults(true); // Mark as search results
-            console.log('Transformed products:', transformedProducts);
+            // Save search state to sessionStorage
+            sessionStorage.setItem(`searchState-${category}`, JSON.stringify({
+              searchQuery,
+              activeSearchQuery: searchQuery,
+              products: transformedProducts,
+              isSearchResults: true
+            }));
           }
         }
       } catch (err) {
         console.error('Search failed:', err);
       }
-      
     }
   };
 
   const handleFilterApply = () => {
+      // Clear search state from sessionStorage when not searching
+      useEffect(() => {
+        if (!isSearchResults && !activeSearchQuery) {
+          sessionStorage.removeItem(`searchState-${category}`);
+        }
+      }, [isSearchResults, activeSearchQuery, category]);
     setCurrentPage(1);
   };
 
@@ -242,17 +311,45 @@ export const CategoryTab = ({ category }) => {
               setSelectedSubcategories={setSelectedSubcategories}
             />
 
-            {/* Products Grid */}
+            {/* Products Display */}
             <div className="flex-1">
-              <ProductGrid
-                products={filteredProducts}
-                currentPage={currentPage}
-                itemsPerPage={itemsPerPage}
-                onPageChange={handlePageChange}
-                source={`${category}-tab`}
-                description={`Showing ${indexOfFirstItem + 1}-${Math.min(indexOfLastItem, filteredProducts.length)} of ${filteredProducts.length} products`}
-                layout="horizontal"
-              />
+              {loading ? (
+                <div className="flex items-center justify-center h-64">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+                </div>
+              ) : isSearchResults || activeSearchQuery ? (
+                /* Search Results - Grid View */
+                <ProductGrid
+                  products={filteredProducts}
+                  currentPage={currentPage}
+                  itemsPerPage={itemsPerPage}
+                  onPageChange={handlePageChange}
+                  source={`${category}-tab`}
+                  description={`Showing ${indexOfFirstItem + 1}-${Math.min(indexOfLastItem, filteredProducts.length)} of ${filteredProducts.length} products`}
+                  layout="horizontal"
+                />
+              ) : (
+                /* Category Browse - Subcategory Sections */
+                <div className="space-y-12">
+                  {Object.entries(productsBySubcategory).map(([subcategory, products], index) => {
+                    if (products.length === 0) return null;
+                    
+                    return (
+                      <div 
+                        key={subcategory}
+                        className={'bg-white p-8 rounded-lg'}
+                      >
+                        <ProductSection
+                          products={products.slice(0, 8)}
+                          title={SUBCATEGORY_LABELS[subcategory] || subcategory}
+                          source={subcategory}
+                          layout="horizontal"
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -28,7 +28,7 @@ export const ProductCard = ({ product, source = 'all-products', position, layout
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (user._id) {
       const params = new URLSearchParams({
-        product_id: product._id || product.product_id,
+        product_id: product.product_id,
         user_id: user._id,
         source: source,
         timestamp: new Date().toISOString(),
@@ -40,11 +40,11 @@ export const ProductCard = ({ product, source = 'all-products', position, layout
         .catch(err => console.log('Event tracking failed:', err));
     }
     // Navigate with product data and source info - no need to fetch from API
-    navigate(`/product/${product._id || product.product_id}`, { 
+    navigate(`/product/${product.product_id}`, { 
       state: { 
         source,
         product: {
-          _id: product._id || product.product_id,
+          _id: product.product_id,
           name: product.name,
           price: product.price,
           image_url: imageUrl,
@@ -78,7 +78,7 @@ export const ProductCard = ({ product, source = 'all-products', position, layout
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           user_id: user._id,
-          product_id: product._id || product.product_id,
+          product_id: product.product_id,
           product_name: product.name,
           product_price: product.price,
           product_image_url: imageUrl,
@@ -92,7 +92,7 @@ export const ProductCard = ({ product, source = 'all-products', position, layout
         
         // Track wishlist event
         const params = new URLSearchParams({
-          product_id: product._id || product.product_id,
+          product_id: product.product_id,
           user_id: user._id,
           timestamp: new Date().toISOString(),
           session_id: `session_${user._id}`

@@ -143,7 +143,7 @@ const ProductDetail = () => {
 
     try {
       const reviewPayload = {
-        product_id: product._id,
+        product_id: product.product_id,
         user_id: user._id,
         user_name: user.username || user.email?.split('@')[0] || 'Anonymous',
         rating: reviewData.rating,
@@ -161,7 +161,7 @@ const ProductDetail = () => {
       if (response.ok) {
         // Track review event
         const params = new URLSearchParams({
-          product_id: product._id,
+          product_id: product.product_id,
           user_id: user._id,
           rating: reviewData.rating.toString(),
           timestamp: new Date().toISOString(),
@@ -269,7 +269,7 @@ const ProductDetail = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           user_id: user._id,
-          product_id: product._id,
+          product_id: product.product_id,
           product_name: product.name,
           product_price: product.price,
           product_image_url: imageUrl,
@@ -282,7 +282,7 @@ const ProductDetail = () => {
         
         // Track wishlist event
         const params = new URLSearchParams({
-          product_id: product._id,
+          product_id: product.product_id,
           user_id: user._id,
           timestamp: new Date().toISOString(),
           session_id: `session_${user._id}`
@@ -364,7 +364,7 @@ const ProductDetail = () => {
               />
               {product.has_discount && product.discount_amount && (
                 <div className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg text-lg font-bold shadow-lg">
-                  SAVE {product.discount_amount.toFixed(3)} DT
+                  {product.discount_amount} %
                 </div>
               )}
             </div>
@@ -415,7 +415,7 @@ const ProductDetail = () => {
 
               {/* Stock Status */}
               <div className="mb-6">
-                {product.stock > 0 ? (
+                {product.stock > 0 || product.stock_quantity > 0 ? (
                   <div className="flex items-center text-green-600">
                     <Package className="mr-2" size={20} />
                     <span className="font-medium">In Stock</span>
