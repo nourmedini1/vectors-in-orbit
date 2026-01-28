@@ -52,6 +52,12 @@ class Helpers:
             return (outputs / outputs.norm(p=2, dim=-1, keepdim=True)).squeeze().tolist()
         except: return None
 
+    @staticmethod
+    def is_null(value: Any) -> bool:
+        """Helper to check if a value is effectively null for tools."""
+        if value is None: return True
+        if isinstance(value, str) and (value.strip() == "" or value.lower() == "none"): return True
+        return False
 
     def user_point_id(self, user_id: str) -> str:
         return get_point_id(user_id)

@@ -10,10 +10,10 @@ class RetrievalLayer:
         self.helpers = helpers if helpers else SearchHelpers(self.config)
         self.client = self.helpers.qdrant
 
-    def retrieve(self, user_payload: Dict[str, Any], query_text: str, explicit_filters: Optional[Dict[str, Any]] = None, limit: int = 20) -> List[ScoredPoint]:
+    def retrieve(self, query_text: str, explicit_filters: Optional[Dict[str, Any]] = None, limit: int = 20) -> List[ScoredPoint]:
         semantic_vector = self.helpers.get_text_embedding(query_text)
         visual_query_vector = self.helpers.get_clip_text_embedding(query_text)
-        qdrant_filter = ConstraintLayer.build_filters({"payload": user_payload}, explicit_filters or {})
+        qdrant_filter = ConstraintLayer.build_filters(explicit_filters or {})
         try:
             hits_text = self.client.query_points("products", query=semantic_vector, using="text_vector", query_filter=qdrant_filter, limit=limit, with_payload=True).points
             hits_visual = self.client.query_points("products", query=visual_query_vector, using="visual_vector", query_filter=qdrant_filter, limit=limit, with_payload=True).points

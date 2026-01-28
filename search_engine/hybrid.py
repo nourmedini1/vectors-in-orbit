@@ -12,7 +12,7 @@ class HybridSearchEngine:
         intent_data = self.intent_engine.predict_intent(query)
         intent_type, confidence = intent_data["intent_type"], intent_data["confidence"]
         alpha, beta = (0.85, 0.15) if intent_type == "specific_product" else (0.2, 0.8)
-        vector_results = self.vector_db.retrieve(user_payload=user_payload, query_text=query, explicit_filters=explicit_filters, limit=limit * 3)
+        vector_results = self.vector_db.retrieve(query_text=query, explicit_filters=explicit_filters, limit=limit * 3)
         bm25_results = self.bm25.search(query, top_k=limit * 3)
         
         fusion_map = {}
