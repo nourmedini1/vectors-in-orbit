@@ -1,0 +1,6 @@
+# User Simulation Requirements
+
+google-genai>=0.2.0             # New Gemini API (Gemini 2.5 Flash-Lite)
+python-dotenv>=1.0.0            # Environment variables
+httpx>=0.24.0                   # Async HTTP client
+qdrant-client>=1.7.0            # Vector database

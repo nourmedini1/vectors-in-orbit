@@ -18,3 +18,8 @@ qdrant_data_export/
 
 # Frontend
 frontend/
+uv.lock
+QUICK_REFERENCE*
+search_engine_v2/
+en_core_*
+RL_COMPLETE*

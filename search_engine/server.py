@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, Dict, Any, List
@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 import uvicorn
 import os, sys
 import asyncio
+import uuid
 from datetime import datetime
 
 # Path setup to find search_engine module
@@ -19,6 +20,9 @@ from kafka_broker import broker
 # Global instances
 search_pipeline = None
 feed_pipeline = None
+
+# Session storage (in-memory for now, use Redis for production)
+session_histories: Dict[str, Dict[str, Any]] = {}
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -67,30 +71,52 @@ async def health_check():
     return {"status": "initializing"}
 
 @app.post("/search")
-async def search(request: SearchRequest, background_tasks: BackgroundTasks):
+async def search(request: SearchRequest, http_request: Request, response: Response, background_tasks: BackgroundTasks):
     """
-    Intent-Aware Hybrid Search.
+    Intent-Aware Hybrid Search with Session Tracking.
     Used when user TYPES a query.
     """
     if not search_pipeline: 
         raise HTTPException(status_code=503, detail="Search engine not ready")
 
+    # Get or create session_id
+    session_id = http_request.cookies.get("session_id")
+    if not session_id:
+        session_id = str(uuid.uuid4())
+        response.set_cookie(key="session_id", value=session_id, max_age=86400)  # 24 hours
+    
+    # Get session history
+    if session_id not in session_histories:
+        session_histories[session_id] = {
+            "search_count": 0,
+            "click_count": 0,
+            "duration_seconds": 0.0
+        }
+    
+    session_history = session_histories[session_id]
+    session_history["search_count"] += 1
+
     # Send Search Event to Kafka (Background Task)
     event_payload = {
         "user_id": request.user_id,
+        "session_id": session_id,
         "query": request.query_text,
         "filters": request.filters,
         "timestamp": datetime.now().isoformat()
     }
     background_tasks.add_task(broker.send_event, "SearchPerformedEvent", event_payload)
     
+    # Execute search with session context
     results = search_pipeline.execute(
-        request.user_id, 
-        request.query_text, 
-        request.filters, 
-        request.limit
+        user_id=request.user_id,
+        query_text=request.query_text,
+        explicit_filters=request.filters,
+        limit=request.limit,
+        session_id=session_id,
+        session_history=session_history
     )
-    return {"results": results}
+    
+    return {"results": results, "session_id": session_id}
 
 @app.get("/feed/{user_id}")
 async def get_feed(user_id: str):

@@ -268,3 +268,24 @@ class RerankingLayer:
             })
             
         return sorted(results, key=lambda x: x["scores"]["total"], reverse=True)
+    
+    def get_current_weights(self):
+        """
+        Returns the current weight configuration for logging.
+        This returns default static weights for RL training compatibility.
+        Later these will be replaced by RL-learned weights.
+        """
+        from .search_logging.models import SearchAction
+        
+        return SearchAction(
+            W_COLLAB_POS=0.4,
+            W_COLLAB_NEG=0.6,
+            W_TRAIT=0.15,
+            W_BRAND=0.5,
+            W_WISHLIST=0.5,
+            W_MARKET_CONV=0.1,
+            W_MARKET_DEAL=0.3,
+            relevance_scale=25.0,
+            affordability_scale=2.0,
+            action_source="static"
+        )
