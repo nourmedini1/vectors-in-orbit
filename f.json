@@ -1,0 +1,2973 @@
+[
+    {
+        "user_id": "user_walid_eng",
+        "persona_name": "Walid (Engineer/Budget)",
+        "timestamp": 1769594599.0017092,
+        "duration_seconds": 0.14814519882202148,
+        "response": {
+            "feed": [
+                {
+                    "section_title": "Because you want 'USB for OS installs'",
+                    "items": [
+                        {
+                            "product_id": "f56d4b99-97b3-5180-af4e-9c1d79b986c3",
+                            "name": "Boitier Pour Disque Dur Externe  2.5'' USB 3.0 - Noir",
+                            "price": 14.9,
+                            "image_url": "https://www.mytek.tn/media/catalog/product/b/o/boitier-pour-disque-dur-externe-2-5-usb-3-0-noir-e.jpg",
+                            "match_reason": "Highly Rated by community",
+                            "scores": {
+                                "total": 5.6023,
+                                "base_relevance": 0.51,
+                                "context_multiplier": 1.1,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_mytek_128",
+                                "metadata": {
+                                    "name": "Boitier Pour Disque Dur Externe  2.5'' USB 3.0 - Noir",
+                                    "description": "Boitier Pour Disque Dur Externe 2.5 pouces - Connexion USB 3.0 - Matiére : En Plastique - Design compact et installation sans vis - Idéal pour le stockage et le transport sécurisé - Couleur: Noir.",
+                                    "category": "Electronics-Storage",
+                                    "brand": "Sans Fabricant",
+                                    "gender": "Unisex",
+                                    "condition": "New",
+                                    "price": 14.9,
+                                    "stock_quantity": 96,
+                                    "tags": [
+                                        "sans-fabricant",
+                                        "electronics",
+                                        "budget"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://www.mytek.tn/media/catalog/product/b/o/boitier-pour-disque-dur-externe-2-5-usb-3-0-noir-e.jpg",
+                                    "updated_at": "2026-01-23T17:51:26.369497",
+                                    "created_at": "2026-01-23T17:51:26.369514"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 3,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 1.0,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Similar to 'USB for OS installs'",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "a6475f39-8c0d-5d3e-b321-c295e959a970",
+                            "name": "Clé USB SILICON POWER Ultima U02 64Go USB 2.0 - Noir",
+                            "price": 15.9,
+                            "image_url": "https://www.mytek.tn/media/catalog/product/c/l/cle-usb-silicon-power-ultima-u02-64go-usb-2-0-noir.jpg",
+                            "match_reason": "Great Deal",
+                            "scores": {
+                                "total": 5.3916,
+                                "base_relevance": 0.54,
+                                "context_multiplier": 1.0,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_mytek_124",
+                                "metadata": {
+                                    "name": "Clé USB SILICON POWER Ultima U02 64Go USB 2.0 - Noir",
+                                    "description": "Clé USB SILICON POWER Ultima U02 - Capacité: 64 Go - Interface: USB 2.0 - Capuchon de protection - Système d'exploitation requis: Linux 2.6.x ou plus récent, Apple MacOS X 10.3.x ou plus récent, Microsoft Windows XP / Vista / 7 / 8 / 8.1 / 10 - Dimensions: 60.6 x 18 x 8.1 mm - Poids: 8gr - Couleur: Noir - Garantie: 1 an",
+                                    "category": "Electronics-Storage",
+                                    "brand": "Silicon Power",
+                                    "gender": "Unisex",
+                                    "condition": "New",
+                                    "price": 15.9,
+                                    "stock_quantity": 55,
+                                    "tags": [
+                                        "silicon-power",
+                                        "electronics",
+                                        "budget"
+                                    ],
+                                    "is_discounted": true,
+                                    "image_url": "https://www.mytek.tn/media/catalog/product/c/l/cle-usb-silicon-power-ultima-u02-64go-usb-2-0-noir.jpg",
+                                    "updated_at": "2026-01-23T17:50:56.325759",
+                                    "created_at": "2026-01-23T17:50:56.325777"
+                                },
+                                "stats": {
+                                    "purchase_count": 0,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 0,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 0.5,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Similar to 'USB for OS installs'",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "98c5c40c-ce72-55e2-b7cc-3b1712e37c21",
+                            "name": "Boitier Pour Disque Dur Externe  2.5'' USB 2.0 En Métal",
+                            "price": 11.9,
+                            "image_url": "https://www.mytek.tn/media/catalog/product/b/o/boitier-pour-disque-dur-externe-2-5-usb-2-0-en-metal-d.jpg",
+                            "match_reason": "You might like this",
+                            "scores": {
+                                "total": 5.1178,
+                                "base_relevance": 0.51,
+                                "context_multiplier": 1.0,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_mytek_145",
+                                "metadata": {
+                                    "name": "Boitier Pour Disque Dur Externe  2.5'' USB 2.0 En Métal",
+                                    "description": "Boitier Pour Disque Dur Externe 2.5 pouces - Connexion USB 2.0 - Matiére : En Métal - Design compact et installation sans vis - Idéal pour le stockage et le transport sécurisé .",
+                                    "category": "Electronics-Storage",
+                                    "brand": "Sans Fabricant",
+                                    "gender": "Unisex",
+                                    "condition": "New",
+                                    "price": 11.9,
+                                    "stock_quantity": 23,
+                                    "tags": [
+                                        "sans-fabricant",
+                                        "electronics",
+                                        "budget"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://www.mytek.tn/media/catalog/product/b/o/boitier-pour-disque-dur-externe-2-5-usb-2-0-en-metal-d.jpg",
+                                    "updated_at": "2026-01-23T17:53:04.380427",
+                                    "created_at": "2026-01-23T17:53:04.380444"
+                                },
+                                "stats": {
+                                    "purchase_count": 0,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 0,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 0.5,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Similar to 'USB for OS installs'",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "f5d6036e-0c0a-5949-b83c-50ec40116c98",
+                            "name": "Clé USB ADATA UC300 32Go Type C - Noir&Vert",
+                            "price": 14.9,
+                            "image_url": "https://www.mytek.tn/media/catalog/product/c/l/cle-usb-adata-uc300-32go-type-c-noir-vert-i.jpg",
+                            "match_reason": "Fits your style",
+                            "scores": {
+                                "total": 5.1167,
+                                "base_relevance": 0.51,
+                                "context_multiplier": 1.0,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_mytek_127",
+                                "metadata": {
+                                    "name": "Clé USB ADATA UC300 32Go Type C - Noir&Vert",
+                                    "description": "Clé USB ADATA UC300 - Connecteur: Type C - Interface: USB 3.2 Gen1 - Capacité: 32Go - Système opérateur: Windows Vista, 7, 8, 8.1, 10, 11, Mac OS X 10.6 ou version ultérieure, noyau Linux 2.6 ou version ultérieure, sans pilote de périphérique requis - Dimensions (L x l x h): 63 x 20 x 10 mm - Poids: 7 g - Couleur: Noir et Vert - Garantie: 3 ans",
+                                    "category": "Electronics-Storage",
+                                    "brand": "Adata",
+                                    "gender": "Unisex",
+                                    "condition": "New",
+                                    "price": 14.9,
+                                    "stock_quantity": 41,
+                                    "tags": [
+                                        "adata",
+                                        "electronics",
+                                        "budget"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://www.mytek.tn/media/catalog/product/c/l/cle-usb-adata-uc300-32go-type-c-noir-vert-i.jpg",
+                                    "updated_at": "2026-01-23T17:51:25.961800",
+                                    "created_at": "2026-01-23T17:51:25.961819"
+                                },
+                                "stats": {
+                                    "purchase_count": 0,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 0,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 0.5,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Similar to 'USB for OS installs'",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "868ad0c7-c08e-5ddc-9531-f5cce03e1c2c",
+                            "name": "Boitier Pour Disque Dur Externe  2.5'' USB 2.0 - Noir",
+                            "price": 10.9,
+                            "image_url": "https://www.mytek.tn/media/catalog/product/b/o/boitier-pour-disque-dur-externe-2-5-usb-2-0-noir-r.jpg",
+                            "match_reason": "Great Deal",
+                            "scores": {
+                                "total": 5.1015,
+                                "base_relevance": 0.51,
+                                "context_multiplier": 1.0,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_mytek_153",
+                                "metadata": {
+                                    "name": "Boitier Pour Disque Dur Externe  2.5'' USB 2.0 - Noir",
+                                    "description": "Boitier Pour Disque Dur Externe 2.5 pouces - Connexion USB 2.0 - Matiére : En Plastique - Design compact et installation sans vis - Idéal pour le stockage et le transport sécurisé - Couleur: Noir.",
+                                    "category": "Electronics-Storage",
+                                    "brand": "Sans Fabricant",
+                                    "gender": "Unisex",
+                                    "condition": "New",
+                                    "price": 10.9,
+                                    "stock_quantity": 92,
+                                    "tags": [
+                                        "sans-fabricant",
+                                        "electronics",
+                                        "budget"
+                                    ],
+                                    "is_discounted": true,
+                                    "image_url": "https://www.mytek.tn/media/catalog/product/b/o/boitier-pour-disque-dur-externe-2-5-usb-2-0-noir-r.jpg",
+                                    "updated_at": "2026-01-23T17:54:10.685471",
+                                    "created_at": "2026-01-23T17:54:10.685491"
+                                },
+                                "stats": {
+                                    "purchase_count": 0,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 0,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 0.5,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Similar to 'USB for OS installs'",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "section_title": "Recommended for your style",
+                    "items": [
+                        {
+                            "product_id": "ad59c0d8-f5d6-5e34-a762-c9980a9daf16",
+                            "name": "Hooded fleece sports jacket",
+                            "price": 149,
+                            "image_url": "https://static.lefties.com/assets/public/1993/cdc5/1b59473dbbd8/7c2fd65209d9/01810550825-A1/01810550825-A1.jpg?ts=1762763389053&w=400&f=auto",
+                            "match_reason": "Because you love Lefties",
+                            "scores": {
+                                "total": 13.8613,
+                                "base_relevance": 0.96,
+                                "context_multiplier": 1.45,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_lefties_men_4",
+                                "metadata": {
+                                    "name": "Hooded fleece sports jacket",
+                                    "description": "Jacket with an adjustable hood and long sleeve finished with elastic cuffs and a front zip fastening. Features zip pockets on the chest and hips. Adjustable hem with elastic. It's a regular fit and is made of sports fabric with a fleece lining.",
+                                    "category": "Fashion-Men",
+                                    "brand": "Lefties",
+                                    "gender": "Men",
+                                    "condition": "New",
+                                    "price": 149,
+                                    "stock_quantity": 42,
+                                    "tags": [
+                                        "fashion",
+                                        "men",
+                                        "jacket"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://static.lefties.com/assets/public/1993/cdc5/1b59473dbbd8/7c2fd65209d9/01810550825-A1/01810550825-A1.jpg?ts=1762763389053&w=400&f=auto",
+                                    "updated_at": "2026-01-23T19:35:23.874408",
+                                    "created_at": "2026-01-23T19:35:23.874422"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 1,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 1.0,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Matches your style",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "7e32f576-c67a-589f-bcb9-d5ad983affd7",
+                            "name": "Foamy knit sweater",
+                            "price": 89.9,
+                            "image_url": "https://static.lefties.com/assets/public/0530/c4ac/12f3450da24b/30af4a9ab51e/05604348803-A1/05604348803-A1.jpg?ts=1762156506327&w=400&f=auto",
+                            "match_reason": "Because you love Lefties",
+                            "scores": {
+                                "total": 10.3772,
+                                "base_relevance": 0.72,
+                                "context_multiplier": 1.45,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_lefties_4",
+                                "metadata": {
+                                    "name": "Foamy knit sweater",
+                                    "description": "long sleeve V-neck sweater. It has a straight cut and is made of a foamy knit fabric.",
+                                    "category": "Fashion-Women",
+                                    "brand": "Lefties",
+                                    "gender": "Women",
+                                    "condition": "New",
+                                    "price": 89.9,
+                                    "stock_quantity": 88,
+                                    "tags": [
+                                        "fashion",
+                                        "women"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://static.lefties.com/assets/public/0530/c4ac/12f3450da24b/30af4a9ab51e/05604348803-A1/05604348803-A1.jpg?ts=1762156506327&w=400&f=auto",
+                                    "updated_at": "2026-01-23T19:32:29.633259",
+                                    "created_at": "2026-01-23T19:32:29.633292"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 1,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 1.0,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Matches your style",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "526068f8-f4a0-5c5a-890e-54b2a06a36ea",
+                            "name": "Foamy knit sweater",
+                            "price": 89.9,
+                            "image_url": "https://static.lefties.com/assets/public/4c00/b974/7b3e4d5f86ed/5729b655fa90/01600313806-A3/01600313806-A3.jpg?ts=1763126807115&w=400&f=auto",
+                            "match_reason": "Because you love Lefties",
+                            "scores": {
+                                "total": 10.255,
+                                "base_relevance": 0.71,
+                                "context_multiplier": 1.45,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_lefties_5",
+                                "metadata": {
+                                    "name": "Foamy knit sweater",
+                                    "description": "long sleeve V-neck sweater. It has a straight cut and is made of a foamy knit fabric.",
+                                    "category": "Fashion-Women",
+                                    "brand": "Lefties",
+                                    "gender": "Women",
+                                    "condition": "New",
+                                    "price": 89.9,
+                                    "stock_quantity": 40,
+                                    "tags": [
+                                        "fashion",
+                                        "women"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://static.lefties.com/assets/public/4c00/b974/7b3e4d5f86ed/5729b655fa90/01600313806-A3/01600313806-A3.jpg?ts=1763126807115&w=400&f=auto",
+                                    "updated_at": "2026-01-23T19:32:33.319306",
+                                    "created_at": "2026-01-23T19:32:33.319335"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 2,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 1.0,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Matches your style",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "3d971da1-0be4-51e3-91b1-c315a7937edf",
+                            "name": "Mom jeans",
+                            "price": 89.9,
+                            "image_url": "https://static.lefties.com/assets/public/8f0b/7608/14844ffca97d/23c37970b238/01400333801-A6/01400333801-A6.jpg?ts=1763559091191&w=400&f=auto",
+                            "match_reason": "Because you love Lefties",
+                            "scores": {
+                                "total": 10.255,
+                                "base_relevance": 0.71,
+                                "context_multiplier": 1.45,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_lefties_16",
+                                "metadata": {
+                                    "name": "Mom jeans",
+                                    "description": "High-waist relaxed fit trousers with a five-pocket design. Metal button and zip fly fastening on the front. Made of stretch cotton.",
+                                    "category": "Fashion-Women",
+                                    "brand": "Lefties",
+                                    "gender": "Women",
+                                    "condition": "New",
+                                    "price": 89.9,
+                                    "stock_quantity": 47,
+                                    "tags": [
+                                        "fashion",
+                                        "women",
+                                        "jeans"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://static.lefties.com/assets/public/8f0b/7608/14844ffca97d/23c37970b238/01400333801-A6/01400333801-A6.jpg?ts=1763559091191&w=400&f=auto",
+                                    "updated_at": "2026-01-23T19:33:48.579410",
+                                    "created_at": "2026-01-23T19:33:48.579426"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 2,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 1.0,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Matches your style",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "fedc773d-023d-50e5-b75b-352bc1476c57",
+                            "name": "Basic cap",
+                            "price": 39.9,
+                            "image_url": "https://static.lefties.com/assets/public/c41b/e054/06b4447e8e09/ba3b06ff3f97/01320514800-A1/01320514800-A1.jpg?ts=1765296723374&w=400&f=auto",
+                            "match_reason": "Because you love Lefties",
+                            "scores": {
+                                "total": 9.9226,
+                                "base_relevance": 0.69,
+                                "context_multiplier": 1.45,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_lefties_men_3",
+                                "metadata": {
+                                    "name": "Basic cap",
+                                    "description": "Basic cap with a curved peak and an adjustable hook-and-loop strap at the back.",
+                                    "category": "Fashion-Men",
+                                    "brand": "Lefties",
+                                    "gender": "Men",
+                                    "condition": "New",
+                                    "price": 39.9,
+                                    "stock_quantity": 44,
+                                    "tags": [
+                                        "fashion",
+                                        "men",
+                                        "budget"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://static.lefties.com/assets/public/c41b/e054/06b4447e8e09/ba3b06ff3f97/01320514800-A1/01320514800-A1.jpg?ts=1765296723374&w=400&f=auto",
+                                    "updated_at": "2026-01-23T19:35:18.906729",
+                                    "created_at": "2026-01-23T19:35:18.906749"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 0,
+                                    "return_count": 1,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 0.85,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Matches your style",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "section_title": "Trending Now",
+                    "items": [
+                        {
+                            "product_id": "03ce469b-f291-5855-b7b0-fed91b20dcf8",
+                            "name": "Wide-leg jeans with pockets",
+                            "price": 119,
+                            "image_url": "https://static.lefties.com/assets/public/3040/ec9b/ad2c421bbeda/8b974bbbc145/0141031440104-A9/0141031440104-A9.jpg?ts=1768388815089&w=400&f=auto",
+                            "match_reason": "Because you love Lefties",
+                            "scores": {
+                                "total": 10.855,
+                                "base_relevance": 1.0,
+                                "context_multiplier": 1.09,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_lefties_25",
+                                "metadata": {
+                                    "name": "Wide-leg jeans with pockets",
+                                    "description": "Long denim trousers with a front button and zip fastening. Featuring front patch pockets and a wide-leg design. Made from 100% indigo cotton denim fabric.\n\nCOORDINATED GARMENTS",
+                                    "category": "Fashion-Women",
+                                    "brand": "Lefties",
+                                    "gender": "Women",
+                                    "condition": "New",
+                                    "price": 119,
+                                    "stock_quantity": 56,
+                                    "tags": [
+                                        "fashion",
+                                        "women",
+                                        "jeans"
+                                    ],
+                                    "is_discounted": true,
+                                    "image_url": "https://static.lefties.com/assets/public/3040/ec9b/ad2c421bbeda/8b974bbbc145/0141031440104-A9/0141031440104-A9.jpg?ts=1768388815089&w=400&f=auto",
+                                    "updated_at": "2026-01-23T19:34:33.586223",
+                                    "created_at": "2026-01-23T19:34:33.586250"
+                                },
+                                "stats": {
+                                    "purchase_count": 8,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 7,
+                                    "return_count": 4,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 1.0,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [
+                                        "love the wide leg style",
+                                        "very trendy",
+                                        "perfect fit"
+                                    ],
+                                    "sentiment_score": 0.75
+                                },
+                                "feed_reason": "Popular right now",
+                                "hybrid_debug": {
+                                    "intent": "specific_product"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "000cf2a8-ba68-5d42-8b35-d782e088c0ef",
+                            "name": "Hooded fleece sports jacket",
+                            "price": 149,
+                            "image_url": "https://static.lefties.com/assets/public/c541/7e67/80b343dea938/d6b0430e6e91/01810550825-03-A9/01810550825-03-A9.jpg?ts=1768913541459&w=400&f=auto",
+                            "match_reason": "Because you love Lefties",
+                            "scores": {
+                                "total": 10.1313,
+                                "base_relevance": 0.7,
+                                "context_multiplier": 1.45,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_lefties_men_5",
+                                "metadata": {
+                                    "name": "Hooded fleece sports jacket",
+                                    "description": "Jacket with an adjustable hood and long sleeve finished with elastic cuffs and a front zip fastening. Features zip pockets on the chest and hips. Adjustable hem with elastic. It's a regular fit and is made of sports fabric with a fleece lining.",
+                                    "category": "Fashion-Men",
+                                    "brand": "Lefties",
+                                    "gender": "Men",
+                                    "condition": "New",
+                                    "price": 149,
+                                    "stock_quantity": 10,
+                                    "tags": [
+                                        "fashion",
+                                        "men",
+                                        "jacket"
+                                    ],
+                                    "is_discounted": true,
+                                    "image_url": "https://static.lefties.com/assets/public/c541/7e67/80b343dea938/d6b0430e6e91/01810550825-03-A9/01810550825-03-A9.jpg?ts=1768913541459&w=400&f=auto",
+                                    "updated_at": "2026-01-23T19:35:29.973435",
+                                    "created_at": "2026-01-23T19:35:29.973454"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 2,
+                                    "return_count": 1,
+                                    "hesitation_count": 1
+                                },
+                                "scores": {
+                                    "desirability_score": 0.85,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Popular right now",
+                                "hybrid_debug": {
+                                    "intent": "specific_product"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "1079f602-2210-5686-b9a4-64333ab81be2",
+                            "name": "Carrot fit dress trousers",
+                            "price": 99.9,
+                            "image_url": "https://static.lefties.com/assets/public/223d/4027/86bc4a4f88b8/c8d5e3f173c6/01920303745-A6/01920303745-A6.jpg?ts=1761734779150&w=400&f=auto",
+                            "match_reason": "Because you love Lefties",
+                            "scores": {
+                                "total": 10.1313,
+                                "base_relevance": 0.7,
+                                "context_multiplier": 1.45,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_lefties_20",
+                                "metadata": {
+                                    "name": "Carrot fit dress trousers",
+                                    "description": "Long trousers with an interior button, metal appliqué and zip fly on the front. Featuring two side pockets and faux back pockets. Slightly loose fit that tapers at the hem. Includes a belt. Made of flowing fabric.",
+                                    "category": "Fashion-Women",
+                                    "brand": "Lefties",
+                                    "gender": "Women",
+                                    "condition": "New",
+                                    "price": 99.9,
+                                    "stock_quantity": 34,
+                                    "tags": [
+                                        "fashion",
+                                        "women",
+                                        "dress"
+                                    ],
+                                    "is_discounted": true,
+                                    "image_url": "https://static.lefties.com/assets/public/223d/4027/86bc4a4f88b8/c8d5e3f173c6/01920303745-A6/01920303745-A6.jpg?ts=1761734779150&w=400&f=auto",
+                                    "updated_at": "2026-01-23T19:34:08.712908",
+                                    "created_at": "2026-01-23T19:34:08.712925"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 1,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 1.0,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [
+                                        "nice fabric",
+                                        "slightly long"
+                                    ],
+                                    "sentiment_score": 0.5
+                                },
+                                "feed_reason": "Popular right now",
+                                "hybrid_debug": {
+                                    "intent": "specific_product"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "0018ce99-e4aa-5e8e-8b0e-e9038acf22d1",
+                            "name": "Ecran ASUS VA249HG 23.8'' Full HD IPS 120 Hz",
+                            "price": 289,
+                            "image_url": "https://www.mytek.tn/media/catalog/product/e/c/ecran-asus-va249hg-23-8-full-hd-ips-120-hz.jpg",
+                            "match_reason": "Great Deal",
+                            "scores": {
+                                "total": 7.7,
+                                "base_relevance": 0.7,
+                                "context_multiplier": 1.1,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_mytek_348",
+                                "metadata": {
+                                    "name": "Ecran ASUS VA249HG 23.8'' Full HD IPS 120 Hz",
+                                    "description": "Écran ASUS Eye Care VA249HG - Taille de l'écran: 23.8\" Full HD, 120 Hz - Résolution: 1920 x 1080 pixels - Format d'écran: 16:9 - Rapport de contraste: 1500:1 - Type de dalle: IPS - Luminosité: 300 cd/m² - Temps de réponse: 1 ms - Angle de vue (H / V): 178°/178° - Espaces de couleurs: 99% sRGB - Inclinaison: +23° ~ -5° - Montage VESA: 100 x 100mm - Connecteurs: 1x HDMI (v1.4), 1x VGA, Prise pour écouteurs - Avec Câble HDMI - Technologie Adaptive-Sync - Dimensions: L x H x P: 54 x 40,8 x 19,1 cm - Couleur: Noir - Garantie: 1 an",
+                                    "category": "Electronics-Screens",
+                                    "brand": "ASUS",
+                                    "gender": "Unisex",
+                                    "condition": "New",
+                                    "price": 289,
+                                    "stock_quantity": 74,
+                                    "tags": [
+                                        "asus",
+                                        "electronics",
+                                        "budget"
+                                    ],
+                                    "is_discounted": true,
+                                    "image_url": "https://www.mytek.tn/media/catalog/product/e/c/ecran-asus-va249hg-23-8-full-hd-ips-120-hz.jpg",
+                                    "updated_at": "2026-01-23T19:11:55.583787",
+                                    "created_at": "2026-01-23T19:11:55.583805"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 1,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 1.0,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [
+                                        "bought it on sale",
+                                        "great value for money"
+                                    ],
+                                    "sentiment_score": 0.75
+                                },
+                                "feed_reason": "Popular right now",
+                                "hybrid_debug": {
+                                    "intent": "specific_product"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "079cec5d-0c45-5958-9653-c2b98dc2b10b",
+                            "name": "Souris Filaire Optique JEDEL CP72 - Noir",
+                            "price": 4.5,
+                            "image_url": "https://www.mytek.tn/media/catalog/product/j/e/jedel-cp72.jpg",
+                            "match_reason": "Highly Rated by community",
+                            "scores": {
+                                "total": 7.7,
+                                "base_relevance": 0.7,
+                                "context_multiplier": 1.1,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_mytek_253",
+                                "metadata": {
+                                    "name": "Souris Filaire Optique JEDEL CP72 - Noir",
+                                    "description": "Souris optique JEDEL CP72 - Technologie de connectivité: Filaire - Interface: USB - Nombre de boutons: 3 - Résolution: 1600 DPI - Compatible avec: Windows XP / 7/8/10 / Vista / Mac - Longueur de câble: 1,2 mètre - Couleur: Noir",
+                                    "category": "Electronics-Mice",
+                                    "brand": "Jedel",
+                                    "gender": "Unisex",
+                                    "condition": "New",
+                                    "price": 4.5,
+                                    "stock_quantity": 14,
+                                    "tags": [
+                                        "jedel",
+                                        "electronics",
+                                        "budget"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://www.mytek.tn/media/catalog/product/j/e/jedel-cp72.jpg",
+                                    "updated_at": "2026-01-23T18:13:03.950238",
+                                    "created_at": "2026-01-23T18:13:03.950256"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 1,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 1.0,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Popular right now",
+                                "hybrid_debug": {
+                                    "intent": "specific_product"
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    {
+        "user_id": "user_yasmine_style",
+        "persona_name": "Yasmine (Fashion/High Spender)",
+        "timestamp": 1769594599.1131284,
+        "duration_seconds": 0.1112668514251709,
+        "response": {
+            "feed": [
+                {
+                    "section_title": "Because you want 'White Magic Keyboard for iPad Pro 16-inch'",
+                    "items": [
+                        {
+                            "product_id": "80b6150a-ca49-5c40-a94f-eae39e429eb6",
+                            "name": "Pencil WiWU Universel pour Écrans Tactiles Capacitif - blanc",
+                            "price": 109,
+                            "image_url": "https://www.mytek.tn/media/catalog/product/p/e/pencil-wiwu-universel-pour-ecrans-tactiles-capacitif-blanc-j.jpg",
+                            "match_reason": "Recommended for you",
+                            "scores": {
+                                "total": 4.7675,
+                                "base_relevance": 0.48,
+                                "context_multiplier": 1.0,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_mytek_305",
+                                "metadata": {
+                                    "name": "Pencil WiWU Universel pour Écrans Tactiles Capacitif - blanc",
+                                    "description": "Pencil D WiWU Universel pour Écrans Tactiles Capacitifs - Compatible avec smartphones et tablettes - Technologie : Écran capacitif universel - Pointe haute précision pour écriture et dessin fluide - Design ergonomique confortable même sur longue durée - Couleur : Blanc - Garantie : 3 mois",
+                                    "category": "Electronics-Tablets",
+                                    "brand": "WiWU",
+                                    "gender": "Unisex",
+                                    "condition": "New",
+                                    "price": 109,
+                                    "stock_quantity": 77,
+                                    "tags": [
+                                        "wiwu",
+                                        "electronics",
+                                        "budget",
+                                        "tablet",
+                                        "smartphone"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://www.mytek.tn/media/catalog/product/p/e/pencil-wiwu-universel-pour-ecrans-tactiles-capacitif-blanc-j.jpg",
+                                    "updated_at": "2026-01-23T19:06:00.084033",
+                                    "created_at": "2026-01-23T19:06:00.084050"
+                                },
+                                "stats": {
+                                    "purchase_count": 0,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 0,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 0.5,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Similar to 'White Magic Keyboard for iPad Pro 16-inch'",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "3fcd0f4d-199b-578c-ab6a-d8582bea2132",
+                            "name": "Clavier HUAWEI Pour Tablette MateBook E",
+                            "price": 59,
+                            "image_url": "https://www.mytek.tn/media/catalog/product/c/l/clavier-huawei-pour-tablette-matebook-e.jpg",
+                            "match_reason": "Curated selection",
+                            "scores": {
+                                "total": 4.7487,
+                                "base_relevance": 0.47,
+                                "context_multiplier": 1.0,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_mytek_306",
+                                "metadata": {
+                                    "name": "Clavier HUAWEI Pour Tablette MateBook E",
+                                    "description": "Clavier HUAWEI Pour Tablette MateBook E - Design fin et léger - Facile à transporter - Touches confortables et grands - Augmentez votre efficacité avec le clavier magnétique intelligent HUAWEI - Couleur: Noir",
+                                    "category": "Electronics-Tablets",
+                                    "brand": "HUAWEI",
+                                    "gender": "Unisex",
+                                    "condition": "New",
+                                    "price": 59,
+                                    "stock_quantity": 48,
+                                    "tags": [
+                                        "huawei",
+                                        "electronics",
+                                        "budget",
+                                        "tablet"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://www.mytek.tn/media/catalog/product/c/l/clavier-huawei-pour-tablette-matebook-e.jpg",
+                                    "updated_at": "2026-01-23T19:06:03.947613",
+                                    "created_at": "2026-01-23T19:06:03.947633"
+                                },
+                                "stats": {
+                                    "purchase_count": 0,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 1,
+                                    "return_count": 0,
+                                    "hesitation_count": 1
+                                },
+                                "scores": {
+                                    "desirability_score": 0.45,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Similar to 'White Magic Keyboard for iPad Pro 16-inch'",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "523c1247-2f74-532a-b8af-980dae7e075e",
+                            "name": "Pencil APPLE (USB-C) - Blanc (MUWA3ZM/A)",
+                            "price": 389,
+                            "image_url": "https://www.mytek.tn/media/catalog/product/p/e/pencil-apple-usb-c-blanc-g.png",
+                            "match_reason": "Great Deal",
+                            "scores": {
+                                "total": 4.1957,
+                                "base_relevance": 0.52,
+                                "context_multiplier": 0.81,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_mytek_288",
+                                "metadata": {
+                                    "name": "Pencil APPLE (USB-C) - Blanc (MUWA3ZM/A)",
+                                    "description": "Pencil APPLE (USB-C) - Connexions: Bluetooth, connecteur USB-C - L’Apple Pencil est l’outil idéal pour prendre des notes, dessiner, annoter des documents, tenir un journal et bien plus. Avec sa précision au pixel près, sa faible latence et sa sensibilité à l’inclinaison, il se manie aussi facilement qu’un crayon, mais en fait infiniment plus - Autres caractéristiques: Capuchon maintenu magnétiquement - Compatibilité Modèles d’iPad: iPad Pro 13 pouces (M4)/ iPad Pro 12,9 pouces (6ᵉ génération)/ iPad Pro 12,9 pouces (5ᵉ génération)/ iPad Pro 12,9 pouces (4ᵉ génération)/ iPad Pro 12,9 pouces (3ᵉ génération)/ iPad Pro 11 pouces (M4)/ iPad Air 13 pouces (M2)/ iPad Air 11 pouces (M2)/ iPad Air (5ᵉ génération)/ iPad Air (4ᵉ génération)/ iPad (10ᵉ génération)/ iPad mini (6ᵉ génération) - Couleur: Blanc - Garantie: 1an",
+                                    "category": "Electronics-Tablets",
+                                    "brand": "Apple",
+                                    "gender": "Unisex",
+                                    "condition": "New",
+                                    "price": 389,
+                                    "stock_quantity": 69,
+                                    "tags": [
+                                        "apple",
+                                        "electronics",
+                                        "budget"
+                                    ],
+                                    "is_discounted": true,
+                                    "image_url": "https://www.mytek.tn/media/catalog/product/p/e/pencil-apple-usb-c-blanc-g.png",
+                                    "updated_at": "2026-01-23T18:13:26.264499",
+                                    "created_at": "2026-01-23T18:13:26.264520"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 2,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 1.0,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [
+                                        "very responsive",
+                                        "responsive",
+                                        "essential",
+                                        "essential for design work"
+                                    ],
+                                    "sentiment_score": 0.9
+                                },
+                                "feed_reason": "Similar to 'White Magic Keyboard for iPad Pro 16-inch'",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "dd416625-8c8b-5b8e-be03-6b20b6981e65",
+                            "name": "Clavier Magic APPLE Folio Pour iPad 10 et 11 + Etui - Blanc",
+                            "price": 1209,
+                            "image_url": "https://www.mytek.tn/media/catalog/product/c/l/clavier-apple-sans-fil-magic-folio-pour-ipad-10-et-11-etuis-ee.jpg",
+                            "match_reason": "Fits your style",
+                            "scores": {
+                                "total": 2.2314,
+                                "base_relevance": 0.64,
+                                "context_multiplier": 0.35,
+                                "budget_fit": 0.28
+                            },
+                            "payload": {
+                                "product_id": "prod_mytek_263",
+                                "metadata": {
+                                    "name": "Clavier Magic APPLE Folio Pour iPad 10 et 11 + Etui - Blanc",
+                                    "description": "Clavier APPLE Magic Folio Pour iPad 10 et 11 + Etui - Norme de Clavier: AZERTY - Compatible avec iPad 10 et 11 - Trackpad large et cliquable - 14 touches de fonction pour un accès rapide et simplifié aux raccourcis - Design modulaire en deux parties : clavier amovible avec protection avant et arrière intégrée - Frappe confortable grâce à un mécanisme à ciseaux et une course réduite de 1 mm - Support réglable pour trouver le meilleur angle de vision - Couleur: Blanc.",
+                                    "category": "Electronics-Keyboards",
+                                    "brand": "Apple",
+                                    "gender": "Unisex",
+                                    "condition": "New",
+                                    "price": 1209,
+                                    "stock_quantity": 99,
+                                    "tags": [
+                                        "apple",
+                                        "electronics"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://www.mytek.tn/media/catalog/product/c/l/clavier-apple-sans-fil-magic-folio-pour-ipad-10-et-11-etuis-ee.jpg",
+                                    "updated_at": "2026-01-23T18:13:06.236831",
+                                    "created_at": "2026-01-23T18:13:06.236855"
+                                },
+                                "stats": {
+                                    "purchase_count": 1,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 2,
+                                    "return_count": 0,
+                                    "hesitation_count": 1
+                                },
+                                "scores": {
+                                    "desirability_score": 0.85,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Similar to 'White Magic Keyboard for iPad Pro 16-inch'",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "ebc229a4-512c-5d59-868b-e9718e6fc71f",
+                            "name": "Tablette Graphique WACOM Intuos Pro Medium",
+                            "price": 999,
+                            "image_url": "https://www.mytek.tn/media/catalog/product/t/a/tablette-graphique-wacom-intuos-pro-medium.jpg",
+                            "match_reason": "Great Deal",
+                            "scores": {
+                                "total": 2.0886,
+                                "base_relevance": 0.47,
+                                "context_multiplier": 0.45,
+                                "budget_fit": 0.45
+                            },
+                            "payload": {
+                                "product_id": "prod_mytek_265",
+                                "metadata": {
+                                    "name": "Tablette Graphique WACOM Intuos Pro Medium",
+                                    "description": "Surface active: 224 x 148 mm - Résolutions: 5 080 lpi - Fonctions sans fil: Bluetooth - Touches ExpressKey™ personnalisables - Stylet Wacom Pro Pen 2 (sans batterie) - Un stylet créatif avec reconnaissance d'inclinaison et suivi pratiquement sans décalage - Niveau de pression du stylet: 8 192 - Dimensions: 338 x 219 x 8 mm - Couleur: Noir - Garantie: 1 an",
+                                    "category": "Electronics-Tablets",
+                                    "brand": "Wacom",
+                                    "gender": "Unisex",
+                                    "condition": "New",
+                                    "price": 999,
+                                    "stock_quantity": 42,
+                                    "tags": [
+                                        "wacom",
+                                        "electronics",
+                                        "tablet"
+                                    ],
+                                    "is_discounted": true,
+                                    "image_url": "https://www.mytek.tn/media/catalog/product/t/a/tablette-graphique-wacom-intuos-pro-medium.jpg",
+                                    "updated_at": "2026-01-23T18:13:08.368424",
+                                    "created_at": "2026-01-23T18:13:08.368443"
+                                },
+                                "stats": {
+                                    "purchase_count": 0,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 1,
+                                    "return_count": 0,
+                                    "hesitation_count": 1
+                                },
+                                "scores": {
+                                    "desirability_score": 0.45,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Similar to 'White Magic Keyboard for iPad Pro 16-inch'",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "section_title": "Recommended for your style",
+                    "items": [
+                        {
+                            "product_id": "4a232146-0ff1-5fda-81d7-29f344ee768a",
+                            "name": "Slim fit wide-leg animal print jeans",
+                            "price": 99.9,
+                            "image_url": "https://static.lefties.com/assets/public/a567/ed15/7a46441eb0a8/ceb93718e929/05414328807-A1/05414328807-A1.jpg?ts=1761578709391&w=400&f=auto",
+                            "match_reason": "Because you love Lefties",
+                            "scores": {
+                                "total": 13.5794,
+                                "base_relevance": 0.94,
+                                "context_multiplier": 1.44,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_lefties_26",
+                                "metadata": {
+                                    "name": "Slim fit wide-leg animal print jeans",
+                                    "description": "Full-length, five-pocket jeans with a metal zip and button fastening at the front. High-waist and straight leg. Featuring an animal print and made of 100% cotton denim fabric.",
+                                    "category": "Fashion-Women",
+                                    "brand": "Lefties",
+                                    "gender": "Women",
+                                    "condition": "New",
+                                    "price": 99.9,
+                                    "stock_quantity": 100,
+                                    "tags": [
+                                        "fashion",
+                                        "women",
+                                        "jeans"
+                                    ],
+                                    "is_discounted": true,
+                                    "image_url": "https://static.lefties.com/assets/public/a567/ed15/7a46441eb0a8/ceb93718e929/05414328807-A1/05414328807-A1.jpg?ts=1761578709391&w=400&f=auto",
+                                    "updated_at": "2026-01-23T19:34:38.390820",
+                                    "created_at": "2026-01-23T19:34:38.390838"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 2,
+                                    "return_count": 1,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 0.85,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Matches your style",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "40c08fc2-be9d-5fc5-8076-ee9236fc21f5",
+                            "name": "Basic poplin shirt",
+                            "price": 69.9,
+                            "image_url": "https://static.lefties.com/assets/public/574d/ab18/d9b64477ac8a/62993a4c2ec7/05914353250-A3/05914353250-A3.jpg?ts=1767019210396&w=400&f=auto",
+                            "match_reason": "Because you love Lefties",
+                            "scores": {
+                                "total": 13.4003,
+                                "base_relevance": 0.92,
+                                "context_multiplier": 1.45,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_lefties_19",
+                                "metadata": {
+                                    "name": "Basic poplin shirt",
+                                    "description": "Long sleeve shirt with a collar and button-up front. It has a straight fit and is made of poplin fabric.",
+                                    "category": "Fashion-Women",
+                                    "brand": "Lefties",
+                                    "gender": "Women",
+                                    "condition": "New",
+                                    "price": 69.9,
+                                    "stock_quantity": 74,
+                                    "tags": [
+                                        "fashion",
+                                        "women",
+                                        "shirt"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://static.lefties.com/assets/public/574d/ab18/d9b64477ac8a/62993a4c2ec7/05914353250-A3/05914353250-A3.jpg?ts=1767019210396&w=400&f=auto",
+                                    "updated_at": "2026-01-23T19:34:03.380523",
+                                    "created_at": "2026-01-23T19:34:03.380539"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 1,
+                                    "return_count": 1,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 0.85,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Matches your style",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "1079f602-2210-5686-b9a4-64333ab81be2",
+                            "name": "Carrot fit dress trousers",
+                            "price": 99.9,
+                            "image_url": "https://static.lefties.com/assets/public/223d/4027/86bc4a4f88b8/c8d5e3f173c6/01920303745-A6/01920303745-A6.jpg?ts=1761734779150&w=400&f=auto",
+                            "match_reason": "Because you love Lefties",
+                            "scores": {
+                                "total": 12.9773,
+                                "base_relevance": 0.97,
+                                "context_multiplier": 1.34,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_lefties_20",
+                                "metadata": {
+                                    "name": "Carrot fit dress trousers",
+                                    "description": "Long trousers with an interior button, metal appliqué and zip fly on the front. Featuring two side pockets and faux back pockets. Slightly loose fit that tapers at the hem. Includes a belt. Made of flowing fabric.",
+                                    "category": "Fashion-Women",
+                                    "brand": "Lefties",
+                                    "gender": "Women",
+                                    "condition": "New",
+                                    "price": 99.9,
+                                    "stock_quantity": 34,
+                                    "tags": [
+                                        "fashion",
+                                        "women",
+                                        "dress"
+                                    ],
+                                    "is_discounted": true,
+                                    "image_url": "https://static.lefties.com/assets/public/223d/4027/86bc4a4f88b8/c8d5e3f173c6/01920303745-A6/01920303745-A6.jpg?ts=1761734779150&w=400&f=auto",
+                                    "updated_at": "2026-01-23T19:34:08.712908",
+                                    "created_at": "2026-01-23T19:34:08.712925"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 1,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 1.0,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [
+                                        "nice fabric",
+                                        "slightly long"
+                                    ],
+                                    "sentiment_score": 0.5
+                                },
+                                "feed_reason": "Matches your style",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "9b48ef31-e4f0-5d62-95d1-408cefc109c1",
+                            "name": "Gym sneakers",
+                            "price": 89.9,
+                            "image_url": "https://static.lefties.com/assets/public/4eb8/5020/a48940b8ad05/99b5e6be2f95/1220669000403-A7/1220669000403-A7.jpg?ts=1768908917299&w=400&f=auto",
+                            "match_reason": "Because you love Lefties",
+                            "scores": {
+                                "total": 12.8945,
+                                "base_relevance": 0.88,
+                                "context_multiplier": 1.47,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_lefties_men_9",
+                                "metadata": {
+                                    "name": "Gym sneakers",
+                                    "description": "Men's athletic shoe. Available in various colors. Tone-on-tone lace-up closure. Contrast sole.",
+                                    "category": "Fashion-Men",
+                                    "brand": "Lefties",
+                                    "gender": "Men",
+                                    "condition": "New",
+                                    "price": 89.9,
+                                    "stock_quantity": 42,
+                                    "tags": [
+                                        "fashion",
+                                        "men"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://static.lefties.com/assets/public/4eb8/5020/a48940b8ad05/99b5e6be2f95/1220669000403-A7/1220669000403-A7.jpg?ts=1768908917299&w=400&f=auto",
+                                    "updated_at": "2026-01-23T19:35:52.745360",
+                                    "created_at": "2026-01-23T19:35:52.745378"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 1,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 1.0,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Matches your style",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "283a17ef-5ec0-5c28-ab88-521232120975",
+                            "name": "Contrast embroidered cap",
+                            "price": 49.9,
+                            "image_url": "https://static.lefties.com/assets/public/d876/b156/c6af4ea6ac38/f9e4de0561bf/01320512519-A1/01320512519-A1.jpg?ts=1765296719234&w=400&f=auto",
+                            "match_reason": "Tailored to your interests",
+                            "scores": {
+                                "total": 7.2772,
+                                "base_relevance": 0.87,
+                                "context_multiplier": 0.84,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_lefties_men_26",
+                                "metadata": {
+                                    "name": "Contrast embroidered cap",
+                                    "description": "Cap with a contrast curved peak and front text embroidery. Features a hook-and-loop strap at the back for a better fit.",
+                                    "category": "Fashion-Men",
+                                    "brand": "UrbanCloth",
+                                    "gender": "Men",
+                                    "condition": "New",
+                                    "price": 49.9,
+                                    "stock_quantity": 98,
+                                    "tags": [
+                                        "fashion",
+                                        "men",
+                                        "budget"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://static.lefties.com/assets/public/d876/b156/c6af4ea6ac38/f9e4de0561bf/01320512519-A1/01320512519-A1.jpg?ts=1765296719234&w=400&f=auto",
+                                    "updated_at": "2026-01-23T20:26:09.501154",
+                                    "created_at": "2026-01-23T20:26:09.501189"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 1,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 1.0,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Matches your style",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "section_title": "Trending Now",
+                    "items": [
+                        {
+                            "product_id": "03ce469b-f291-5855-b7b0-fed91b20dcf8",
+                            "name": "Wide-leg jeans with pockets",
+                            "price": 119,
+                            "image_url": "https://static.lefties.com/assets/public/3040/ec9b/ad2c421bbeda/8b974bbbc145/0141031440104-A9/0141031440104-A9.jpg?ts=1768388815089&w=400&f=auto",
+                            "match_reason": "Because you love Lefties",
+                            "scores": {
+                                "total": 17.325,
+                                "base_relevance": 1.0,
+                                "context_multiplier": 1.73,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_lefties_25",
+                                "metadata": {
+                                    "name": "Wide-leg jeans with pockets",
+                                    "description": "Long denim trousers with a front button and zip fastening. Featuring front patch pockets and a wide-leg design. Made from 100% indigo cotton denim fabric.\n\nCOORDINATED GARMENTS",
+                                    "category": "Fashion-Women",
+                                    "brand": "Lefties",
+                                    "gender": "Women",
+                                    "condition": "New",
+                                    "price": 119,
+                                    "stock_quantity": 56,
+                                    "tags": [
+                                        "fashion",
+                                        "women",
+                                        "jeans"
+                                    ],
+                                    "is_discounted": true,
+                                    "image_url": "https://static.lefties.com/assets/public/3040/ec9b/ad2c421bbeda/8b974bbbc145/0141031440104-A9/0141031440104-A9.jpg?ts=1768388815089&w=400&f=auto",
+                                    "updated_at": "2026-01-23T19:34:33.586223",
+                                    "created_at": "2026-01-23T19:34:33.586250"
+                                },
+                                "stats": {
+                                    "purchase_count": 8,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 7,
+                                    "return_count": 4,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 1.0,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [
+                                        "love the wide leg style",
+                                        "very trendy",
+                                        "perfect fit"
+                                    ],
+                                    "sentiment_score": 0.75
+                                },
+                                "feed_reason": "Popular right now",
+                                "hybrid_debug": {
+                                    "intent": "specific_product"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "000cf2a8-ba68-5d42-8b35-d782e088c0ef",
+                            "name": "Hooded fleece sports jacket",
+                            "price": 149,
+                            "image_url": "https://static.lefties.com/assets/public/c541/7e67/80b343dea938/d6b0430e6e91/01810550825-03-A9/01810550825-03-A9.jpg?ts=1768913541459&w=400&f=auto",
+                            "match_reason": "Because you love Lefties",
+                            "scores": {
+                                "total": 10.1378,
+                                "base_relevance": 0.7,
+                                "context_multiplier": 1.45,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_lefties_men_5",
+                                "metadata": {
+                                    "name": "Hooded fleece sports jacket",
+                                    "description": "Jacket with an adjustable hood and long sleeve finished with elastic cuffs and a front zip fastening. Features zip pockets on the chest and hips. Adjustable hem with elastic. It's a regular fit and is made of sports fabric with a fleece lining.",
+                                    "category": "Fashion-Men",
+                                    "brand": "Lefties",
+                                    "gender": "Men",
+                                    "condition": "New",
+                                    "price": 149,
+                                    "stock_quantity": 10,
+                                    "tags": [
+                                        "fashion",
+                                        "men",
+                                        "jacket"
+                                    ],
+                                    "is_discounted": true,
+                                    "image_url": "https://static.lefties.com/assets/public/c541/7e67/80b343dea938/d6b0430e6e91/01810550825-03-A9/01810550825-03-A9.jpg?ts=1768913541459&w=400&f=auto",
+                                    "updated_at": "2026-01-23T19:35:29.973435",
+                                    "created_at": "2026-01-23T19:35:29.973454"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 2,
+                                    "return_count": 1,
+                                    "hesitation_count": 1
+                                },
+                                "scores": {
+                                    "desirability_score": 0.85,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Popular right now",
+                                "hybrid_debug": {
+                                    "intent": "specific_product"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "1079f602-2210-5686-b9a4-64333ab81be2",
+                            "name": "Carrot fit dress trousers",
+                            "price": 99.9,
+                            "image_url": "https://static.lefties.com/assets/public/223d/4027/86bc4a4f88b8/c8d5e3f173c6/01920303745-A6/01920303745-A6.jpg?ts=1761734779150&w=400&f=auto",
+                            "match_reason": "Because you love Lefties",
+                            "scores": {
+                                "total": 9.4056,
+                                "base_relevance": 0.7,
+                                "context_multiplier": 1.34,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_lefties_20",
+                                "metadata": {
+                                    "name": "Carrot fit dress trousers",
+                                    "description": "Long trousers with an interior button, metal appliqué and zip fly on the front. Featuring two side pockets and faux back pockets. Slightly loose fit that tapers at the hem. Includes a belt. Made of flowing fabric.",
+                                    "category": "Fashion-Women",
+                                    "brand": "Lefties",
+                                    "gender": "Women",
+                                    "condition": "New",
+                                    "price": 99.9,
+                                    "stock_quantity": 34,
+                                    "tags": [
+                                        "fashion",
+                                        "women",
+                                        "dress"
+                                    ],
+                                    "is_discounted": true,
+                                    "image_url": "https://static.lefties.com/assets/public/223d/4027/86bc4a4f88b8/c8d5e3f173c6/01920303745-A6/01920303745-A6.jpg?ts=1761734779150&w=400&f=auto",
+                                    "updated_at": "2026-01-23T19:34:08.712908",
+                                    "created_at": "2026-01-23T19:34:08.712925"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 1,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 1.0,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [
+                                        "nice fabric",
+                                        "slightly long"
+                                    ],
+                                    "sentiment_score": 0.5
+                                },
+                                "feed_reason": "Popular right now",
+                                "hybrid_debug": {
+                                    "intent": "specific_product"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "169bc599-c6af-5135-8e92-de12e0b93363",
+                            "name": "Asus ROG Strix Gaming Laptop",
+                            "price": 3100,
+                            "image_url": "https://images.unsplash.com/photo-1603302576837-83784e6eee5e?auto=format&fit=crop&w=500&q=80",
+                            "match_reason": "Highly Rated by community",
+                            "scores": {
+                                "total": 7.15,
+                                "base_relevance": 0.65,
+                                "context_multiplier": 1.1,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_rog_laptop",
+                                "metadata": {
+                                    "name": "Asus ROG Strix Gaming Laptop",
+                                    "description": "RGB Keyboard, RTX 4080, 240Hz screen.",
+                                    "category": "Electronics-Other",
+                                    "brand": "Asus",
+                                    "gender": "Unisex",
+                                    "condition": "New",
+                                    "price": 3100,
+                                    "region": "Tunis",
+                                    "stock_quantity": 100,
+                                    "tags": [
+                                        "gaming",
+                                        "rgb",
+                                        "esports"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://images.unsplash.com/photo-1603302576837-83784e6eee5e?auto=format&fit=crop&w=500&q=80",
+                                    "updated_at": "2026-01-23T11:48:03.895388",
+                                    "created_at": "2026-01-23T11:48:03.895424"
+                                },
+                                "stats": {
+                                    "purchase_count": 1,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 0,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 1,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0
+                                },
+                                "feed_reason": "Popular right now",
+                                "hybrid_debug": {
+                                    "intent": "specific_product"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "144f3a90-7cae-5ce5-b5fe-3e1fa6aa052b",
+                            "name": "Cable USB 3.0 pour Disque Dur Externe",
+                            "price": 8.9,
+                            "image_url": "https://www.mytek.tn/media/catalog/product/c/a/cable-usb-3-0-pour-disque-dur-externe-1.jpg",
+                            "match_reason": "Great Deal",
+                            "scores": {
+                                "total": 6.1861,
+                                "base_relevance": 0.7,
+                                "context_multiplier": 0.88,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_mytek_162",
+                                "metadata": {
+                                    "name": "Cable USB 3.0 pour Disque Dur Externe",
+                                    "description": "Cable USB 3.0 Mâle/Mâle Pour Disque Dur Externe - Une bonne solution pour connecter disques durs externes - Longueur: 0.25 mètres - Couleur: Noir",
+                                    "category": "Electronics-Storage",
+                                    "brand": "Sans Fabricant",
+                                    "gender": "Unisex",
+                                    "condition": "New",
+                                    "price": 8.9,
+                                    "stock_quantity": 7,
+                                    "tags": [
+                                        "sans-fabricant",
+                                        "electronics",
+                                        "budget"
+                                    ],
+                                    "is_discounted": true,
+                                    "image_url": "https://www.mytek.tn/media/catalog/product/c/a/cable-usb-3-0-pour-disque-dur-externe-1.jpg",
+                                    "updated_at": "2026-01-23T17:54:39.950924",
+                                    "created_at": "2026-01-23T17:54:39.950944"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 1,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 1.0,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [
+                                        "does the job",
+                                        "good price"
+                                    ],
+                                    "sentiment_score": 0.5
+                                },
+                                "feed_reason": "Popular right now",
+                                "hybrid_debug": {
+                                    "intent": "specific_product"
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    {
+        "user_id": "user_meriem_mom",
+        "persona_name": "Meriem (New Mom)",
+        "timestamp": 1769594599.230108,
+        "duration_seconds": 0.11681103706359863,
+        "response": {
+            "feed": [
+                {
+                    "section_title": "Because you want 'Dream nursery set for my newborn from CuddleCo'",
+                    "items": [
+                        {
+                            "product_id": "a49b455b-873b-5a7b-a5b1-b8acf5bb38b8",
+                            "name": "Neutral Stripe 'I Love My Daddy' Organic Cotton Sleepsuit",
+                            "price": 59.23,
+                            "image_url": "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/W25125s.jpg?im=Resize,width=180",
+                            "match_reason": "Curated selection",
+                            "scores": {
+                                "total": 10.0674,
+                                "base_relevance": 0.6,
+                                "context_multiplier": 1.67,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_baby_clothes_0121",
+                                "metadata": {
+                                    "name": "Neutral Stripe 'I Love My Daddy' Organic Cotton Sleepsuit",
+                                    "description": "For little ones who love to stretch out for a cuddle - there s nothing better than dreamy snuggles with mummy! And they are just a snooze away in this Organic Footed Sleepsuit. Ideal for welcoming them to the world, it s the perfect blend of comfort and charm that makes a lovely gift for both newborns and for new parents. Crafted from ultra-soft, breathable fabric, this sleepsuit is gentle on delicate skin, and the little giraffe appliqué adds an oh-so sweet touch with handy poppers for fastening. So whether you re preparing a hospital bag, shopping for a baby shower gift, or dressing your own bundle of joy, this sleepsuit brings together style, softness, and simplicity. • I love my mummy sleepsuit • Giraffe appliqué • Super soft touch • Peter Pan collar • Polka dot print • Poppers from top to bottom • Fold over scratch cuffs up to size 9-12 months • Sizes 9-12 months feature anti-slip dots on feet • KEEP AWAY FROM FIRE • Machine washable This product contains at least 95% certified organically grown cotton. Jo Jo are certified by Soil Association to a Chain of Custody standard which verifies the percentage of organically grown cotton and tracks it from source to final product.\nSave £10.00* when buying 2 items from Jo Jo Maman Bebé Sleepsuits/Layette Range.* Saving applied will be apportioned across all qualifying items. To get the saving, you must order the qualifying items within the same order at the same time. If you later return one of the items, you will not be entitled to the discount. Offer applies to selected items at full price.  Please refer to T&Cs for full details. 100% Cotton.",
+                                    "category": "Baby-Clothes",
+                                    "brand": "Jo Jo Maman Bebé",
+                                    "gender": "Kids",
+                                    "condition": "New",
+                                    "price": 59.23,
+                                    "stock_quantity": 134,
+                                    "tags": [
+                                        "baby",
+                                        "clothes",
+                                        "premium",
+                                        "sleepwear",
+                                        "cotton"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/W25125s.jpg?im=Resize,width=180",
+                                    "updated_at": "2026-01-27T18:42:31.663725",
+                                    "created_at": "2026-01-27T18:42:31.663746"
+                                },
+                                "stats": {
+                                    "purchase_count": 0,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 0,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 0.5,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Similar to 'Dream nursery set for my newborn from CuddleCo'",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "e5f96dfa-ea2c-5069-a385-8b9fa083da96",
+                            "name": "Cuddleco White Nola Changing Table",
+                            "price": 129,
+                            "image_url": "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/B00063s.jpg?im=Resize,width=180",
+                            "match_reason": "Great Deal",
+                            "scores": {
+                                "total": 4.0422,
+                                "base_relevance": 0.64,
+                                "context_multiplier": 0.63,
+                                "budget_fit": 0.38
+                            },
+                            "payload": {
+                                "product_id": "prod_baby_furniture_0240",
+                                "metadata": {
+                                    "name": "Cuddleco White Nola Changing Table",
+                                    "description": "The Nola White and Natural Changing Table has an airy yet compact design, perfect for small space, and modern living. This gender-neutral, white changing table is a stylish nursery must-have. The changing unit features a changing top with raised sides and 2 spacious shelves, ideal for storing nappy changing essentials.   Nola’s open design means you can easily grab a nappy, a clean sleepsuit or anything else you might need from one of the shelves below. Don’t forget to purchase a changing mat to keep your little one comfortable.  The changing top is suitable up until 11kg approx 12 months Changing mats are sold separately. The recommended changing mat size is 75 x 46cm Lay the mat on the top surface within the retaining barriers Features 2 spacious shelves Fully certified and accredited testing to BS EN 12221:2008+A1:2013 2-year warranty against manufacturing defects. The warranty period is effective from the day of purchase Self-assembly required Never use furniture polish to clean the furniture. Use a duster or damp cloth to remove stubborn stains. Always dry afterwards  Height 91cm Width 53cm Depth 81.5cm",
+                                    "category": "Baby-Furniture",
+                                    "brand": "Cuddleco",
+                                    "gender": "Kids",
+                                    "condition": "New",
+                                    "price": 129,
+                                    "stock_quantity": 23,
+                                    "tags": [
+                                        "baby",
+                                        "furniture",
+                                        "changing"
+                                    ],
+                                    "is_discounted": true,
+                                    "image_url": "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/B00063s.jpg?im=Resize,width=180",
+                                    "updated_at": "2026-01-27T19:12:05.952641",
+                                    "created_at": "2026-01-27T19:12:05.952662"
+                                },
+                                "stats": {
+                                    "purchase_count": 0,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 0,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 0.5,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Similar to 'Dream nursery set for my newborn from CuddleCo'",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "f19ecbef-cc72-5dcb-bf1a-4b344ca6b8ae",
+                            "name": "CuddleCo White Clara Cot Bed",
+                            "price": 399,
+                            "image_url": "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/121477s.jpg?im=Resize,width=180",
+                            "match_reason": "You might like this",
+                            "scores": {
+                                "total": 1.1022,
+                                "base_relevance": 0.65,
+                                "context_multiplier": 0.17,
+                                "budget_fit": 0.1
+                            },
+                            "payload": {
+                                "product_id": "prod_baby_furniture_0154",
+                                "metadata": {
+                                    "name": "CuddleCo White Clara Cot Bed",
+                                    "description": "Complete your fairy tale with the Clara furniture set. Classic curvature with a modern contemporary look, function and style to transform any nursery. Full-size cot bed suitable from birth to about 5 years 3 mattress positions Converts into a modern, stylish toddler bed Classic styling Designed for durability and long-term use  Length 88cm Width 82cm Depth 156cm Multibuy: Save 10% when buying 2 or more items each priced at £150 or above across selected Sofas, Chairs, Rugs, Beds, Mattresses and Furniture Collections. Multibuy is only applicable to the UK Mainland Area.* Condition: * Saving applied will be apportioned across all qualifying items. To get the saving, you must order the qualifying items in the same order at the same time. If you later return one of the items, you will not be entitled to the discount. Offer applies to selected items at full price. Please refer to T&Cs for full details. This item will be delivered directly to you from our branded partner. Prior to delivery our partner or their carrier will contact you to confirm a date.  Unfortunately weekend deliveries are currently unavailable.<br/><br/> Please note that delivery is unavailable outside the UK Mainland. This product requires self-assembly. Regrettably, self-assembly items cannot be returned once assembly is part or fully completed, unless they do not comply with the description given, are faulty, or are not fit for any stated purpose. Your statutory rights are not affected.",
+                                    "category": "Baby-Furniture",
+                                    "brand": "CuddleCo",
+                                    "gender": "Unisex",
+                                    "condition": "New",
+                                    "price": 399,
+                                    "stock_quantity": 45,
+                                    "tags": [
+                                        "baby",
+                                        "furniture",
+                                        "premium",
+                                        "cot"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/121477s.jpg?im=Resize,width=180",
+                                    "updated_at": "2026-01-27T19:05:41.571903",
+                                    "created_at": "2026-01-27T19:05:41.571929"
+                                },
+                                "stats": {
+                                    "purchase_count": 0,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 0,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 0.5,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Similar to 'Dream nursery set for my newborn from CuddleCo'",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "ba3f21ed-9039-5219-977c-293ab117d151",
+                            "name": "Cuddleco Natural Aria Crib Rattan",
+                            "price": 199,
+                            "image_url": "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/D56227s.jpg?im=Resize,width=180",
+                            "match_reason": "Curated selection",
+                            "scores": {
+                                "total": 1.0884,
+                                "base_relevance": 0.65,
+                                "context_multiplier": 0.17,
+                                "budget_fit": 0.1
+                            },
+                            "payload": {
+                                "product_id": "prod_baby_furniture_0127",
+                                "metadata": {
+                                    "name": "Cuddleco Natural Aria Crib Rattan",
+                                    "description": "The Aria Crib is the perfect way to add a boho-chic feel to your nursery. This beautifully designed rattan crib combines traditional techniques with a modern style. Enhance your nursery with the warmth and texture of Aria. The Aria Crib comes with a crib liner and a mattress to ensure a safe sleeping environment for your baby. The mattress is breathable, soft and supportive, providing the ideal place for your new arrival to snooze and dream. The quilted fabric used on both mattress and liner is made with ultra-soft fibres which help to promote airflow and regulate temperature.Product Features: Suitable from birth until approximately 6 months old. The crib is not suitable for children who can sit or kneel or pull themselves up. The product shall not be used before reading the instructions for use. The Aria Crib comes with a liner and foam mattress included. The liner must be used with the crib. The Aria Crib measures 92 x 56 x 73cm (L x W x H). Fully and accredited testing to BS EN 1130:2019. Self assembly required. This product requires self-assembly. Wipe clean only. Regrettably, self-assembly items cannot be returned once assembly is part or fully completed, unless they do not comply with the description given, are faulty, or are not fit for any stated purpose. Your statutory rights are not affected.  This product requires self-assembly. Regrettably, self-assembly items cannot be returned once assembly is part or fully completed, unless they do not comply with the description given, are faulty, or are not fit for any stated purpose. Your statutory rights are not affected.",
+                                    "category": "Baby-Furniture",
+                                    "brand": "Cuddleco",
+                                    "gender": "Unisex",
+                                    "condition": "New",
+                                    "price": 199,
+                                    "stock_quantity": 49,
+                                    "region": "TN",
+                                    "tags": [
+                                        "baby",
+                                        "furniture",
+                                        "cot"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/D56227s.jpg?im=Resize,width=180",
+                                    "updated_at": "2026-01-27T19:09:17.229095",
+                                    "created_at": "2026-01-27T19:09:17.229113"
+                                },
+                                "stats": {
+                                    "purchase_count": 0,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 0,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 0.5,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Similar to 'Dream nursery set for my newborn from CuddleCo'",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "34b3ebaf-717b-5678-86b0-de03d26aa710",
+                            "name": "Cuddleco Natural Aria Wave Rattan Crib",
+                            "price": 199,
+                            "image_url": "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/N99514s.jpg?im=Resize,width=180",
+                            "match_reason": "Fits your style",
+                            "scores": {
+                                "total": 1.0368,
+                                "base_relevance": 0.62,
+                                "context_multiplier": 0.17,
+                                "budget_fit": 0.1
+                            },
+                            "payload": {
+                                "product_id": "prod_baby_furniture_0072",
+                                "metadata": {
+                                    "name": "Cuddleco Natural Aria Wave Rattan Crib",
+                                    "description": "The Aria Wave Crib is a beautiful sleep time must-have for your new arrival, with a beautiful, intricate, handwoven design and soft curves. The natural rattan bassinet is supported by contemporary, sleek black legs and is lightweight enough to be easily transported around the house so your baby can snooze by your side, no matter which room you’re in. The Aria Wave Crib comes with a soft and supportive crib mattress featuring a hypoallergenic knitted cover with natural fibre for a clean sleep environment. Features: Comes with a crib mattress Suitable from birth to 6 months Not suitable for children who can sit, kneel, or pull themselves up Conforms to BS EN 1130: 2019 Self-assembly required 2-year warranty against manufacturing defects (effective from the day of purchase) Never use furniture polish; clean with a duster or damp cloth for stubborn stains Always dry afterwards Wipe clean with a soft cloth dampened in water and mild soapy solution, then wipe dry Natural materials may change colour and develop character over time Handmade with natural materials, so sizes and shapes may vary Wipe clean only Composition: 43% Metal, 43% Rattan, 14% Plywood Self-assembly items cannot be returned once assembly is part or fully completed, unless they do not comply with the description, are faulty, or are not fit for any stated purpose    This product requires self-assembly. Regrettably, self-assembly items cannot be returned once assembly is part or fully completed, unless they do not comply with the description given, are faulty, or are not fit for any stated purpose. Your statutory rights are not affected.",
+                                    "category": "Baby-Furniture",
+                                    "brand": "Cuddleco",
+                                    "gender": "Unisex",
+                                    "condition": "New",
+                                    "price": 199,
+                                    "stock_quantity": 46,
+                                    "region": "TN",
+                                    "tags": [
+                                        "baby",
+                                        "furniture",
+                                        "cot"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/N99514s.jpg?im=Resize,width=180",
+                                    "updated_at": "2026-01-27T19:09:25.566860",
+                                    "created_at": "2026-01-27T19:09:25.566877"
+                                },
+                                "stats": {
+                                    "purchase_count": 0,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 0,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 0.5,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Similar to 'Dream nursery set for my newborn from CuddleCo'",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "section_title": "Because you want 'Wooden Walker for later'",
+                    "items": [
+                        {
+                            "product_id": "e07bc926-0dcc-5f1c-a4a3-f83662dd8095",
+                            "name": "Pink Wooden Baby Walker with Colourful Blocks",
+                            "price": 31.36,
+                            "image_url": "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/U29103s.jpg?im=Resize,width=180",
+                            "match_reason": "You might like this",
+                            "scores": {
+                                "total": 8.776,
+                                "base_relevance": 0.54,
+                                "context_multiplier": 1.63,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_baby_toys_0154",
+                                "metadata": {
+                                    "name": "Pink Wooden Baby Walker with Colourful Blocks",
+                                    "description": "You can help your toddler develop confidence on their feet with a Baby Walker. The colourful wooden blocks stimulate a child's senses and motor skills as they fit them into the walker, stack them and feel the different shapes. Plus, the pink design will look wonderful in a nursery.  Lots of wooden blocks to play with  Made from sturdy wood  Develops physical and cognitive skills  Adult assembly required  Child-safe paint  100% Poplar Wood  43 x 27 x 41cm  Suitable from 12 months  Wipe clean only  This product is FSC®-certified. The Forest Stewardship Council® (FSC) helps to protect forests for all our futures",
+                                    "category": "Baby-Toys",
+                                    "brand": "None",
+                                    "gender": "Kids",
+                                    "condition": "New",
+                                    "price": 31.36,
+                                    "stock_quantity": 70,
+                                    "region": "None",
+                                    "tags": [
+                                        "baby",
+                                        "toys"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/U29103s.jpg?im=Resize,width=180",
+                                    "updated_at": "2026-01-27T19:42:13.968929",
+                                    "created_at": "2026-01-27T19:42:13.968947"
+                                },
+                                "stats": {
+                                    "purchase_count": 0,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 0,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 0.5,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Similar to 'Wooden Walker for later'",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "0abd2367-61dc-52aa-bbfe-dbe506249d4d",
+                            "name": "Woodland Shape Sorter",
+                            "price": 64.07,
+                            "image_url": "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/H48910s.jpg?im=Resize,width=180",
+                            "match_reason": "Great Deal",
+                            "scores": {
+                                "total": 8.7705,
+                                "base_relevance": 0.54,
+                                "context_multiplier": 1.62,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_baby_toys_0137",
+                                "metadata": {
+                                    "name": "Woodland Shape Sorter",
+                                    "description": "If you go down to the woods today, what animal shapes will you find? Little tots will have endless fun shape-sorting all their favourite woodland characters into this colourful toy. With a beautifully finished wooden surface, watch little ones count and identify all the shapes and colours. It s a key toy for developing essential hand-eye coordination skills and fine motor skills. The block will also store the shapes, making it a fantastic addition to any nursery or playroom.  Woodland shape sorter  Block also acts as storage  Woodland animals and primary shapes  Develops dexterity and hand-eye coordination  Suitable from 12 months  14x14x14cm  Wipe clean only  This product is FSC® certified. The Forest Stewardship Council® (FSC) helps to protect forests for all our futures",
+                                    "category": "Baby-Toys",
+                                    "brand": "None",
+                                    "gender": "Unisex",
+                                    "condition": "New",
+                                    "price": 64.07,
+                                    "stock_quantity": 108,
+                                    "region": "TN",
+                                    "tags": [
+                                        "baby",
+                                        "toys",
+                                        "premium"
+                                    ],
+                                    "is_discounted": true,
+                                    "image_url": "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/H48910s.jpg?im=Resize,width=180",
+                                    "updated_at": "2026-01-27T19:38:24.240948",
+                                    "created_at": "2026-01-27T19:38:24.240966"
+                                },
+                                "stats": {
+                                    "purchase_count": 0,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 0,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 0.5,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Similar to 'Wooden Walker for later'",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "bfc86255-4197-557f-aeb0-8d2378859279",
+                            "name": "Woodland Plush Stacker",
+                            "price": 71.73,
+                            "image_url": "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/H48901s.jpg?im=Resize,width=180",
+                            "match_reason": "Great Deal",
+                            "scores": {
+                                "total": 8.7488,
+                                "base_relevance": 0.54,
+                                "context_multiplier": 1.62,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_baby_toys_0161",
+                                "metadata": {
+                                    "name": "Woodland Plush Stacker",
+                                    "description": "Woodland friends piled up tall... squeeze, stack and count them all! Build their fine motor skills with an extra dash of fun with this Plush Stacker. With oh so soft materials and ring shapes, it s perfect for little hands to grab, squish and stack, encouraging dexterity, motor skills, and hand-eye coordination, while also teaching colours, numbers, and words. Get ready for some tower-tumbling fun!  Includes soft plush bear, otter, fox, snail and hedgehog stacking toys  Helps develop dexterity and hand-eye coordination  24 x 17 x 22cm  Hand wash only  Suitable from birth",
+                                    "category": "Baby-Toys",
+                                    "brand": "Woodland",
+                                    "gender": "Kids",
+                                    "condition": "New",
+                                    "price": 71.73,
+                                    "stock_quantity": 104,
+                                    "tags": [
+                                        "baby",
+                                        "toys",
+                                        "premium",
+                                        "plush"
+                                    ],
+                                    "is_discounted": true,
+                                    "image_url": "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/H48901s.jpg?im=Resize,width=180",
+                                    "updated_at": "2026-01-27T19:37:34.753739",
+                                    "created_at": "2026-01-27T19:37:34.753757"
+                                },
+                                "stats": {
+                                    "purchase_count": 0,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 0,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 0.5,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Similar to 'Wooden Walker for later'",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "ed911434-38dd-5d2b-922f-a3c8925d3d2f",
+                            "name": "Wooden Toy Camera",
+                            "price": 36.6,
+                            "image_url": "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/B27068s.jpg?im=Resize,width=180",
+                            "match_reason": "Great Deal",
+                            "scores": {
+                                "total": 8.6193,
+                                "base_relevance": 0.53,
+                                "context_multiplier": 1.61,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_baby_toys_0049",
+                                "metadata": {
+                                    "name": "Wooden Toy Camera",
+                                    "description": "Say cheese! Snap away all day with this Wooden Camera Toy. Spark creativity with its colourful design and interactive buttons - it's sure to keep them entertained for hours.  Bright and colourful design  Features a fabric loop handle  Made from durable wood  Suitable for children from 18 months  This product is FSC®-certified. The Forest Stewardship Council® (FSC) helps to protect forests for all our futures.",
+                                    "category": "Baby-Toys",
+                                    "brand": "None",
+                                    "gender": "Kids",
+                                    "condition": "New",
+                                    "price": 36.6,
+                                    "stock_quantity": 100,
+                                    "region": "None",
+                                    "tags": [
+                                        "baby",
+                                        "toys"
+                                    ],
+                                    "is_discounted": true,
+                                    "image_url": "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/B27068s.jpg?im=Resize,width=180",
+                                    "updated_at": "2026-01-27T19:36:13.099078",
+                                    "created_at": "2026-01-27T19:36:13.099095"
+                                },
+                                "stats": {
+                                    "purchase_count": 0,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 0,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 0.5,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Similar to 'Wooden Walker for later'",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "4cbe0f53-1252-5468-9b72-65e2f3c4a31b",
+                            "name": "Dalmatian Push Along",
+                            "price": 44.17,
+                            "image_url": "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/D78631s.jpg?im=Resize,width=180",
+                            "match_reason": "Great Deal",
+                            "scores": {
+                                "total": 8.4608,
+                                "base_relevance": 0.53,
+                                "context_multiplier": 1.61,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_baby_toys_0128",
+                                "metadata": {
+                                    "name": "Dalmatian Push Along",
+                                    "description": "A fun addition to a polka dot-themed nursery, children will go barking mad for our Dalmatian Push-Along Toy. Perfectly sized for little hands, watch children push the toy along and gain confidence as they walk. With rotating wheels for dog paws, it s a great walking tool and entertaining too!  Classic push-along toy  Wooden handle with extendable end  Dalmatian features wheeled feet that spin  Encourages new walkers  Helps build gross motor skills  Adult assembly required  MAIN: MDF  OTHER: Lotus wood  Wipe clean only  Height: 45cm  Suitable from 12 months  This product is FSC®-certified. The Forest Stewardship Council® (FSC) helps to protect forests for all our futures.",
+                                    "category": "Baby-Toys",
+                                    "brand": "None",
+                                    "gender": "Unisex",
+                                    "condition": "New",
+                                    "price": 44.17,
+                                    "stock_quantity": 106,
+                                    "region": "None",
+                                    "tags": [
+                                        "baby",
+                                        "toys"
+                                    ],
+                                    "is_discounted": true,
+                                    "image_url": "https://cdn.platform.next/common/items/default/default/itemimages/3_4Ratio/product/lge/D78631s.jpg?im=Resize,width=180",
+                                    "updated_at": "2026-01-27T19:40:14.527812",
+                                    "created_at": "2026-01-27T19:40:14.527828"
+                                },
+                                "stats": {
+                                    "purchase_count": 0,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 0,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 0.5,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Similar to 'Wooden Walker for later'",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "section_title": "Recommended for your style",
+                    "items": [
+                        {
+                            "product_id": "7e32f576-c67a-589f-bcb9-d5ad983affd7",
+                            "name": "Foamy knit sweater",
+                            "price": 89.9,
+                            "image_url": "https://static.lefties.com/assets/public/0530/c4ac/12f3450da24b/30af4a9ab51e/05604348803-A1/05604348803-A1.jpg?ts=1762156506327&w=400&f=auto",
+                            "match_reason": "Highly Rated by community",
+                            "scores": {
+                                "total": 10.6335,
+                                "base_relevance": 0.8,
+                                "context_multiplier": 1.33,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_lefties_4",
+                                "metadata": {
+                                    "name": "Foamy knit sweater",
+                                    "description": "long sleeve V-neck sweater. It has a straight cut and is made of a foamy knit fabric.",
+                                    "category": "Fashion-Women",
+                                    "brand": "Lefties",
+                                    "gender": "Women",
+                                    "condition": "New",
+                                    "price": 89.9,
+                                    "stock_quantity": 88,
+                                    "tags": [
+                                        "fashion",
+                                        "women"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://static.lefties.com/assets/public/0530/c4ac/12f3450da24b/30af4a9ab51e/05604348803-A1/05604348803-A1.jpg?ts=1762156506327&w=400&f=auto",
+                                    "updated_at": "2026-01-23T19:32:29.633259",
+                                    "created_at": "2026-01-23T19:32:29.633292"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 1,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 1.0,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Matches your style",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "526068f8-f4a0-5c5a-890e-54b2a06a36ea",
+                            "name": "Foamy knit sweater",
+                            "price": 89.9,
+                            "image_url": "https://static.lefties.com/assets/public/4c00/b974/7b3e4d5f86ed/5729b655fa90/01600313806-A3/01600313806-A3.jpg?ts=1763126807115&w=400&f=auto",
+                            "match_reason": "Highly Rated by community",
+                            "scores": {
+                                "total": 10.3871,
+                                "base_relevance": 0.67,
+                                "context_multiplier": 1.55,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_lefties_5",
+                                "metadata": {
+                                    "name": "Foamy knit sweater",
+                                    "description": "long sleeve V-neck sweater. It has a straight cut and is made of a foamy knit fabric.",
+                                    "category": "Fashion-Women",
+                                    "brand": "Lefties",
+                                    "gender": "Women",
+                                    "condition": "New",
+                                    "price": 89.9,
+                                    "stock_quantity": 40,
+                                    "tags": [
+                                        "fashion",
+                                        "women"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://static.lefties.com/assets/public/4c00/b974/7b3e4d5f86ed/5729b655fa90/01600313806-A3/01600313806-A3.jpg?ts=1763126807115&w=400&f=auto",
+                                    "updated_at": "2026-01-23T19:32:33.319306",
+                                    "created_at": "2026-01-23T19:32:33.319335"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 2,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 1.0,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Matches your style",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "3d971da1-0be4-51e3-91b1-c315a7937edf",
+                            "name": "Mom jeans",
+                            "price": 89.9,
+                            "image_url": "https://static.lefties.com/assets/public/8f0b/7608/14844ffca97d/23c37970b238/01400333801-A6/01400333801-A6.jpg?ts=1763559091191&w=400&f=auto",
+                            "match_reason": "Highly Rated by community",
+                            "scores": {
+                                "total": 10.353,
+                                "base_relevance": 0.67,
+                                "context_multiplier": 1.54,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_lefties_16",
+                                "metadata": {
+                                    "name": "Mom jeans",
+                                    "description": "High-waist relaxed fit trousers with a five-pocket design. Metal button and zip fly fastening on the front. Made of stretch cotton.",
+                                    "category": "Fashion-Women",
+                                    "brand": "Lefties",
+                                    "gender": "Women",
+                                    "condition": "New",
+                                    "price": 89.9,
+                                    "stock_quantity": 47,
+                                    "tags": [
+                                        "fashion",
+                                        "women",
+                                        "jeans"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://static.lefties.com/assets/public/8f0b/7608/14844ffca97d/23c37970b238/01400333801-A6/01400333801-A6.jpg?ts=1763559091191&w=400&f=auto",
+                                    "updated_at": "2026-01-23T19:33:48.579410",
+                                    "created_at": "2026-01-23T19:33:48.579426"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 2,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 1.0,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Matches your style",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "84fb9884-18a6-51b9-9d29-8c81f8de275e",
+                            "name": "Pack of 2 assorted T-shirts",
+                            "price": 39.9,
+                            "image_url": "https://static.lefties.com/assets/public/57d6/d932/cd824994a85b/f8c73d722a46/01025801701-A3/01025801701-A3.jpg?ts=1764575423897&w=400&f=auto",
+                            "match_reason": "Highly Rated by community",
+                            "scores": {
+                                "total": 10.2576,
+                                "base_relevance": 0.78,
+                                "context_multiplier": 1.32,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_lefties_kids_13",
+                                "metadata": {
+                                    "name": "Pack of 2 assorted T-shirts",
+                                    "description": "Pack of 2 long sleeve, round neck T-shirts, combining one plain and one printed. Made from 100% cotton fabric.",
+                                    "category": "Fashion-Kids",
+                                    "brand": "MiniStyle",
+                                    "gender": "Kids",
+                                    "condition": "New",
+                                    "price": 39.9,
+                                    "stock_quantity": 60,
+                                    "tags": [
+                                        "fashion",
+                                        "kids",
+                                        "budget",
+                                        "shirt"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://static.lefties.com/assets/public/57d6/d932/cd824994a85b/f8c73d722a46/01025801701-A3/01025801701-A3.jpg?ts=1764575423897&w=400&f=auto",
+                                    "updated_at": "2026-01-23T20:27:46.777225",
+                                    "created_at": "2026-01-23T20:27:46.777261"
+                                },
+                                "stats": {
+                                    "purchase_count": 4,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 2,
+                                    "return_count": 1,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 1.0,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Matches your style",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "a0bef062-dac3-5fbb-ab30-ba607aef815c",
+                            "name": "Sac à Dos Primaire COOL SCHOOL Ergo Space Taille M Pour Garçon - Noir&Bleu",
+                            "price": 89,
+                            "image_url": "https://www.mytek.tn/media/catalog/product/t/4/t42129-l_1_2.jpg",
+                            "match_reason": "Highly Rated by community",
+                            "scores": {
+                                "total": 9.4561,
+                                "base_relevance": 0.59,
+                                "context_multiplier": 1.59,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_mytek_11",
+                                "metadata": {
+                                    "name": "Sac à Dos Primaire COOL SCHOOL Ergo Space Taille M Pour Garçon - Noir&Bleu",
+                                    "description": "Sac à Dos Primaire COOL SCHOOL Ergo Space Pour Garçon - Taille: Moyen - Niveau scolaire de 1er année primaire jusqu'à 3éme année primaire - Couleur: Noir & Bleu - Sac avec différents compartiments qui offre une organisation facile, avec une poche isotherme - Base Eva: Solide et renforcée, permet de fixer le sac à dos sur le chariot - Un tissu imperméable - Dos orthopédique et confortable - Bretelles renforcées, matelassés et ajustable - Sangle de poitrine doit toujours attacher pour aider à la répartition du poids - Des éléments réfléchissants qui assurent la sécurité de l'enfant sur la route le soir",
+                                    "category": "Electronics-Supplies",
+                                    "brand": "COOL SCHOOL",
+                                    "gender": "Men",
+                                    "condition": "New",
+                                    "price": 89,
+                                    "stock_quantity": 45,
+                                    "tags": [
+                                        "cool-school",
+                                        "electronics",
+                                        "budget"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://www.mytek.tn/media/catalog/product/t/4/t42129-l_1_2.jpg",
+                                    "updated_at": "2026-01-23T20:44:46.627369",
+                                    "created_at": "2026-01-23T20:44:46.627390"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 1,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 1.0,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Matches your style",
+                                "hybrid_debug": {
+                                    "intent": "broad_explore"
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "section_title": "Trending Now",
+                    "items": [
+                        {
+                            "product_id": "03ce469b-f291-5855-b7b0-fed91b20dcf8",
+                            "name": "Wide-leg jeans with pockets",
+                            "price": 119,
+                            "image_url": "https://static.lefties.com/assets/public/3040/ec9b/ad2c421bbeda/8b974bbbc145/0141031440104-A9/0141031440104-A9.jpg?ts=1768388815089&w=400&f=auto",
+                            "match_reason": "Great Deal",
+                            "scores": {
+                                "total": 12.8682,
+                                "base_relevance": 1.0,
+                                "context_multiplier": 1.29,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_lefties_25",
+                                "metadata": {
+                                    "name": "Wide-leg jeans with pockets",
+                                    "description": "Long denim trousers with a front button and zip fastening. Featuring front patch pockets and a wide-leg design. Made from 100% indigo cotton denim fabric.\n\nCOORDINATED GARMENTS",
+                                    "category": "Fashion-Women",
+                                    "brand": "Lefties",
+                                    "gender": "Women",
+                                    "condition": "New",
+                                    "price": 119,
+                                    "stock_quantity": 56,
+                                    "tags": [
+                                        "fashion",
+                                        "women",
+                                        "jeans"
+                                    ],
+                                    "is_discounted": true,
+                                    "image_url": "https://static.lefties.com/assets/public/3040/ec9b/ad2c421bbeda/8b974bbbc145/0141031440104-A9/0141031440104-A9.jpg?ts=1768388815089&w=400&f=auto",
+                                    "updated_at": "2026-01-23T19:34:33.586223",
+                                    "created_at": "2026-01-23T19:34:33.586250"
+                                },
+                                "stats": {
+                                    "purchase_count": 8,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 7,
+                                    "return_count": 4,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 1.0,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [
+                                        "love the wide leg style",
+                                        "very trendy",
+                                        "perfect fit"
+                                    ],
+                                    "sentiment_score": 0.75
+                                },
+                                "feed_reason": "Popular right now",
+                                "hybrid_debug": {
+                                    "intent": "specific_product"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "079cec5d-0c45-5958-9653-c2b98dc2b10b",
+                            "name": "Souris Filaire Optique JEDEL CP72 - Noir",
+                            "price": 4.5,
+                            "image_url": "https://www.mytek.tn/media/catalog/product/j/e/jedel-cp72.jpg",
+                            "match_reason": "Highly Rated by community",
+                            "scores": {
+                                "total": 11.8564,
+                                "base_relevance": 0.7,
+                                "context_multiplier": 1.69,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_mytek_253",
+                                "metadata": {
+                                    "name": "Souris Filaire Optique JEDEL CP72 - Noir",
+                                    "description": "Souris optique JEDEL CP72 - Technologie de connectivité: Filaire - Interface: USB - Nombre de boutons: 3 - Résolution: 1600 DPI - Compatible avec: Windows XP / 7/8/10 / Vista / Mac - Longueur de câble: 1,2 mètre - Couleur: Noir",
+                                    "category": "Electronics-Mice",
+                                    "brand": "Jedel",
+                                    "gender": "Unisex",
+                                    "condition": "New",
+                                    "price": 4.5,
+                                    "stock_quantity": 14,
+                                    "tags": [
+                                        "jedel",
+                                        "electronics",
+                                        "budget"
+                                    ],
+                                    "is_discounted": false,
+                                    "image_url": "https://www.mytek.tn/media/catalog/product/j/e/jedel-cp72.jpg",
+                                    "updated_at": "2026-01-23T18:13:03.950238",
+                                    "created_at": "2026-01-23T18:13:03.950256"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 1,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 1.0,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Popular right now",
+                                "hybrid_debug": {
+                                    "intent": "specific_product"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "144f3a90-7cae-5ce5-b5fe-3e1fa6aa052b",
+                            "name": "Cable USB 3.0 pour Disque Dur Externe",
+                            "price": 8.9,
+                            "image_url": "https://www.mytek.tn/media/catalog/product/c/a/cable-usb-3-0-pour-disque-dur-externe-1.jpg",
+                            "match_reason": "Great Deal",
+                            "scores": {
+                                "total": 11.7571,
+                                "base_relevance": 0.7,
+                                "context_multiplier": 1.68,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_mytek_162",
+                                "metadata": {
+                                    "name": "Cable USB 3.0 pour Disque Dur Externe",
+                                    "description": "Cable USB 3.0 Mâle/Mâle Pour Disque Dur Externe - Une bonne solution pour connecter disques durs externes - Longueur: 0.25 mètres - Couleur: Noir",
+                                    "category": "Electronics-Storage",
+                                    "brand": "Sans Fabricant",
+                                    "gender": "Unisex",
+                                    "condition": "New",
+                                    "price": 8.9,
+                                    "stock_quantity": 7,
+                                    "tags": [
+                                        "sans-fabricant",
+                                        "electronics",
+                                        "budget"
+                                    ],
+                                    "is_discounted": true,
+                                    "image_url": "https://www.mytek.tn/media/catalog/product/c/a/cable-usb-3-0-pour-disque-dur-externe-1.jpg",
+                                    "updated_at": "2026-01-23T17:54:39.950924",
+                                    "created_at": "2026-01-23T17:54:39.950944"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 1,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 1.0,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [
+                                        "does the job",
+                                        "good price"
+                                    ],
+                                    "sentiment_score": 0.5
+                                },
+                                "feed_reason": "Popular right now",
+                                "hybrid_debug": {
+                                    "intent": "specific_product"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "0a07463e-facf-5849-beac-3bd06e2df706",
+                            "name": "Quilted house slippers",
+                            "price": 45.9,
+                            "image_url": "https://static.lefties.com/assets/public/cb94/a87c/c5434a5a8f44/d88cb7cf64bf/12600690010-A1/12600690010-A1.jpg?ts=1757411068945&w=400&f=auto",
+                            "match_reason": "Great Deal",
+                            "scores": {
+                                "total": 11.6641,
+                                "base_relevance": 0.7,
+                                "context_multiplier": 1.67,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_lefties_men_21",
+                                "metadata": {
+                                    "name": "Quilted house slippers",
+                                    "description": "Men's shoe-style slippers. Available in several colors. Topstitch detail on the upper. Cushioned sole.",
+                                    "category": "Fashion-Men",
+                                    "brand": "UrbanCloth",
+                                    "gender": "Men",
+                                    "condition": "New",
+                                    "price": 45.9,
+                                    "stock_quantity": 18,
+                                    "tags": [
+                                        "fashion",
+                                        "men",
+                                        "budget"
+                                    ],
+                                    "is_discounted": true,
+                                    "image_url": "https://static.lefties.com/assets/public/cb94/a87c/c5434a5a8f44/d88cb7cf64bf/12600690010-A1/12600690010-A1.jpg?ts=1757411068945&w=400&f=auto",
+                                    "updated_at": "2026-01-23T20:25:52.371099",
+                                    "created_at": "2026-01-23T20:25:52.371166"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 1,
+                                    "return_count": 0,
+                                    "hesitation_count": 0
+                                },
+                                "scores": {
+                                    "desirability_score": 1.0,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Popular right now",
+                                "hybrid_debug": {
+                                    "intent": "specific_product"
+                                }
+                            }
+                        },
+                        {
+                            "product_id": "000cf2a8-ba68-5d42-8b35-d782e088c0ef",
+                            "name": "Hooded fleece sports jacket",
+                            "price": 149,
+                            "image_url": "https://static.lefties.com/assets/public/c541/7e67/80b343dea938/d6b0430e6e91/01810550825-03-A9/01810550825-03-A9.jpg?ts=1768913541459&w=400&f=auto",
+                            "match_reason": "Great Deal",
+                            "scores": {
+                                "total": 11.5455,
+                                "base_relevance": 0.7,
+                                "context_multiplier": 1.65,
+                                "budget_fit": 1.0
+                            },
+                            "payload": {
+                                "product_id": "prod_lefties_men_5",
+                                "metadata": {
+                                    "name": "Hooded fleece sports jacket",
+                                    "description": "Jacket with an adjustable hood and long sleeve finished with elastic cuffs and a front zip fastening. Features zip pockets on the chest and hips. Adjustable hem with elastic. It's a regular fit and is made of sports fabric with a fleece lining.",
+                                    "category": "Fashion-Men",
+                                    "brand": "Lefties",
+                                    "gender": "Men",
+                                    "condition": "New",
+                                    "price": 149,
+                                    "stock_quantity": 10,
+                                    "tags": [
+                                        "fashion",
+                                        "men",
+                                        "jacket"
+                                    ],
+                                    "is_discounted": true,
+                                    "image_url": "https://static.lefties.com/assets/public/c541/7e67/80b343dea938/d6b0430e6e91/01810550825-03-A9/01810550825-03-A9.jpg?ts=1768913541459&w=400&f=auto",
+                                    "updated_at": "2026-01-23T19:35:29.973435",
+                                    "created_at": "2026-01-23T19:35:29.973454"
+                                },
+                                "stats": {
+                                    "purchase_count": 2,
+                                    "view_count": 0,
+                                    "add_to_cart_count": 2,
+                                    "return_count": 1,
+                                    "hesitation_count": 1
+                                },
+                                "scores": {
+                                    "desirability_score": 0.85,
+                                    "affordability_score": 0.5
+                                },
+                                "warnings": {
+                                    "quality_flag": false
+                                },
+                                "review_data": {
+                                    "extracted_tags": [],
+                                    "sentiment_score": 0.0
+                                },
+                                "feed_reason": "Popular right now",
+                                "hybrid_debug": {
+                                    "intent": "specific_product"
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+]

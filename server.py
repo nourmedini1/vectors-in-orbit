@@ -1,9 +1,14 @@
 # server.py
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import uuid
 import datetime
+import os
+
+# --- NEW IMPORTS FOR QDRANT READ ---
+from qdrant_client import QdrantClient
+from qdrant_client.models import Filter, FieldCondition, MatchValue
 
 # Import your existing event models
 try:
@@ -11,48 +16,20 @@ try:
     from .kafka_broker import broker
     from .product_vectorizer.events import ProductAddedEvent, ProductUpdatedEvent
 except ImportError:  # Allow running as a script
-    import os
     import sys
-
     repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     if repo_root not in sys.path:
         sys.path.insert(0, repo_root)
 
     from user_profiler.events import *
     from kafka_broker import broker
+    from product_vectorizer.events import ProductAddedEvent, ProductUpdatedEvent
 
-# --- MOCK DATABASE ---
-PRODUCTS = [
-    {
-        "id": "prod_asus_rog",
-        "name": "ASUS ROG Strix G16",
-        "price": 3200.0,
-        "currency": "TND",
-        "category": "Laptops",
-        "image": "https://images.unsplash.com/photo-1603302576837-37561b2e2302?auto=format&fit=crop&w=500&q=60",
-        "description": "High performance gaming laptop with RTX 4060."
-    },
-    {
-        "id": "prod_nike_air",
-        "name": "Nike Air Max 90",
-        "price": 450.0,
-        "currency": "TND",
-        "category": "Footwear",
-        "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=500&q=60",
-        "description": "Classic comfort and style."
-    },
-    {
-        "id": "prod_sony_xm5",
-        "name": "Sony WH-1000XM5",
-        "price": 1200.0,
-        "currency": "TND",
-        "category": "Audio",
-        "image": "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?auto=format&fit=crop&w=500&q=60",
-        "description": "Noise cancelling headphones."
-    }
-]
-
-STORES = ["store_1", "store_tunis_central"]
+# --- QDRANT CONFIGURATION ---
+QDRANT_HOST = os.getenv("QDRANT_HOST", "localhost")
+QDRANT_PORT = int(os.getenv("QDRANT_PORT", 6333))
+# Initialize client for reading
+qdrant_client = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -70,14 +47,69 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# --- NEW ENDPOINT: GET PRODUCTS BY CATEGORY ---
+@app.get("/products/{category}")
+async def get_products_by_category(category: str):
+    """
+    Returns 30 products matching the specific category from Qdrant.
+    """
+    try:
+        # Create a filter to match the category field in metadata
+        category_filter = Filter(
+            must=[
+                FieldCondition(
+                    key="metadata.category",
+                    match=MatchValue(value=category)
+                )
+            ]
+        )
+
+        # Scroll (fetch) products from the 'products' collection
+        records, _ = qdrant_client.scroll(
+            collection_name="products",
+            scroll_filter=category_filter,
+            limit=30,
+            with_payload=True,
+            with_vectors=False  # We don't need the vectors for display
+        )
+
+        if not records:
+            return {"count": 0, "products": []}
+
+        # Clean up the output format
+        cleaned_products = []
+        for record in records:
+            payload = record.payload
+            # Flatten structure for frontend if necessary, or keep as is
+            product_data = {
+                "id": payload.get("product_id"),
+                "name": payload.get("metadata", {}).get("name"),
+                "description": payload.get("metadata", {}).get("description"),
+                "price": payload.get("metadata", {}).get("price"),
+                "image": payload.get("metadata", {}).get("image_url"),
+                "category": payload.get("metadata", {}).get("category"),
+                "tags": payload.get("metadata", {}).get("tags", []),
+                "is_discounted": payload.get("metadata", {}).get("is_discounted", False),
+                # Include stats if useful for frontend
+                "rating": payload.get("scores", {}).get("desirability_score", 0.5)
+            }
+            cleaned_products.append(product_data)
+
+        return {"count": len(cleaned_products), "products": cleaned_products}
+
+    except Exception as e:
+        print(f"Error fetching products: {e}")
+        # Return empty list gracefully or raise HTTP error depending on preference
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+
+# --- EXISTING PRODUCT MUTATIONS ---
+
 @app.post("/products")
 async def add_product(prod: dict):
-    # 1. Save to Mock DB
+    # Trigger Event for Product Vectorizer
     prod_id = prod.get("id", f"prod_{uuid.uuid4().hex[:8]}")
-    prod["id"] = prod_id
-    PRODUCTS.append(prod)
-
-    # 2. Trigger Event for Product Vectorizer
+    
     event = ProductAddedEvent(
         timestamp=datetime.datetime.now().isoformat(),
         product_id=prod_id,
@@ -90,17 +122,11 @@ async def add_product(prod: dict):
     )
     await broker.send_event("ProductAddedEvent", event.model_dump())
     
-    return prod
+    return {"status": "sent", "product_id": prod_id}
 
 @app.put("/products/{product_id}")
 async def update_product(product_id: str, updates: dict):
-    # 1. Update Mock DB (Simplified)
-    for p in PRODUCTS:
-        if p["id"] == product_id:
-            p.update(updates)
-            break
-    
-    # 2. Trigger Event
+    # Trigger Event
     event = ProductUpdatedEvent(
         timestamp=datetime.datetime.now().isoformat(),
         product_id=product_id,
@@ -108,7 +134,7 @@ async def update_product(product_id: str, updates: dict):
         **updates
     )
     await broker.send_event("ProductUpdatedEvent", event.model_dump())
-    return {"status": "updated"}
+    return {"status": "sent"}
 
 # --- EVENT ENDPOINTS (TRIGGER KAFKA) ---
 
@@ -119,11 +145,6 @@ async def create_profile(event: ProfileCreatedEvent):
     await broker.send_event("ProfileCreatedEvent", event.model_dump())
     return {"status": "sent"}
 
-@app.post("/events/search")
-async def search_event(event: SearchPerformedEvent):
-    if not event.timestamp: event.timestamp = datetime.datetime.now().isoformat()
-    await broker.send_event("SearchPerformedEvent", event.model_dump())
-    return {"status": "sent"}
 
 @app.post("/events/cart/add")
 async def add_cart(event: AddToCartEvent):

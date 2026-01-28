@@ -1,16 +1,12 @@
 import numpy as np
 import math
+import random
 from typing import List, Dict, Any, Optional
 from datetime import datetime, timedelta
 
 class RerankingLayer:
     """
     LAYER 3: Context-Aware Multiplicative Scorer
-    
-    Now featuring:
-    - Intent-Driven Budgeting (Specific = No Limit)
-    - Elastic Spending Power based on Traits
-    - Market Anchors for Category Cold-Starts
     """
 
     def __init__(self):
@@ -142,34 +138,133 @@ class RerankingLayer:
         elif demog.get("status") == "working" and p.payload.get("stats", {}).get("purchase_count", 0) > 10: mult *= 1.1
         return mult * (0.8 + p.payload.get("scores", {}).get("desirability_score", 0.5) * 0.4)
 
+    def _generate_dynamic_reason(
+        self, 
+        meta: Dict[str, Any],
+        multipliers: Dict[str, float],
+        user_context: Dict[str, Any]
+    ) -> str:
+        
+        if multipliers['wishlist'] > 1.8:
+            return "Matches your wishlist preferences"
+        
+        if multipliers['life_event'] > 1.5:
+            cat = meta.get("category", "")
+            for event in user_context.get("life_events", []):
+                if cat in self.life_event_categories.get(event.get("event", ""), []):
+                    return f"Perfect for your '{event.get('event')}'"
+            return "Timely for your upcoming plans"
+
+        if multipliers['brand'] > 1.2:
+            brand = meta.get("brand", "this brand")
+            return f"Because you love {brand}"
+
+        if multipliers['seasonal'] > 1.1:
+            tags = meta.get("tags", [])
+            for s, kws in self.seasonal_tags.items():
+                if any(kw in ' '.join(tags).lower() for kw in kws):
+                    return f"Ready for {s.capitalize()}?" if s == "fall" else f"Ready for {s.capitalize()}?" if s == "summer" else f"Essential for {s.capitalize()}"
+            return "Great for the season"
+
+        if multipliers['trait'] > 1.15:
+            traits = user_context.get("traits", [])
+            cat = meta.get("category", "")
+            tags = meta.get("tags", [])
+            for t in traits:
+                if cat in self.trait_category_boost.get(t, []) or (t.lower() in str(tags).lower()):
+                    return f"Picked for {t}s like you"
+            return "Tailored to your interests"
+
+        if meta.get("is_discounted"):
+            return "Great Deal"
+        
+        desirability = multipliers.get('desirability_raw', 0.5)
+        if desirability > 0.85:
+            return "Highly Rated by community"
+        
+        fallbacks = [
+            "Recommended for you",
+            "Fits your style",
+            "You might like this",
+            "Curated selection"
+        ]
+        return random.choice(fallbacks)
+
     def rerank(self, candidates: List[Any], user_profile: Dict[str, Any], user_wishlist: List[Dict[str, Any]], query_text: str = "", top_n: int = 20) -> List[Dict[str, Any]]:
         if not candidates: return []
         load, demog = user_profile.get("payload", {}), user_profile.get("payload", {}).get("demographics", {})
         traits, dislikes = load.get("traits", []), load.get("dislikes", [])
         fin, prefs = load.get("financials", {}), load.get("preferences", {})
         is_cold = (not user_profile.get("vector", {}).get("long_term_taste") and fin.get("global_ltv", 0) == 0)
+        
         results = []
+        
+        # Prepare context for the reason generator
+        user_context_for_reason = {
+            "life_events": load.get("life_events", []),
+            "traits": traits
+        }
+
         for c in sorted(candidates, key=lambda x: x.score, reverse=True)[:top_n]:
             meta, price, tags = c.payload.get("metadata", {}), c.payload.get("metadata", {}).get("price", 0.0), c.payload.get("metadata", {}).get("tags", []) + c.payload.get("review_data", {}).get("extracted_tags", [])
             base = c.score
+            
             if is_cold:
                 cmult = self._get_cold_start_multipliers(c, demog)
-                results.append({"product_id": str(c.id), "name": meta.get("name"), "price": price, "image_url": meta.get("image_url"), "match_reason": "Curated for you", "scores": {"total": round(base * cmult * 10.0, 4), "base_relevance": round(base, 2), "cold_start_multiplier": round(cmult, 2)}, "payload": c.payload})
+                results.append({
+                    "product_id": str(c.id), 
+                    "name": meta.get("name"), 
+                    "price": price, 
+                    "image_url": meta.get("image_url"), 
+                    "match_reason": "🌟 Popular with new users", 
+                    "scores": {"total": round(base * cmult * 10.0, 4), "base_relevance": round(base, 2), "cold_start_multiplier": round(cmult, 2)}, 
+                    "payload": c.payload
+                })
                 continue
             
-            ctx_mult = (
-                self._calculate_life_event_multiplier(meta.get("category", "general"), load.get("life_events", [])) *
-                self._calculate_negative_taste_multiplier((getattr(c, "vector", {}) or {}).get("typical_user_vector"), user_profile.get("vector", {}).get("negative_taste")) *
-                self._calculate_dislike_penalty(c, dislikes) *
-                self._calculate_wishlist_multiplier(c, user_wishlist) *
-                self._calculate_brand_loyalty_multiplier(meta.get("brand", ""), prefs.get("brand_affinity", {})) *
-                self._calculate_trait_category_multiplier(traits, meta.get("category", "general"), tags) *
-                self._calculate_seasonal_multiplier(tags, query_text, load.get("seasonality", {}).get("active_months", [])) *
-                self._calculate_budget_multiplier(price, meta.get("category", "general"), fin.get("category_stats", {}), traits, c.payload.get('hybrid_debug', {}).get('intent', 'broad_explore')) *
-                self._calculate_market_quality_multiplier(c, fin.get("hesitation_count", 0))
-            )
-            results.append({"product_id": str(c.id), "name": meta.get("name"), "price": price, "image_url": meta.get("image_url"), "match_reason": self._generate_match_reason(1.0, 1.0, 1.0, 1.0, 1.0), "scores": {"total": round(base * ctx_mult * 10.0, 4), "base_relevance": round(base, 2), "context_multiplier": round(ctx_mult, 2)}, "payload": c.payload})
-        return sorted(results, key=lambda x: x["scores"]["total"], reverse=True)
+            # Calculate all multipliers individually
+            life_event_mult = self._calculate_life_event_multiplier(meta.get("category", "general"), load.get("life_events", []))
+            negative_mult = self._calculate_negative_taste_multiplier((getattr(c, "vector", {}) or {}).get("typical_user_vector"), user_profile.get("vector", {}).get("negative_taste"))
+            dislike_mult = self._calculate_dislike_penalty(c, dislikes)
+            wishlist_mult = self._calculate_wishlist_multiplier(c, user_wishlist)
+            brand_mult = self._calculate_brand_loyalty_multiplier(meta.get("brand", ""), prefs.get("brand_affinity", {}))
+            trait_mult = self._calculate_trait_category_multiplier(traits, meta.get("category", "general"), tags)
+            seasonal_mult = self._calculate_seasonal_multiplier(tags, query_text, load.get("seasonality", {}).get("active_months", []))
+            budget_mult = self._calculate_budget_multiplier(price, meta.get("category", "general"), fin.get("category_stats", {}), traits, c.payload.get('hybrid_debug', {}).get('intent', 'broad_explore'))
+            market_mult = self._calculate_market_quality_multiplier(c, fin.get("hesitation_count", 0))
 
-    def _generate_match_reason(self, seasonal: float, life: float, wish: float, brand: float, trait: float) -> str:
-        return "Perfect for the season" if seasonal > 1.5 else "Perfect for your upcoming event" if life > 2.0 else "Matches your wishlist preferences" if wish > 2.5 else "From a brand you love" if brand > 1.5 else "Tailored to your interests" if trait > 1.5 else "Personalized recommendation"
+            # Combine
+            context_multiplier = (
+                life_event_mult * negative_mult * dislike_mult * wishlist_mult *
+                brand_mult * trait_mult * seasonal_mult * budget_mult * market_mult
+            )
+            
+            # Pack multipliers for reason generator
+            multipliers_map = {
+                "wishlist": wishlist_mult,
+                "life_event": life_event_mult,
+                "brand": brand_mult,
+                "seasonal": seasonal_mult,
+                "trait": trait_mult,
+                "desirability_raw": c.payload.get("scores", {}).get("desirability_score", 0.5)
+            }
+            
+            # Generate Dynamic Reason using actual data
+            reason = self._generate_dynamic_reason(meta, multipliers_map, user_context_for_reason)
+
+            results.append({
+                "product_id": str(c.id), 
+                "name": meta.get("name"), 
+                "price": price, 
+                "image_url": meta.get("image_url"), 
+                "match_reason": reason, 
+                "scores": {
+                    "total": round(base * context_multiplier * 10.0, 4), 
+                    "base_relevance": round(base, 2), 
+                    "context_multiplier": round(context_multiplier, 2),
+                    "budget_fit": round(budget_mult, 2)
+                }, 
+                "payload": c.payload
+            })
+            
+        return sorted(results, key=lambda x: x["scores"]["total"], reverse=True)

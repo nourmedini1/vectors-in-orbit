@@ -3,8 +3,9 @@ from dotenv import load_dotenv
 from typing import Union, List, Optional
 from google.adk.agents import LlmAgent
 from google.adk.models.lite_llm import LiteLlm 
+import litellm
 
-load_dotenv()
+load_dotenv(override=True)
 try:
     from .events import *
     from .tools import (ensure_product_collections, UpsertProductProfile, EvolveTypicalUser, TrackInteraction, LogReviewInsights, ProcessReturnImpact)
@@ -13,6 +14,28 @@ except ImportError:
     if repo_root not in sys.path: sys.path.insert(0, repo_root)
     from product_vectorizer.events import *
     from product_vectorizer.tools import *
+
+# Debug: Check environment variable
+api_key = os.getenv("MISTRAL_API_KEY")
+if not api_key:
+    print("CRITICAL WARNING: MISTRAL_API_KEY is not set in environment variables within agent.py")
+else:
+    print(f"DEBUG: agent.py sees MISTRAL_API_KEY: {api_key[:4]}...{api_key[-4:]}")
+    # Explicitly set the key for litellm to avoid ambiguity
+    os.environ["MISTRAL_API_KEY"] = api_key
+    litellm.api_key = api_key
+
+# --- LITELMM LOGGING ---
+def log_pre_call(kwargs):
+    print(f"\n📡 [LLM CALL START] Model: {kwargs.get('model')} | Params: {list(kwargs.keys())}")
+
+def log_post_call(kwargs, response, start, end):
+    usage = response.get('usage', {}) if response else {}
+    print(f"✅ [LLM CALL END] Time: {end-start:.2f}s | Tokens: {usage.get('total_tokens', '?')}")
+
+litellm.input_callback = [log_pre_call]
+litellm.success_callback = [log_post_call]
+# -----------------------
 
 mixtral_llm = LiteLlm(model="mistral/mistral-small-latest")
 ensure_product_collections()
