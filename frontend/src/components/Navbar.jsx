@@ -47,12 +47,6 @@ export const Navbar = ({ variant = 'authenticated' }) => {
             <button onClick={() => navigate('/shop')} className="text-slate-600 hover:text-slate-900 transition-colors font-medium">
               Products
             </button>
-            <button className="text-slate-600 hover:text-slate-900 transition-colors font-medium">
-              Features
-            </button>
-            <button className="text-slate-600 hover:text-slate-900 transition-colors font-medium">
-              About
-            </button>
           </div>
 
           <div className="flex items-center gap-3">
@@ -75,6 +69,31 @@ export const Navbar = ({ variant = 'authenticated' }) => {
     );
   }
 
+  // If not authenticated, show a minimal header prompting sign-in
+  if (!isAuthenticated) {
+    return (
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+          <button onClick={() => navigate('/')} className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center text-white font-bold">
+              N
+            </div>
+            <span className="text-xl font-bold tracking-tight text-slate-900">Nexus<span className="text-emerald-600">AI</span></span>
+          </button>
+
+          <div className="hidden md:flex items-center gap-6">
+            <span className="text-sm text-slate-600">Sign in to access shop features</span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Button onClick={() => navigate('/login')} variant="outline" className="!border-slate-300 !text-slate-700 hover:!bg-slate-50">Sign In</Button>
+            <Button onClick={() => navigate('/login')} variant="primary">Get Started</Button>
+          </div>
+        </div>
+      </nav>
+    );
+  }
+
   // Authenticated variant - for logged in users
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
@@ -87,26 +106,26 @@ export const Navbar = ({ variant = 'authenticated' }) => {
         </Link>
 
         {/* Center Nav */}
-          <div className="hidden md:flex items-center gap-6">
-            <NavLink to="/shop" active={location.pathname === '/shop' && !location.search}>
-              Shop
-            </NavLink>
-            <NavLink to="/shop?tab=fashion" active={location.search.includes('tab=fashion')}>
-              Fashion
-            </NavLink>
-            <NavLink to="/shop?tab=electronics" active={location.search.includes('tab=electronics')}>
-              Electronics
-            </NavLink>
-            <NavLink to="/shop?tab=baby" active={location.search.includes('tab=baby')}>
-              Baby Products
-            </NavLink>
-            <NavLink to="/wishlist" active={location.pathname === '/wishlist'}>
-              My Wishlist
-            </NavLink>
-            <NavLink to="/purchases" active={location.pathname === '/purchases'}>
-              Purchases
-            </NavLink>
-          </div>
+        <div className="hidden md:flex items-center gap-6">
+          <NavLink to="/shop" active={location.pathname === '/shop' && !location.search}>
+            Shop
+          </NavLink>
+          <NavLink to="/shop?tab=fashion" active={location.search.includes('tab=fashion')}>
+            Fashion
+          </NavLink>
+          <NavLink to="/shop?tab=electronics" active={location.search.includes('tab=electronics')}>
+            Electronics
+          </NavLink>
+          <NavLink to="/shop?tab=baby" active={location.search.includes('tab=baby')}>
+            Baby Products
+          </NavLink>
+          <NavLink to="/wishlist" active={location.pathname === '/wishlist'}>
+            My Wishlist
+          </NavLink>
+          <NavLink to="/purchases" active={location.pathname === '/purchases'}>
+            Purchases
+          </NavLink>
+        </div>
 
 
         {/* Actions */}

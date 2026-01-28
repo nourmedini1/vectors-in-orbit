@@ -5,10 +5,12 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { StoreContext } from '../../context/StoreContext';
 import { Navbar } from '../../components/Navbar';
 import { Button } from '../../components/ui/Button';
+import { useToast } from '../../context/ToastContext';
 
 const ProductCard = ({ product, source = 'all-products', position }) => {
   const { addToCart } = useContext(StoreContext);
   const navigate = useNavigate();
+  const toast = useToast();
   const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
 
   // Handle image_url field and fallback for missing images
@@ -29,8 +31,6 @@ const ProductCard = ({ product, source = 'all-products', position }) => {
       });
       if (position !== undefined) params.append('position', position);
       
-      fetch(`http://localhost:8000/events/product-click?${params}`)
-        .catch(err => console.log('Event tracking failed:', err));
     }
     // Navigate with source info for ProductViewedEvent
     navigate(`/product/${product.product_id}`, { state: { source } });
@@ -63,7 +63,7 @@ const ProductCard = ({ product, source = 'all-products', position }) => {
 
       if (response.ok) {
         // Show success feedback
-        alert('Added to wishlist!');
+        toast.success('Added to wishlist!');
         
         // Track wishlist event
         const params = new URLSearchParams({
@@ -72,11 +72,9 @@ const ProductCard = ({ product, source = 'all-products', position }) => {
           timestamp: new Date().toISOString(),
           session_id: `session_${user._id}`
         });
-        fetch(`http://localhost:8000/events/wishlist-add?${params}`)
-          .catch(err => console.log('Event tracking failed:', err));
       } else {
         const error = await response.json();
-        alert(error.detail || 'Failed to add to wishlist');
+        toast.error(error.detail || 'Failed to add to wishlist');
       }
     } catch (error) {
       console.error('Error adding to wishlist:', error);
@@ -490,8 +488,6 @@ const ShopHome = () => {
         timestamp: new Date().toISOString(),
         session_id: `session_${user._id || 'anonymous'}`
       });
-      fetch(`${API_URL}/events/search?${params}`)
-        .catch(err => console.log('Event tracking failed:', err));
     }
   };
 
@@ -515,8 +511,6 @@ const ShopHome = () => {
         if (priceRange.min) params.append('price_min', priceRange.min);
         if (priceRange.max) params.append('price_max', priceRange.max);
         
-        fetch(`${API_URL}/events/filter-apply?${params}`)
-          .catch(err => console.log('Event tracking failed:', err));
         
         // Update applied filters
         setAppliedFilters({
@@ -895,8 +889,6 @@ const ShopHome = () => {
                                 timestamp: new Date().toISOString(),
                                 session_id: `session_${user._id}`
                               });
-                              fetch(`http://localhost:8000/events/product-click?${params}`)
-                                .catch(err => console.log('Event tracking failed:', err));
                             }
                             navigate(`/product/${product.product_id}`, { state: { source: 'carousel' } });
                           }}

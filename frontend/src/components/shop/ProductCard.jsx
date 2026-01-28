@@ -1,14 +1,18 @@
 import React, { useContext, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ShoppingCart, Heart, Sparkles } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { StoreContext } from '../../context/StoreContext';
+import { useToast } from '../../context/ToastContext';
 import { Button } from '../ui/Button';
 
 export const ProductCard = ({ product, source = 'all-products', position, layout = 'vertical' }) => {
   const { addToCart } = useContext(StoreContext);
+  const toast = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   // Handle image_url field and fallback for missing images
   const imageUrl = (product.image_url && product.image_url !== 'nan' && product.image_url !== '') 
@@ -35,16 +39,23 @@ export const ProductCard = ({ product, source = 'all-products', position, layout
         session_id: `session_${user._id}`
       });
       if (position !== undefined) params.append('position', position);
-      
-      fetch(`http://localhost:8000/events/product-click?${params}`)
-        .catch(err => console.log('Event tracking failed:', err));
     }
+
+    // Ask any CategoryTab to persist its snapshot immediately to avoid race on navigation
+    try {
+      window.dispatchEvent(new CustomEvent('persistCategoryState'));
+    } catch (err) {
+      // ignore
+    }
+
     // Navigate with product data and source info - no need to fetch from API
     navigate(`/product/${product.product_id}`, { 
       state: { 
         source,
+        from: location.pathname + location.search,
         product: {
           _id: product.product_id,
+          product_id: product.product_id,
           name: product.name,
           price: product.price,
           image_url: imageUrl,
@@ -66,7 +77,7 @@ export const ProductCard = ({ product, source = 'all-products', position, layout
     
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (!user._id) {
-      alert('Please login to add items to your wishlist');
+      toast.error('Please login to add items to your wishlist');
       return;
     }
 
@@ -88,7 +99,7 @@ export const ProductCard = ({ product, source = 'all-products', position, layout
 
       if (response.ok) {
         // Show success feedback
-        alert('Added to wishlist!');
+        toast.success('Added to wishlist!');
         
         // Track wishlist event
         const params = new URLSearchParams({
@@ -97,15 +108,15 @@ export const ProductCard = ({ product, source = 'all-products', position, layout
           timestamp: new Date().toISOString(),
           session_id: `session_${user._id}`
         });
-        fetch(`http://localhost:8000/events/wishlist-add?${params}`)
-          .catch(err => console.log('Event tracking failed:', err));
+
+        fetch(`http://localhost:8000/events/wishlist-add?${params}`).catch(err => console.log('Event tracking failed:', err));
       } else {
         const error = await response.json();
-        alert(error.detail || 'Failed to add to wishlist');
+        toast.error(error.detail || 'Failed to add to wishlist');
       }
     } catch (error) {
       console.error('Error adding to wishlist:', error);
-      alert('Failed to add to wishlist');
+      toast.error('Failed to add to wishlist');
     } finally {
       setIsAddingToWishlist(false);
     }
@@ -185,14 +196,23 @@ export const ProductCard = ({ product, source = 'all-products', position, layout
             )}
           </div>
           <Button 
-            onClick={(e) => {
+            onClick={async (e) => {
               e.stopPropagation();
-              addToCart(product);
+              setIsAddingToCart(true);
+              try {
+                await addToCart(product);
+                // addToCart already displays toast on success
+              } catch (err) {
+                toast.error(err.message || 'Failed to add to cart');
+              } finally {
+                setIsAddingToCart(false);
+              }
             }} 
             variant="dark" 
             className="!px-4 !py-2 flex-shrink-0"
+            disabled={isAddingToCart}
           >
-            <ShoppingCart size={16} /> Buy
+            {isAddingToCart ? 'Adding...' : (<><ShoppingCart size={16} /> Buy</>)}
           </Button>
         </div>
       </div>

@@ -25,7 +25,8 @@ export const SearchAndFilters = ({
   brands,
   filteredCount,
   onSearch,
-  onFilterApply
+  onFilterApply,
+  loading = false
 }) => {
   const handleClearAll = () => {
     setSearchQuery('');
@@ -53,12 +54,13 @@ export const SearchAndFilters = ({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === 'Enter' && searchQuery && searchQuery.trim()) {
                     onSearch();
                   }
                 }}
                 className="w-full pl-10 pr-10 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none bg-white/90"
               />
+              
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
@@ -70,9 +72,10 @@ export const SearchAndFilters = ({
             </div>
             <button
               onClick={onSearch}
-              className="px-4 py-2 text-sm bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium"
+              disabled={!searchQuery || !searchQuery.trim() || loading}
+              className={`px-4 py-2 text-sm rounded-lg transition-colors font-medium ${!searchQuery || !searchQuery.trim() || loading ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-emerald-600 text-white hover:bg-emerald-700'}`}
             >
-              Search
+              {loading ? 'Searching...' : 'Search'}
             </button>
           </div>
         </div>

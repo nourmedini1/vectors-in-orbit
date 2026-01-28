@@ -3,6 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Plus, X, Heart, Image as ImageIcon, Type, ShoppingBag, Trash2, Edit, Star, FileText } from 'lucide-react';
 import { Navbar } from '../../components/Navbar';
 import { Button } from '../../components/ui/Button';
+import { useToast } from '../../context/ToastContext';
+import { ErrorScreen } from '../../components/ErrorScreen';
+import { Navigate } from 'react-router-dom';
 
 const SmartWishlist = () => {
   const [wishes, setWishes] = useState([]);
@@ -11,6 +14,8 @@ const SmartWishlist = () => {
   const [formType, setFormType] = useState('text'); // 'text', 'image', 'text_with_image'
   const [filter, setFilter] = useState('all'); // 'all', 'product', 'text', 'text_with_image'
   const [editingItem, setEditingItem] = useState(null);
+  const [fetchError, setFetchError] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const API_URL = 'http://localhost:8000';
@@ -26,11 +31,14 @@ const SmartWishlist = () => {
     desired_attributes: '',
   });
 
+  const toast = useToast();
+
   useEffect(() => {
     if (user._id) {
+      setFetchError(null);
       fetchWishlist();
     }
-  }, [filter]);
+  }, [filter, retryCount]);
 
   const fetchWishlist = async () => {
     try {
@@ -46,6 +54,8 @@ const SmartWishlist = () => {
       }
     } catch (error) {
       console.error('Error fetching wishlist:', error);
+      setFetchError(error.message || 'Failed to load wishlist');
+      toast.error(error.message || 'Failed to load wishlist');
     } finally {
       setLoading(false);
     }
@@ -55,7 +65,7 @@ const SmartWishlist = () => {
     e.preventDefault();
     
     if (!user._id) {
-      alert('Please login to manage your wishlist');
+      toast.error('Please login to manage your wishlist');
       return;
     }
 
@@ -123,13 +133,14 @@ const SmartWishlist = () => {
           desired_attributes: ''
         });
         fetchWishlist();
+        toast.success('Item added to wishlist');
       } else {
         const error = await response.json();
-        alert(error.detail || 'Failed to add item to wishlist');
+        toast.error(error.detail || 'Failed to add item to wishlist');
       }
     } catch (error) {
       console.error('Error adding to wishlist:', error);
-      alert('Failed to add item to wishlist');
+      toast.error('Failed to add item to wishlist');
     }
   };
 
@@ -169,11 +180,11 @@ const SmartWishlist = () => {
         });
         fetchWishlist();
       } else {
-        alert('Failed to update item');
+        toast.error('Failed to update item');
       }
     } catch (error) {
       console.error('Error updating item:', error);
-      alert('Failed to update item');
+      toast.error('Failed to update item');
     }
   };
 
@@ -187,12 +198,13 @@ const SmartWishlist = () => {
 
       if (response.ok) {
         fetchWishlist();
+        toast.success('Item deleted');
       } else {
-        alert('Failed to delete item');
+        toast.error('Failed to delete item');
       }
     } catch (error) {
       console.error('Error deleting item:', error);
-      alert('Failed to delete item');
+      toast.error('Failed to delete item');
     }
   };
 
@@ -206,12 +218,13 @@ const SmartWishlist = () => {
 
       if (response.ok) {
         fetchWishlist();
+        toast.success('Wishlist cleared');
       } else {
-        alert('Failed to clear wishlist');
+        toast.error('Failed to clear wishlist');
       }
     } catch (error) {
       console.error('Error clearing wishlist:', error);
-      alert('Failed to clear wishlist');
+      toast.error('Failed to clear wishlist');
     }
   };
 
@@ -224,16 +237,11 @@ const SmartWishlist = () => {
   };
 
   if (!user._id) {
-    return (
-      <div className="min-h-screen bg-slate-50">
-        <Navbar />
-        <div className="max-w-6xl mx-auto px-6 py-20 text-center">
-          <Heart className="mx-auto h-16 w-16 text-gray-400 mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Please Login</h2>
-          <p className="text-gray-600">You need to login to access your wishlist</p>
-        </div>
-      </div>
-    );
+    return <Navigate to="/login" replace />;
+  }
+
+  if (fetchError) {
+    return <ErrorScreen message={fetchError} onRetry={() => setRetryCount(c => c + 1)} />;
   }
 
   return (
@@ -360,7 +368,7 @@ const SmartWishlist = () => {
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               className="bg-white w-full max-w-lg rounded-2xl shadow-2xl relative z-10 overflow-hidden max-h-[90vh] overflow-y-auto"
             >
-              <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 sticky top-0 z-10">
+              <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-10">
                 <h3 className="text-lg font-bold text-slate-900">
                   {editingItem ? 'Edit Wishlist Item' : `Add ${formType === 'text' ? 'Text Idea' : 'Item with Image'}`}
                 </h3>

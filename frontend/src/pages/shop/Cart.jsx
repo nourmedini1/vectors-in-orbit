@@ -90,9 +90,6 @@ const Cart = () => {
                 <span>Total</span>
                 <span>{total} DT</span>
               </div>
-              <Button onClick={handleCheckoutAll} className="w-full">
-                Checkout All <ArrowRight size={18} />
-              </Button>
             </div>
           </div>
         )}

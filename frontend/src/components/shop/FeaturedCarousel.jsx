@@ -1,8 +1,9 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { StoreContext } from "../../context/StoreContext";
+import { useToast } from '../../context/ToastContext';
 import { Button } from "../ui/Button";
 
 export const FeaturedCarousel = ({
@@ -15,7 +16,10 @@ export const FeaturedCarousel = ({
   hideMainTitle = false,
 }) => {
   const { addToCart } = useContext(StoreContext);
+  const toast = useToast();
+  const [addingIndex, setAddingIndex] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
   useEffect(() => {
     console.log("🎠 FeaturedCarousel rendered with products:", featuredProducts);
   }, [featuredProducts]);
@@ -122,27 +126,31 @@ export const FeaturedCarousel = ({
                     <div className="flex items-center gap-2 md:gap-3 flex-wrap">
                       <Button
                         onClick={() => {
-                          const user = JSON.parse(
-                            localStorage.getItem("user") || "{}",
-                          );
-                          if (user._id) {
-                            const params = new URLSearchParams({
-                              product_id: product.product_id,
-                              user_id: user._id,
-                              source: "carousel",
-                              position: index.toString(),
-                              timestamp: new Date().toISOString(),
-                              session_id: `session_${user._id}`,
-                            });
-                            fetch(
-                              `http://localhost:8000/events/product-click?${params}`,
-                            ).catch((err) =>
-                              console.log("Event tracking failed:", err),
-                            );
-                          }
+                          // Request CategoryTab to persist its state immediately to history/sessionStorage
+                          try {
+                            window.dispatchEvent(new CustomEvent('persistCategoryState'));
+                          } catch (err) {}
+
+                          // Normalize product to same shape ProductCard sends
+                          const normalized = {
+                            _id: product.product_id || product._id || product.id,
+                            product_id: product.product_id || product._id || product.id,
+                            name: product.name || product.title || 'Product',
+                            price: product.price || 0,
+                            image_url: product.image_url || product.image || '',
+                            description: product.description || product.desc || '',
+                            category: product.category || '',
+                            brand: product.brand || product.vendor || '',
+                            vendor: product.vendor || product.brand || '',
+                            has_discount: product.has_discount || false,
+                            discount_amount: product.discount_amount || 0,
+                            original_price: product.original_price || (product.price && product.discount_amount ? product.price / (1 - product.discount_amount / 100) : product.price) || product.price || 0,
+                            stock: product.stock || product.stock_quantity || 0
+                          };
+
                           navigate(
-                            `/product/${product.product_id}`,
-                            { state: { source: "carousel" } },
+                            `/product/${normalized.product_id}`,
+                            { state: { source: "carousel", from: location.pathname + location.search, position: index, product: normalized } },
                           );
                         }}
                         variant="primary"
@@ -151,14 +159,23 @@ export const FeaturedCarousel = ({
                         View Details
                       </Button>
                       <Button
-                        onClick={(e) => {
+                        onClick={async (e) => {
                           e.stopPropagation();
-                          addToCart(product);
+                          setAddingIndex(index);
+                          try {
+                            await addToCart(product);
+                            // addToCart displays toast on success
+                          } catch (err) {
+                            toast.error(err.message || 'Failed to add to cart');
+                          } finally {
+                            setAddingIndex(null);
+                          }
                         }}
                         variant="outline"
                         className="!px-4 md:!px-6 !py-2 md:!py-2.5 !text-sm md:!text-base"
+                        disabled={addingIndex === index}
                       >
-                        <ShoppingCart size={16} /> Add to Cart
+                        {addingIndex === index ? 'Adding...' : (<><ShoppingCart size={16} /> Add to Cart</>)}
                       </Button>
                     </div>
                   </div>

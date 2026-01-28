@@ -2,28 +2,34 @@ import { useState, useEffect } from 'react';
 import { useCart } from '../../context/CartContext';
 import { Trash2, Plus, Minus, ShoppingCart, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../../context/ToastContext';
 
 const CartPage = () => {
   const { cart, loading, updateCartItem, removeFromCart, clearCart } = useCart();
   const navigate = useNavigate();
 
+  const toast = useToast();
+
   const handleQuantityChange = async (productId, newQuantity) => {
     try {
       if (newQuantity < 1) {
         await removeFromCart(productId);
+        toast.success('Item removed');
       } else {
         await updateCartItem(productId, newQuantity);
+        toast.success('Quantity updated');
       }
     } catch (error) {
-      alert(error.message);
+      toast.error(error.message || 'Failed to update cart');
     }
   };
 
   const handleRemoveItem = async (productId) => {
     try {
       await removeFromCart(productId);
+      toast.success('Item removed');
     } catch (error) {
-      alert(error.message);
+      toast.error(error.message || 'Failed to remove item');
     }
   };
 
@@ -31,8 +37,9 @@ const CartPage = () => {
     if (window.confirm('Are you sure you want to clear your cart?')) {
       try {
         await clearCart();
+        toast.success('Cart cleared');
       } catch (error) {
-        alert(error.message);
+        toast.error(error.message || 'Failed to clear cart');
       }
     }
   };

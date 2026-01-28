@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Package, RefreshCw, CheckCircle, XCircle, Filter, AlertCircle, X } from 'lucide-react';
 import { Navbar } from '../../components/Navbar';
+import { useToast } from '../../context/ToastContext';
+import { Navigate } from 'react-router-dom';
 
 const PurchaseHistory = () => {
   const [purchases, setPurchases] = useState([]);
@@ -20,6 +22,8 @@ const PurchaseHistory = () => {
     }
   }, [userId, filter]);
 
+  const toast = useToast();
+
   const fetchPurchases = async () => {
     setLoading(true);
     try {
@@ -32,7 +36,7 @@ const PurchaseHistory = () => {
       setPurchases(data.purchases || []);
     } catch (error) {
       console.error('Failed to fetch purchases:', error);
-      alert('Failed to load purchase history');
+      toast.error('Failed to load purchase history');
     } finally {
       setLoading(false);
     }
@@ -44,7 +48,7 @@ const PurchaseHistory = () => {
 
   const handleReturnSubmit = async () => {
     if (!returnReason.trim()) {
-      alert('Please provide a reason for the return');
+      toast.error('Please provide a reason for the return');
       return;
     }
     
@@ -60,16 +64,16 @@ const PurchaseHistory = () => {
       );
       
       if (response.ok) {
-        alert('Product return initiated successfully');
+        toast.success('Product return initiated successfully');
         setReturnModal({ isOpen: false, purchaseId: null, productName: '' });
         setReturnReason('');
         fetchPurchases();
       } else {
         const error = await response.json();
-        alert(error.detail || 'Failed to return product');
+        toast.error(error.detail || 'Failed to return product');
       }
     } catch (error) {
-      alert('Failed to process return request');
+      toast.error('Failed to process return request');
     } finally {
       setRefundingId(null);
     }
@@ -104,23 +108,14 @@ const PurchaseHistory = () => {
   };
 
   if (!userId) {
-    return (
-      <div className="min-h-screen bg-slate-50">
-        <Navbar />
-        <div className="max-w-7xl mx-auto px-6 py-20 text-center">
-          <AlertCircle className="mx-auto text-red-500 mb-4" size={48} />
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">Please Login</h2>
-          <p className="text-slate-600">You need to be logged in to view your purchase history</p>
-        </div>
-      </div>
-    );
+    return <Navigate to="/login" replace />;
   }
 
   return (
     <div className="min-h-screen bg-slate-50">
       <Navbar />
       
-      <div className="max-w-7xl mx-auto px-6 py-12">
+      <div className="max-w-7xl mx-auto px-6 py-20">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900 mb-2">Purchase History</h1>
           <p className="text-slate-600">View and manage your past purchases</p>

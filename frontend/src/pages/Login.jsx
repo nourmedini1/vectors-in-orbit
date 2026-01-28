@@ -5,6 +5,7 @@ import { Mail, Lock, User, Store, Eye, EyeOff } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Navbar } from '../components/Navbar';
 import { StoreContext } from '../context/StoreContext';
+import { useToast } from '../context/ToastContext';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -32,17 +33,19 @@ const Login = () => {
     });
   };
 
+  const toast = useToast();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!isLogin) {
       // Signup validation
       if (formData.password !== formData.confirmPassword) {
-        alert('Passwords do not match!');
+        toast.error('Passwords do not match!');
         return;
       }
       if (formData.password.length < 6) {
-        alert('Password must be at least 6 characters');
+        toast.error('Password must be at least 6 characters');
         return;
       }
     }
@@ -76,7 +79,7 @@ const Login = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        alert(data.detail || 'Authentication failed');
+        toast.error(data.detail || 'Authentication failed');
         return;
       }
 
@@ -95,7 +98,7 @@ const Login = () => {
       }
     } catch (error) {
       console.error('Auth error:', error);
-      alert('An error occurred. Please try again.');
+      toast.error('An error occurred. Please try again.');
     }
   };
 
@@ -174,7 +177,7 @@ const Login = () => {
             {/* User Type Selector */}
             <div className="mb-5">
               <label className="block text-sm font-medium text-slate-700 mb-2">I am a:</label>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3">
                 <button
                   type="button"
                   onClick={() => setUserType('shopper')}
@@ -186,18 +189,6 @@ const Login = () => {
                 >
                   <User size={18} />
                   <span className="font-medium">Shopper</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setUserType('vendor')}
-                  className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 transition-all text-sm ${
-                    userType === 'vendor'
-                      ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
-                      : 'border-slate-200 hover:border-slate-300 text-slate-600'
-                  }`}
-                >
-                  <Store size={18} />
-                  <span className="font-medium">Shop Owner</span>
                 </button>
               </div>
             </div>
@@ -393,9 +384,6 @@ const Login = () => {
                     <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" />
                     <span className="text-slate-600">Remember me</span>
                   </label>
-                  <button type="button" className="text-emerald-600 hover:text-emerald-700 font-medium">
-                    Forgot password?
-                  </button>
                 </div>
               )}
 
@@ -408,19 +396,7 @@ const Login = () => {
               </Button>
             </form>
 
-            {/* Toggle Login/Signup */}
-            <div className="mt-5 text-center">
-              <p className="text-slate-600 text-sm">
-                {isLogin ? "Don't have an account?" : "Already have an account? "}
-                <button
-                  type="button"
-                  onClick={() => setIsLogin(!isLogin)}
-                  className="text-emerald-600 hover:text-emerald-700 font-semibold ml-1"
-                >
-                  {isLogin ? 'Sign Up' : 'Sign In'}
-                </button>
-              </p>
-            </div>
+
           </motion.div>
         </div>
       </div>

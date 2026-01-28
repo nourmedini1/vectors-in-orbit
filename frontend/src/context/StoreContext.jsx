@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { useToast } from './ToastContext';
 
 export const StoreContext = createContext();
 
@@ -11,11 +12,18 @@ const getUserId = () => {
 };
 
 export const StoreProvider = ({ children }) => {
+  const toast = useToast();
+
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
   const [wishes, setWishes] = useState([]); 
   const [userRole, setUserRole] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const [addingToCart, setAddingToCart] = useState(false);
+  const [removingFromCart, setRemovingFromCart] = useState(false);
+  const [creatingWish, setCreatingWish] = useState(false);
+
 
   // Check authentication on mount and fetch cart immediately
   useEffect(() => {
@@ -59,7 +67,10 @@ export const StoreProvider = ({ children }) => {
     try {
       const res = await axios.get(`${API_URL}/api/products`);
       setProducts(res.data);
-    } catch (err) { console.error("API Error", err); }
+    } catch (err) { 
+      console.error("API Error", err);
+      toast.error('Failed to load products');
+    }
   };
 
   const fetchCart = async (userId) => {
@@ -71,6 +82,7 @@ export const StoreProvider = ({ children }) => {
       console.log('✅ Cart updated with', res.data.items?.length || 0, 'items');
     } catch (err) { 
       console.error("❌ Cart fetch error", err);
+      toast.error('Failed to fetch cart');
       setCart([]);
     }
   };
@@ -89,9 +101,11 @@ export const StoreProvider = ({ children }) => {
   const addToCart = async (product) => {
     const userId = getUserId();
     if (!userId) {
-      alert('Please login to add items to cart');
+      toast.error('Please login to add items to cart');
       return;
     }
+
+    setAddingToCart(true);
 
     // Get proper image URL with fallback
     const imageUrl = (product.image_url && product.image_url !== 'nan' && product.image_url !== '') 
@@ -109,10 +123,14 @@ export const StoreProvider = ({ children }) => {
         quantity: 1
       });
       await fetchCart(userId);
+      toast.success('Added to cart');
       console.log('✅ Added to cart');
     } catch (err) {
       console.error('Add to cart error:', err);
-      alert('Failed to add item to cart');
+      toast.error('Failed to add item to cart');
+      throw err;
+    } finally {
+      setAddingToCart(false);
     }
   };
 
@@ -120,11 +138,13 @@ export const StoreProvider = ({ children }) => {
     const userId = getUserId();
     if (!userId) return;
 
+    setRemovingFromCart(true);
+
     try {
-          // Get proper image URL with fallback
-    const imageUrl = (product.image_url && product.image_url !== 'nan' && product.image_url !== '') 
-      ? product.image_url 
-      : (product.image || '');
+      // Get proper image URL with fallback
+      const imageUrl = (product.image_url && product.image_url !== 'nan' && product.image_url !== '') 
+        ? product.image_url 
+        : (product.image || '');
       await axios.post(`${API_URL}/api/cart/remove`, {
         user_id: userId,
         product_id: product.product_id,
@@ -135,32 +155,48 @@ export const StoreProvider = ({ children }) => {
 
       });
       await fetchCart(userId);
+      toast.success('Removed from cart');
       console.log('✅ Removed from cart');
     } catch (err) {
       console.error('Remove from cart error:', err);
+      toast.error('Failed to remove from cart');
       // Fallback to local removal
       const newCart = [...cart];
       newCart.splice(index, 1);
       setCart(newCart);
+    } finally {
+      setRemovingFromCart(false);
     }
   };
 
-  // NEW: Create a Wish Intent
-  const createWish = (wishData) => {
-    const newWish = { id: Date.now(), ...wishData };
-    setWishes([newWish, ...wishes]);
-    
-    // Track wishlist event (non-blocking)
-    const userId = getUserId();
-    if (userId) {
-      const params = new URLSearchParams({
-        user_id: userId,
-        product_id: wishData.productId || 'custom',
-        timestamp: new Date().toISOString(),
-        session_id: `session_${userId}`
-      });
-      fetch(`${API_URL}/events/wishlist-add?${params}`, { method: 'POST' })
-        .catch(err => console.log('Event tracking failed:', err));
+  // NEW: Create a Wish Intent (local + optional server call)
+  const createWish = async (wishData) => {
+    setCreatingWish(true);
+    try {
+      const newWish = { id: Date.now(), ...wishData };
+      setWishes([newWish, ...wishes]);
+
+      // Track wishlist event (non-blocking)
+      const userId = getUserId();
+      if (userId) {
+        const params = new URLSearchParams({
+          user_id: userId,
+          product_id: wishData.productId || 'custom',
+          timestamp: new Date().toISOString(),
+          session_id: `session_${userId}`
+        });
+
+        // Optionally send to server (non-blocking)
+        fetch(`${API_URL}/events/wishlist-add?${params}`).catch(err => console.log('Event tracking failed:', err));
+      }
+
+      toast.success('Added to wishlist');
+      return newWish;
+    } catch (err) {
+      toast.error('Failed to add to wishlist');
+      throw err;
+    } finally {
+      setCreatingWish(false);
     }
   };
 
@@ -168,7 +204,8 @@ export const StoreProvider = ({ children }) => {
     <StoreContext.Provider value={{ 
       products, cart, wishes, userRole, 
       setWishes, setUserRole, addToCart, removeFromCart, createWish,
-      fetchProducts, fetchCart, API_URL, isAuthenticated, logout, checkAuthStatus
+      fetchProducts, fetchCart, API_URL, isAuthenticated, logout, checkAuthStatus,
+      addingToCart, removingFromCart, creatingWish
     }}>
       {children}
     </StoreContext.Provider>

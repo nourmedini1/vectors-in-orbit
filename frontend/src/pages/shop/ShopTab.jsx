@@ -1,20 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { FeaturedCarousel } from '../../components/shop/FeaturedCarousel';
 import { ProductSection } from '../../components/shop/ProductSection';
+import { ErrorScreen } from '../../components/ErrorScreen';
+import { useToast } from '../../context/ToastContext';
+import { Navigate } from 'react-router-dom';
 
 export const ShopTab = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [feedSections, setFeedSections] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const toast = useToast();
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const API_URL = 'http://192.168.1.128:8002';
 
   useEffect(() => {
     if (user._id) {
+      setFetchError(null);
       fetchFeed();
     }
-  }, [user._id]);
+  }, [user._id, retryCount]);
 
   const fetchFeed = async () => {
     setLoading(true);
@@ -57,6 +64,8 @@ export const ShopTab = () => {
       setFeedSections(transformedSections);
     } catch (error) {
       console.error('Failed to fetch feed:', error);
+      setFetchError(error.message || 'Failed to load feed');
+      toast.error(error.message || 'Failed to load feed');
     } finally {
       setLoading(false);
     }
@@ -86,13 +95,12 @@ export const ShopTab = () => {
     );
   }
 
+  if (fetchError) {
+    return <ErrorScreen message={fetchError} onRetry={() => setRetryCount(c => c + 1)} />;
+  }
+
   if (!user._id) {
-    return (
-      <div className="max-w-7xl mx-auto px-6 py-20 text-center">
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">Please Login</h2>
-        <p className="text-slate-600">Login to see personalized recommendations</p>
-      </div>
-    );
+    return <Navigate to="/login" replace />;
   }
 
   // Separate 'Because' sections (wishlist-based) from other sections

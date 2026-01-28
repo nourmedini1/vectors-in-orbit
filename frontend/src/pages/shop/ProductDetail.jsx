@@ -4,16 +4,20 @@ import { ArrowLeft, ShoppingCart, Package, Star, Truck, ThumbsUp, CheckCircle, E
 import { Navbar } from '../../components/Navbar';
 import { StoreContext } from '../../context/StoreContext';
 import { useContext } from 'react';
+import { useToast } from '../../context/ToastContext';
+import { ErrorScreen } from '../../components/ErrorScreen';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { addToCart } = useContext(StoreContext);
+  const { addToCart, products, fetchProducts } = useContext(StoreContext);
+  const toast = useToast();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [addedToCart, setAddedToCart] = useState(false);
+  const [addingToCart, setAddingToCart] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [reviewData, setReviewData] = useState({ rating: 5, title: '', comment: '' });
   const [reviews, setReviews] = useState([]);
@@ -22,16 +26,35 @@ const ProductDetail = () => {
   const [editingReview, setEditingReview] = useState(null);
   const [userReview, setUserReview] = useState(null);
   const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const API_URL = 'http://localhost:8000';
 
+  const normalizeProduct = (p) => {
+    if (!p) return null;
+    return {
+      _id: p.product_id || p._id || p.id || id,
+      product_id: p.product_id || p._id || p.id || id,
+      name: p.name || p.title || 'Product',
+      price: p.price || p.price_amount || 0,
+      image_url: p.image_url || p.image || p.imageUrl || '',
+      description: p.description || p.desc || '',
+      category: p.category || p.category_name || '',
+      brand: p.brand || p.vendor || '',
+      vendor: p.vendor || p.brand || '',
+      has_discount: p.has_discount || (p.discount_amount && p.discount_amount > 0) || false,
+      discount_amount: p.discount_amount || p.discount_percentage || 0,
+      original_price: p.original_price || (p.price && p.discount_amount ? p.price / (1 - p.discount_amount / 100) : p.price) || p.price || 0,
+      stock: p.stock || p.stock_quantity || p.stock_qty || 0
+    };
+  };
+
   useEffect(() => {
-    // Check if product data was passed via navigation state
+    // If product data was passed in navigation state, use it (fast)
     if (location.state?.product) {
-      setProduct(location.state.product);
+      setProduct(normalizeProduct(location.state.product));
       setLoading(false);
-      
       // Track product view event (non-blocking)
       if (user._id) {
         const source = location.state?.source || 'direct';
@@ -42,18 +65,24 @@ const ProductDetail = () => {
           timestamp: new Date().toISOString(),
           session_id: `session_${user._id}`
         });
-        fetch(`${API_URL}/events/product-view?${params}`)
-          .catch(err => console.log('Event tracking failed:', err));
       }
+      // We can still fetch reviews/stats below
     } else {
-      // Fallback: fetch from API if no product data in state (e.g., direct URL access)
-      fetchProduct();
+      // Try to find the product in local store (when there's no backend)
+      const found = products.find(p => p.product_id === id || p._id === id || p.id === id);
+      if (found) {
+        setProduct(normalizeProduct(found));
+        setLoading(false);
+      } else {
+        // Nothing locally - fall back to fetching from API (if available)
+        fetchProduct();
+      }
     }
-    
-    // Always fetch reviews from database
+
+    // Always attempt to fetch reviews/stats (fails silently when backend is absent)
     fetchReviews();
     fetchReviewStats();
-  }, [id]);
+  }, [id, products]);
 
   const fetchProduct = async () => {
     try {
@@ -74,11 +103,11 @@ const ProductDetail = () => {
           timestamp: new Date().toISOString(),
           session_id: `session_${user._id}`
         });
-        fetch(`http://localhost:8000/events/product-view?${params}`)
-          .catch(err => console.log('Event tracking failed:', err));
       }
     } catch (error) {
       console.error('Error fetching product:', error);
+      setFetchError(error.message || 'Failed to load product');
+      toast.error('Failed to load product');
     } finally {
       setLoading(false);
     }
@@ -100,6 +129,7 @@ const ProductDetail = () => {
       }
     } catch (error) {
       console.error('Error fetching reviews:', error);
+      toast.error('Failed to load reviews');
     } finally {
       setLoadingReviews(false);
     }
@@ -114,34 +144,43 @@ const ProductDetail = () => {
       }
     } catch (error) {
       console.error('Error fetching review stats:', error);
+      // non-critical but surface to user when available
+      toast.error('Failed to load review stats');
     }
   };
 
   const handleAddToCart = async () => {
     try {
-      // addToCart from StoreContext expects the full product object
-      await addToCart(product);
+      // Ensure product_id exists for backend/cart API and pass normalized object
+      const prodForCart = { ...product, product_id: product.product_id || product._id || id };
+      setAddingToCart(true);
+      await addToCart(prodForCart);
       setAddedToCart(true);
       setTimeout(() => setAddedToCart(false), 2000);
     } catch (error) {
-      alert(error.message || 'Failed to add to cart');
+      toast.error(error.message || 'Failed to add to cart');
+    } finally {
+      setAddingToCart(false);
     }
   };
+
+  const [submittingReview, setSubmittingReview] = useState(false);
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     
     if (!user._id) {
-      alert('Please login to submit a review');
+      toast.error('Please login to submit a review');
       return;
     }
 
     if (!reviewData.comment.trim()) {
-      alert('Please write a comment');
+      toast.error('Please write a comment');
       return;
     }
 
     try {
+      setSubmittingReview(true);
       const reviewPayload = {
         product_id: product.product_id,
         user_id: user._id,
@@ -169,21 +208,21 @@ const ProductDetail = () => {
         });
         if (reviewData.comment) params.append('comment', reviewData.comment);
         
-        fetch(`${API_URL}/events/review-submit?${params}`)
-          .catch(err => console.log('Event tracking failed:', err));
 
-        alert('Review submitted successfully!');
+        toast.success('Review submitted successfully!');
         setShowReviewForm(false);
         setReviewData({ rating: 5, title: '', comment: '' });
         fetchReviews();
         fetchReviewStats();
       } else {
         const error = await response.json();
-        alert(error.detail || 'Failed to submit review');
+        toast.error(error.detail || 'Failed to submit review');
       }
     } catch (error) {
       console.error('Error submitting review:', error);
-      alert('Failed to submit review');
+      toast.error('Failed to submit review');
+    } finally {
+      setSubmittingReview(false);
     }
   };
 
@@ -202,17 +241,17 @@ const ProductDetail = () => {
       });
 
       if (response.ok) {
-        alert('Review updated successfully!');
+        toast.success('Review updated successfully!');
         setEditingReview(null);
         setReviewData({ rating: 5, title: '', comment: '' });
         fetchReviews();
         fetchReviewStats();
       } else {
-        alert('Failed to update review');
+        toast.error('Failed to update review');
       }
     } catch (error) {
       console.error('Error updating review:', error);
-      alert('Failed to update review');
+      toast.error('Failed to update review');
     }
   };
 
@@ -225,15 +264,15 @@ const ProductDetail = () => {
       });
 
       if (response.ok) {
-        alert('Review deleted successfully!');
+        toast.success('Review deleted successfully!');
         fetchReviews();
         fetchReviewStats();
       } else {
-        alert('Failed to delete review');
+        toast.error('Failed to delete review');
       }
     } catch (error) {
       console.error('Error deleting review:', error);
-      alert('Failed to delete review');
+      toast.error('Failed to delete review');
     }
   };
 
@@ -253,7 +292,7 @@ const ProductDetail = () => {
 
   const handleAddToWishlist = async () => {
     if (!user._id) {
-      alert('Please login to add items to your wishlist');
+      toast.error('Please login to add items to your wishlist');
       return;
     }
 
@@ -278,7 +317,7 @@ const ProductDetail = () => {
       });
 
       if (response.ok) {
-        alert('Added to wishlist!');
+        toast.success('Added to wishlist!');
         
         // Track wishlist event
         const params = new URLSearchParams({
@@ -287,15 +326,16 @@ const ProductDetail = () => {
           timestamp: new Date().toISOString(),
           session_id: `session_${user._id}`
         });
-        fetch(`${API_URL}/events/wishlist-add?${params}`)
-          .catch(err => console.log('Event tracking failed:', err));
+
+        fetch(`${API_URL}/events/wishlist-add?${params}`).catch(err => console.log('Event tracking failed:', err));
+
       } else {
         const error = await response.json();
-        alert(error.detail || 'Failed to add to wishlist');
+        toast.error(error.detail || 'Failed to add to wishlist');
       }
     } catch (error) {
       console.error('Error adding to wishlist:', error);
-      alert('Failed to add to wishlist');
+      toast.error('Failed to add to wishlist');
     } finally {
       setIsAddingToWishlist(false);
     }
@@ -310,6 +350,10 @@ const ProductDetail = () => {
         </div>
       </div>
     );
+  }
+
+  if (fetchError) {
+    return <ErrorScreen message={fetchError} onRetry={() => { setFetchError(null); fetchProduct(); }} />;
   }
 
   if (!product) {
@@ -342,7 +386,13 @@ const ProductDetail = () => {
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Back Button */}
         <button
-          onClick={() => navigate('/shop')}
+          onClick={() => {
+            if (location.state?.from) {
+              navigate(location.state.from);
+            } else {
+              navigate(-1);
+            }
+          }}
           className="flex items-center text-gray-600 hover:text-gray-900 mb-6"
         >
           <ArrowLeft className="mr-2" size={20} />
@@ -467,9 +517,9 @@ const ProductDetail = () => {
               <div className="flex gap-3">
                 <button
                   onClick={handleAddToCart}
-                  disabled={product.stock === 0 || addedToCart}
+                  disabled={product.stock === 0 || addedToCart || addingToCart}
                   className={`flex-1 py-4 rounded-lg font-semibold text-white flex items-center justify-center gap-2 transition-colors ${
-                    addedToCart
+                    addedToCart || addingToCart
                       ? 'bg-green-600 hover:bg-green-700'
                       : product.stock === 0
                       ? 'bg-gray-400 cursor-not-allowed'
@@ -477,7 +527,7 @@ const ProductDetail = () => {
                   }`}
                 >
                   <ShoppingCart size={20} />
-                  {addedToCart ? 'Added to Cart!' : product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+                  {addingToCart ? 'Adding...' : addedToCart ? 'Added to Cart!' : product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
                 </button>
                 
                 <button

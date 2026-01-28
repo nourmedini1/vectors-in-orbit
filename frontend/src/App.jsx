@@ -3,6 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { StoreProvider } from './context/StoreContext';
 import { CartProvider } from './context/CartContext';
 import { OrderProvider } from './context/OrderContext';
+import { ToastProvider } from './context/ToastContext';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { ProtectedRoute } from './components/ProtectedRoute';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import ShopHome from './pages/shop/ShopHome';
@@ -17,28 +20,36 @@ import VendorDashboard from './pages/vendor/VendorDashboard';
 
 function App() {
   return (
-    <StoreProvider>
-      <CartProvider>
-        <OrderProvider>
-          <Router>
-            <Routes>
-              <Route path="/" element={<Landing />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/shop" element={<ShopHome />} />
-              <Route path="/product/:id" element={<ProductDetail />} />
-              <Route path="/wishlist" element={<SmartWishlist />} /> 
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/cart-new" element={<CartPage />} />
-              <Route path="/checkout" element={<CheckoutPage />} />
-              <Route path="/orders" element={<OrdersPage />} />
-              <Route path="/purchases" element={<PurchaseHistory />} />
-              <Route path="/vendor" element={<VendorDashboard />} />
-              <Route path="*" element={<Navigate to="/" />} />
-            </Routes>
+    <ToastProvider>
+      <StoreProvider>
+        <CartProvider>
+          <OrderProvider>
+            <Router>
+            <ErrorBoundary>
+              <Routes>
+                <Route path="/" element={<Landing />} />
+                <Route path="/login" element={<Login />} />
+
+                {/* Protected routes - require auth (only Landing + Login are public) */}
+                <Route path="/shop" element={<ProtectedRoute><ShopHome /></ProtectedRoute>} />
+                <Route path="/product/:id" element={<ProtectedRoute><ProductDetail /></ProtectedRoute>} />
+
+                <Route path="/wishlist" element={<ProtectedRoute><SmartWishlist /></ProtectedRoute>} />
+                <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+                <Route path="/cart-new" element={<ProtectedRoute><CartPage /></ProtectedRoute>} />
+                <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
+                <Route path="/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
+                <Route path="/purchases" element={<ProtectedRoute><PurchaseHistory /></ProtectedRoute>} />
+                <Route path="/vendor" element={<ProtectedRoute><VendorDashboard /></ProtectedRoute>} />
+
+                <Route path="*" element={<Navigate to="/" />} />
+              </Routes>
+            </ErrorBoundary>
           </Router>
         </OrderProvider>
       </CartProvider>
     </StoreProvider>
+    </ToastProvider>
   );
 }
 

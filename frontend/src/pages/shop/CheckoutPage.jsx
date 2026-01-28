@@ -6,6 +6,7 @@ import { ProgressSteps } from '../../components/checkout/ProgressSteps';
 import { ShippingForm } from '../../components/checkout/ShippingForm';
 import { PaymentForm } from '../../components/checkout/PaymentForm';
 import { OrderConfirmation } from '../../components/checkout/OrderConfirmation';
+import { useToast } from '../../context/ToastContext';
 
 const CheckoutPage = () => {
   const { cart, fetchCart } = useContext(StoreContext);
@@ -45,6 +46,8 @@ const CheckoutPage = () => {
     e.preventDefault();
     setStep(2);
   };
+
+  const toast = useToast();
 
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
@@ -104,6 +107,7 @@ const CheckoutPage = () => {
       
       setOrderId(order._id);
       setStep(3);
+      toast.success('Purchase completed successfully!');
       
       // Refetch cart from server to get updated state
       if (user._id) {
@@ -111,15 +115,26 @@ const CheckoutPage = () => {
       }
     } catch (error) {
       console.error('Payment error:', error);
-      alert(error.message || 'Failed to process payment');
+      toast.error(error.message || 'Failed to process payment');
     } finally {
       setLoading(false);
     }
   };
 
-  // Don't render checkout if no items
+  // Don't render checkout if no items - show friendly message instead of blank
   if (items.length === 0) {
-    return null;
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <div className="max-w-6xl mx-auto px-6 py-20 text-center">
+          <h2 className="text-2xl font-bold text-slate-900 mb-2">No items to checkout</h2>
+          <p className="text-slate-600 mb-6">Your cart appears empty. Redirecting to your cart or you can continue shopping.</p>
+          <div className="flex items-center justify-center gap-4">
+            <a href="/cart" className="px-4 py-2 bg-emerald-600 text-white rounded-lg">Go to Cart</a>
+            <a href="/shop" className="px-4 py-2 bg-slate-100 rounded-lg text-slate-700">Continue Shopping</a>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   // Calculate total for display
