@@ -1,125 +1,154 @@
 import React, { useState, useEffect } from 'react';
-import { Tag, Package, Star } from 'lucide-react';
 import { FeaturedCarousel } from '../../components/shop/FeaturedCarousel';
 import { ProductSection } from '../../components/shop/ProductSection';
-import { ProductGrid } from '../../components/shop/ProductGrid';
-import { sampleProducts } from '../../data/sampleProducts';
 
 export const ShopTab = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(12);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [products, setProducts] = useState([]);
+  const [feedSections, setFeedSections] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const API_URL = 'http://localhost:8000';
+  const API_URL = 'http://192.168.1.128:8002';
 
-  // TODO: Replace with API call
   useEffect(() => {
-    // For now, use sample products
-    // Later: fetch(`${API_URL}/api/products/for-you?user_id=${user._id}`)
-    const parseProductCategory = (product) => {
-      const metadata = product.metadata || {};
-      let category = metadata.category || '';
-      let subcategory = metadata.subcategory || null;
-      
-      if (category.includes('-')) {
-        const parts = category.split('-');
-        category = parts[0];
-        subcategory = parts[1] || subcategory;
-      }
-      
-      return {
-        ...product,
-        metadata: { ...metadata, category, subcategory },
-        category,
-        name: metadata.name,
-        description: metadata.description,
-        price: metadata.price,
-        image_url: metadata.image_url,
-        has_discount: metadata.is_discounted,
-        brand: metadata.brand,
-        _id: product.product_id
-      };
-    };
+    if (user._id) {
+      fetchFeed();
+    }
+  }, [user._id]);
 
-    setProducts(sampleProducts.map(parseProductCategory));
-  }, []);
+  const fetchFeed = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/feed/${user._id}`);
+      const data = await response.json();
+      
+      console.log('📥 Feed data received:', data);
+      
+      // Transform feed sections to flatten product structure
+      const transformedSections = (data.feed || []).map(section => ({
+        section_title: section.section_title,
+        items: (section.items || []).map(item => {
+          const isDiscounted = item.payload?.metadata?.is_discounted || false;
+          const discountPercentage = item.payload?.metadata?.discount_percentage || 
+                                    item.payload?.metadata?.discount_amount || 
+                                    (isDiscounted ? 15 : 0);
+          return {
+            _id: item.product_id,
+            product_id: item.product_id,
+            name: item.name,
+            price: item.price,
+            image_url: item.image_url,
+            match_reason: item.match_reason,
+            description: item.payload?.metadata?.description || '',
+            category: item.payload?.metadata?.category || '',
+            brand: item.payload?.metadata?.brand || '',
+            has_discount: isDiscounted,
+            discount_amount: discountPercentage,
+            stock_quantity: item.payload?.metadata?.stock_quantity || 0,
+            vendor: item.payload?.metadata?.brand || 'Unknown'
+          };
+        })
+      }));
+      
+      console.log('🔄 Transformed sections:', transformedSections);
+      console.log('🎠 First section:', transformedSections[0]);
+      console.log('📊 Sections 2-3:', transformedSections.slice(1));
+      
+      setFeedSections(transformedSections);
+    } catch (error) {
+      console.error('Failed to fetch feed:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // Get featured products for carousel
-  const featuredProducts = products.filter(p => p.has_discount).slice(0, 5).length > 0
-    ? products.filter(p => p.has_discount).slice(0, 5)
-    : products.slice(0, 5);
+  // Get first section for carousel
+  const firstSection = feedSections[0];
+  const carouselProducts = firstSection?.items || [];
 
   // Auto-advance carousel
   useEffect(() => {
-    if (featuredProducts.length === 0) return;
+    if (carouselProducts.length === 0) return;
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % featuredProducts.length);
+      setCurrentSlide((prev) => (prev + 1) % carouselProducts.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, [featuredProducts.length]);
+  }, [carouselProducts.length]);
 
-  // Get different product categories
-  const trendingProducts = products.slice(0, 8);
-  const discountedProducts = products.filter(p => p.has_discount).slice(0, 4);
-  const newArrivals = products.slice(0, 4);
+  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % carouselProducts.length);
+  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + carouselProducts.length) % carouselProducts.length);
 
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+      </div>
+    );
+  }
+
+  if (!user._id) {
+    return (
+      <div className="max-w-7xl mx-auto px-6 py-20 text-center">
+        <h2 className="text-2xl font-bold text-slate-900 mb-2">Please Login</h2>
+        <p className="text-slate-600">Login to see personalized recommendations</p>
+      </div>
+    );
+  }
+
+  // Separate 'Because' sections (wishlist-based) from other sections
+  const wishlistSections = feedSections.filter(s => s.section_title.startsWith('Because'));
+  const otherSections = feedSections.filter(s => !s.section_title.startsWith('Because'));
+  
+  // Extract wish text from 'Because' sections
+  const extractWishText = (title) => {
+    const match = title.match(/Because you want '(.+)'/);
+    return match ? match[1] : 'your wishlist';
   };
-
-  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % featuredProducts.length);
-  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + featuredProducts.length) % featuredProducts.length);
-
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
   return (
     <>
-      <FeaturedCarousel
-        featuredProducts={featuredProducts}
-        currentSlide={currentSlide}
-        nextSlide={nextSlide}
-        prevSlide={prevSlide}
-      />
-
-      {/* Hot Deals Section */}
-      {discountedProducts.length > 0 && (
-        <div id="hot-deals" className="py-16">
-          <ProductSection
-            products={discountedProducts}
-            title="Hot Deals"
-            description="Limited time offers you don't want to miss"
-            icon={Tag}
-            source="hot-deals"
-          />
+      {/* Wishlist-based Section - Single Title, Multiple Carousels */}
+      {wishlistSections.length > 0 && (
+        <div className="bg-gradient-to-br from-emerald-50 to-teal-50">
+          <div className="max-w-7xl mx-auto px-6 py-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-6">
+              Based on your wishlist
+            </h2>
+            
+            {wishlistSections.map((section, idx) => {
+              const wishText = extractWishText(section.section_title);
+              return (
+                <div key={`wishlist-${idx}`} className="mb-8 last:mb-0">
+                  <div className="bg-white rounded-2xl overflow-hidden shadow-2xl">
+                    <FeaturedCarousel
+                      featuredProducts={section.items || []}
+                      currentSlide={currentSlide}
+                      nextSlide={nextSlide}
+                      prevSlide={prevSlide}
+                      wishText={wishText}
+                      hideMainTitle={true}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
-      {/* New Arrivals Section */}
-      <div id="new-arrivals" className="bg-white py-16">
-        <ProductSection
-          products={newArrivals}
-          title="New Arrivals"
-          description="Fresh products just added to our collection"
-          icon={Package}
-          source="new-arrivals"
-        />
-      </div>
-
-      {/* Trending Now Section */}
-      <div id="trending" className="py-16">
-        <ProductSection
-          products={trendingProducts}
-          title="Trending Now"
-          description="Most popular items loved by our customers"
-          icon={Star}
-          source="trending"
-        />
-      </div>
-
+      {/* Other Sections - Grid Layout */}
+      {otherSections.map((section, index) => (
+        <div 
+          key={index} 
+          className={index % 2 === 0 ? 'py-16' : 'bg-white py-16'}
+        >
+          <ProductSection
+            products={section.items || []}
+            title={section.section_title}
+            source={`feed-section-${index + 1}`}
+          />
+        </div>
+      ))}
     </>
   );
 };

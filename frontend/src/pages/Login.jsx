@@ -9,7 +9,7 @@ import { StoreContext } from '../context/StoreContext';
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setUserRole } = useContext(StoreContext);
+  const { setUserRole, checkAuthStatus } = useContext(StoreContext);
   const roleFromState = location.state?.role;
 
   const [isLogin, setIsLogin] = useState(true);
@@ -84,8 +84,8 @@ const Login = () => {
       localStorage.setItem('token', data.access_token);
       localStorage.setItem('user', JSON.stringify(data.user));
       
-      // Set the user role in context (map customer back to shopper for frontend)
-      setUserRole(data.user.user_type === 'customer' ? 'shopper' : 'vendor');
+      // Update auth state
+      checkAuthStatus();
       
       // Navigate based on user type
       if (data.user.user_type === 'vendor') {

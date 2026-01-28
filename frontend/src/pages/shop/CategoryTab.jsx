@@ -4,6 +4,13 @@ import { ProductGrid } from '../../components/shop/ProductGrid';
 import { SearchAndFilters } from '../../components/shop/SearchAndFilters';
 import { sampleProducts } from '../../data/sampleProducts';
 
+// Define subcategories for each category (must match CategorySidebar)
+const CATEGORY_SUBCATEGORIES = {
+  fashion: ['Fashion-Men', 'Fashion-Women', 'Fashion-Kids'],
+  electronics: ['Electronics-Laptops', 'Electronics-Desktops', 'Electronics-Smartphones', 'Electronics-Tablets', 'Electronics-Screens', 'Electronics-Keyboards', 'Electronics-Mice', 'Electronics-Chargers', 'Electronics-Storage', 'Electronics-Servers', 'Electronics-TV', 'Electronics-Media', 'Electronics-Supplies', 'Electronics-Other'],
+  baby: ['Baby-Feeding', 'Baby-Toys', 'Baby-Clothes', 'Baby-Furniture']
+};
+
 export const CategoryTab = ({ category }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(12);
@@ -16,9 +23,10 @@ export const CategoryTab = ({ category }) => {
   const [showDiscountOnly, setShowDiscountOnly] = useState(false);
   const [selectedSubcategories, setSelectedSubcategories] = useState([]);
   const [products, setProducts] = useState([]);
+  const [isSearchResults, setIsSearchResults] = useState(false); // Track if showing search results
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const API_URL = 'http://localhost:8000';
+  const API_URL = 'http://192.168.1.128:8002';
 
   // TODO: Replace with API call based on category
   useEffect(() => {
@@ -58,19 +66,29 @@ export const CategoryTab = ({ category }) => {
     setSelectedSubcategories([]);
     setSearchQuery('');
     setActiveSearchQuery('');
+    setIsSearchResults(false); // Reset search results flag when changing category
   }, [category]);
 
   // Apply filters
   const filteredProducts = useMemo(() => {
     let filtered = [...products];
 
-    if (activeSearchQuery) {
+    // If showing search results from API, don't apply text search filter
+    // The API already handled the search relevance
+    if (activeSearchQuery && !isSearchResults) {
       filtered = filtered.filter(p => 
         p.name.toLowerCase().includes(activeSearchQuery.toLowerCase()) ||
         p.description?.toLowerCase().includes(activeSearchQuery.toLowerCase())
       );
     }
 
+    // Don't apply subcategory filter when showing search results
+    // The search API already filtered by category
+    if (selectedSubcategories.length > 0 && !isSearchResults) {
+      filtered = filtered.filter(p => selectedSubcategories.includes(p.metadata?.subcategory));
+    }
+
+    // These filters can still be applied to search results if needed
     if (priceRange.min) {
       filtered = filtered.filter(p => p.price >= parseFloat(priceRange.min));
     }
@@ -90,31 +108,77 @@ export const CategoryTab = ({ category }) => {
       filtered = filtered.filter(p => p.metadata?.brand === selectedBrand);
     }
 
-    if (selectedSubcategories.length > 0) {
-      filtered = filtered.filter(p => selectedSubcategories.includes(p.metadata?.subcategory));
-    }
-
     if (showDiscountOnly) {
       filtered = filtered.filter(p => p.has_discount);
     }
 
     return filtered;
-  }, [products, activeSearchQuery, priceRange, selectedGender, selectedCondition, selectedBrand, showDiscountOnly, selectedSubcategories]);
+  }, [products, activeSearchQuery, priceRange, selectedGender, selectedCondition, selectedBrand, showDiscountOnly, selectedSubcategories, isSearchResults]);
 
-  const handleSearchSubmit = () => {
+  const handleSearchSubmit = async () => {
     setActiveSearchQuery(searchQuery);
     setCurrentPage(1);
     
     if (searchQuery) {
-      const params = new URLSearchParams({
-        query: searchQuery,
-        user_id: user._id || 'anonymous',
-        category: category,
-        timestamp: new Date().toISOString(),
-        session_id: `session_${user._id || 'anonymous'}`
-      });
-      fetch(`${API_URL}/events/search?${params}`)
-        .catch(err => console.log('Event tracking failed:', err));
+      try {
+        // Prepare filters - if no subcategories selected, use all subcategories for this category
+        // Convert subcategory names to "Category-Subcategory" format
+        const categoryPrefix = category.charAt(0).toUpperCase() + category.slice(1);
+        const subcategoriesToSend = selectedSubcategories.length > 0 
+          ? selectedSubcategories.map(sub => `${categoryPrefix}-${sub}`)
+          : CATEGORY_SUBCATEGORIES[category] || [];
+        
+        const filters = {
+          category: subcategoriesToSend,
+          ...(priceRange.min && { min_price: parseFloat(priceRange.min) }),
+          ...(priceRange.max && { max_price: parseFloat(priceRange.max) })
+        };
+
+        // Send search request
+        const searchRequest = {
+          user_id: user._id || 'anonymous',
+          query_text: searchQuery,
+          filters: filters,
+          limit: 20
+        };
+        console.log("aaaaaa",searchRequest)
+        const response = await fetch(`${API_URL}/search`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(searchRequest)
+        });
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Search results:', data);
+          
+          // Transform search results to match product structure
+          if (data.results && Array.isArray(data.results)) {
+            const transformedProducts = data.results.map(result => ({
+              _id: result.product_id,
+              product_id: result.product_id,
+              name: result.name,
+              price: result.price,
+              image_url: result.image_url,
+              description: result.payload?.metadata?.description || '',
+              category: result.payload?.metadata?.category || category,
+              brand: result.payload?.metadata?.brand || '',
+              has_discount: result.payload?.metadata?.is_discounted || false,
+              discount_amount: result.payload?.metadata?.discount_amount || 0,
+              original_price: result.payload?.metadata?.original_price || result.price,
+              match_reason: result.match_reason, // Add match reason for display
+              metadata: result.payload?.metadata || {}
+            }));
+            setProducts(transformedProducts);
+            setIsSearchResults(true); // Mark as search results
+            console.log('Transformed products:', transformedProducts);
+          }
+        }
+      } catch (err) {
+        console.error('Search failed:', err);
+      }
+      
     }
   };
 
@@ -186,7 +250,6 @@ export const CategoryTab = ({ category }) => {
                 itemsPerPage={itemsPerPage}
                 onPageChange={handlePageChange}
                 source={`${category}-tab`}
-                title={categoryTitles[category] || 'Products'}
                 description={`Showing ${indexOfFirstItem + 1}-${Math.min(indexOfLastItem, filteredProducts.length)} of ${filteredProducts.length} products`}
                 layout="horizontal"
               />

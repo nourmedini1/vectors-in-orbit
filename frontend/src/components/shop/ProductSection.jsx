@@ -10,7 +10,7 @@ export const ProductSection = ({ products, title, description, icon: Icon, sourc
         {Icon && <Icon className={getIconColor(source)} size={32} />}
         <div>
           <h2 className="text-3xl font-bold text-slate-900">{title}</h2>
-          <p className="text-slate-600 mt-1">{description}</p>
+          {description && <p className="text-slate-600 mt-1">{description}</p>}
         </div>
       </div>
       

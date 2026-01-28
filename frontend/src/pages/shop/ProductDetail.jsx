@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, ShoppingCart, Package, Star, Truck, ThumbsUp, CheckCircle, Edit, Trash2, Heart } from 'lucide-react';
 import { Navbar } from '../../components/Navbar';
-import { useCart } from '../../context/CartContext';
+import { StoreContext } from '../../context/StoreContext';
+import { useContext } from 'react';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { addToCart } = useCart();
+  const { addToCart } = useContext(StoreContext);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
@@ -26,7 +27,30 @@ const ProductDetail = () => {
   const API_URL = 'http://localhost:8000';
 
   useEffect(() => {
-    fetchProduct();
+    // Check if product data was passed via navigation state
+    if (location.state?.product) {
+      setProduct(location.state.product);
+      setLoading(false);
+      
+      // Track product view event (non-blocking)
+      if (user._id) {
+        const source = location.state?.source || 'direct';
+        const params = new URLSearchParams({
+          product_id: id,
+          user_id: user._id,
+          source: source,
+          timestamp: new Date().toISOString(),
+          session_id: `session_${user._id}`
+        });
+        fetch(`${API_URL}/events/product-view?${params}`)
+          .catch(err => console.log('Event tracking failed:', err));
+      }
+    } else {
+      // Fallback: fetch from API if no product data in state (e.g., direct URL access)
+      fetchProduct();
+    }
+    
+    // Always fetch reviews from database
     fetchReviews();
     fetchReviewStats();
   }, [id]);
@@ -95,11 +119,12 @@ const ProductDetail = () => {
 
   const handleAddToCart = async () => {
     try {
-      await addToCart(product._id, quantity);
+      // addToCart from StoreContext expects the full product object
+      await addToCart(product);
       setAddedToCart(true);
       setTimeout(() => setAddedToCart(false), 2000);
     } catch (error) {
-      alert(error.message);
+      alert(error.message || 'Failed to add to cart');
     }
   };
 
@@ -393,7 +418,7 @@ const ProductDetail = () => {
                 {product.stock > 0 ? (
                   <div className="flex items-center text-green-600">
                     <Package className="mr-2" size={20} />
-                    <span className="font-medium">In Stock ({product.stock} available)</span>
+                    <span className="font-medium">In Stock</span>
                   </div>
                 ) : (
                   <div className="flex items-center text-red-600">
@@ -436,6 +461,8 @@ const ProductDetail = () => {
                 </div>
               </div>
 
+
+
               {/* Add to Cart Button */}
               <div className="flex gap-3">
                 <button
@@ -472,7 +499,7 @@ const ProductDetail = () => {
                 </div>
                 <div className="flex items-center text-gray-600">
                   <Star className="mr-3" size={20} />
-                  <span>Sold by {product.vendor.toUpperCase()}</span>
+                  <span>Sold by {(product.vendor || 'Unknown').toUpperCase()}</span>
                 </div>
               </div>
 

@@ -6,13 +6,15 @@ import { motion } from 'framer-motion';
 import { Button } from './ui/Button';
 
 export const Navbar = ({ variant = 'authenticated' }) => {
-  const { cart, userRole, setUserRole } = useContext(StoreContext);
+  const { cart, userRole, isAuthenticated, logout } = useContext(StoreContext);
   const navigate = useNavigate();
   const location = useLocation();
 
   const handleLogout = () => {
-    setUserRole(null);
-    navigate('/');
+    if (logout) {
+      logout();
+    }
+    navigate('/login');
   };
 
   const scrollToSection = (sectionId) => {
@@ -84,7 +86,7 @@ export const Navbar = ({ variant = 'authenticated' }) => {
           <span className="text-xl font-bold tracking-tight text-slate-900">Nexus<span className="text-emerald-600">AI</span></span>
         </Link>
 
-        {/* Center Nav (Shopper Only) */}
+        {/* Center Nav */}
           <div className="hidden md:flex items-center gap-6">
             <NavLink to="/shop" active={location.pathname === '/shop' && !location.search}>
               Shop
@@ -98,32 +100,28 @@ export const Navbar = ({ variant = 'authenticated' }) => {
             <NavLink to="/shop?tab=baby" active={location.search.includes('tab=baby')}>
               Baby Products
             </NavLink>
-          {userRole === 'shopper' && (
             <NavLink to="/wishlist" active={location.pathname === '/wishlist'}>
               My Wishlist
             </NavLink>
-          )}
+            <NavLink to="/purchases" active={location.pathname === '/purchases'}>
+              Purchases
+            </NavLink>
           </div>
 
 
         {/* Actions */}
         <div className="flex items-center gap-4">
-          {userRole === 'shopper' && (
-            <>
-
-              <Link to="/cart" className="relative p-2 hover:bg-slate-100 rounded-full transition-colors">
-                <ShoppingBag size={20} className="text-slate-700" />
-                {cart.length > 0 && (
-                  <motion.span 
-                    initial={{ scale: 0 }} animate={{ scale: 1 }}
-                    className="absolute top-0 right-0 bg-emerald-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center"
-                  >
-                    {cart.length}
-                  </motion.span>
-                )}
-              </Link>
-            </>
-          )}
+          <Link to="/cart" className="relative p-2 hover:bg-slate-100 rounded-full transition-colors">
+            <ShoppingBag size={20} className="text-slate-700" />
+            {cart.length > 0 && (
+              <motion.span 
+                initial={{ scale: 0 }} animate={{ scale: 1 }}
+                className="absolute top-0 right-0 bg-emerald-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center"
+              >
+                {cart.length}
+              </motion.span>
+            )}
+          </Link>
           
           <div className="h-6 w-px bg-slate-200 mx-2"></div>
           

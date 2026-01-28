@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { ProductCard } from './ProductCard';
 
 export const ProductGrid = ({ 
@@ -8,7 +8,6 @@ export const ProductGrid = ({
   itemsPerPage, 
   onPageChange, 
   source = 'all-products',
-  title = 'All Products',
   description,
   layout = 'vertical'
 }) => {
@@ -21,7 +20,6 @@ export const ProductGrid = ({
     <>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h2 className="text-3xl font-bold text-slate-900">{title}</h2>
           {description && (
             <p className="text-slate-600 mt-1">{description}</p>
           )}
@@ -30,7 +28,9 @@ export const ProductGrid = ({
 
       {currentProducts.length === 0 ? (
         <div className="text-center py-20">
-          <div className="text-6xl mb-4">🔍</div>
+          <div className="flex justify-center mb-4">
+            <Search size={64} className="text-slate-300" />
+          </div>
           <h3 className="text-2xl font-bold text-slate-900 mb-2">No products found</h3>
           <p className="text-slate-600 mb-6">Try adjusting your search or filters</p>
         </div>

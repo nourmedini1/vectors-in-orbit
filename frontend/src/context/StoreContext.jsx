@@ -15,18 +15,45 @@ export const StoreProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [wishes, setWishes] = useState([]); 
   const [userRole, setUserRole] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  // Check authentication on mount and fetch cart immediately
   useEffect(() => {
-    fetchProducts();
     const user = JSON.parse(localStorage.getItem('user') || '{}');
-    if (user.user_type) {
-      // Map customer to shopper for frontend
-      setUserRole(user.user_type === 'customer' ? 'shopper' : user.user_type);
-      if (user._id) {
-        fetchCart(user._id);
-      }
+    console.log('🔍 Initial auth check, user:', user);
+    
+    // Check if user exists by _id (more reliable than user_type)
+    if (user._id) {
+      console.log('✅ User authenticated, fetching cart for:', user._id);
+      const role = user.user_type === 'customer' ? 'shopper' : (user.user_type || 'customer');
+      setUserRole(role);
+      setIsAuthenticated(true);
+      // Fetch cart immediately on mount
+      fetchCart(user._id);
+    } else {
+      console.log('❌ User not authenticated');
+      setIsAuthenticated(false);
+      setUserRole(null);
+      setCart([]);
     }
   }, []);
+
+  const checkAuthStatus = () => {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    console.log('🔄 Checking auth status, user:', user);
+    
+    // Check if user exists by _id
+    if (user._id) {
+      const role = user.user_type === 'customer' ? 'shopper' : (user.user_type || 'customer');
+      setUserRole(role);
+      setIsAuthenticated(true);
+      fetchCart(user._id);
+    } else {
+      setIsAuthenticated(false);
+      setUserRole(null);
+      setCart([]);
+    }
+  };
 
   const fetchProducts = async () => {
     try {
@@ -37,12 +64,24 @@ export const StoreProvider = ({ children }) => {
 
   const fetchCart = async (userId) => {
     try {
+      console.log('🛒 Fetching cart for user:', userId);
       const res = await axios.get(`${API_URL}/api/cart/${userId}`);
+      console.log('📦 Cart response:', res.data);
       setCart(res.data.items || []);
+      console.log('✅ Cart updated with', res.data.items?.length || 0, 'items');
     } catch (err) { 
-      console.error("Cart fetch error", err);
+      console.error("❌ Cart fetch error", err);
       setCart([]);
     }
+  };
+
+  const logout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    setUserRole(null);
+    setIsAuthenticated(false);
+    setCart([]);
+    setWishes([]);
   };
 
 
@@ -54,10 +93,18 @@ export const StoreProvider = ({ children }) => {
       return;
     }
 
+    // Get proper image URL with fallback
+    const imageUrl = (product.image_url && product.image_url !== 'nan' && product.image_url !== '') 
+      ? product.image_url 
+      : (product.image || '');
+
     try {
       await axios.post(`${API_URL}/api/cart/add`, {
         user_id: userId,
         product_id: product._id || product.product_id,
+        product_name: product.name,
+        price: product.price,
+        image_url: imageUrl,
         quantity: 1
       });
       await fetchCart(userId);
@@ -111,7 +158,7 @@ export const StoreProvider = ({ children }) => {
     <StoreContext.Provider value={{ 
       products, cart, wishes, userRole, 
       setWishes, setUserRole, addToCart, removeFromCart, createWish,
-      fetchProducts, API_URL 
+      fetchProducts, fetchCart, API_URL, isAuthenticated, logout, checkAuthStatus
     }}>
       {children}
     </StoreContext.Provider>

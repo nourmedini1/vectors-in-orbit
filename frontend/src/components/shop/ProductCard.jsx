@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ShoppingCart, Heart } from 'lucide-react';
+import { ShoppingCart, Heart, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { StoreContext } from '../../context/StoreContext';
 import { Button } from '../ui/Button';
@@ -14,6 +14,14 @@ export const ProductCard = ({ product, source = 'all-products', position, layout
   const imageUrl = (product.image_url && product.image_url !== 'nan' && product.image_url !== '') 
     ? product.image_url 
     : (product.image || 'https://placehold.co/300x300/e2e8f0/64748b?text=No+Image');
+
+  // Calculate original price from discount percentage if product has discount
+  const hasDiscount = product.has_discount && product.discount_amount > 0;
+  const discountedPrice = product.price;
+  const originalPrice = hasDiscount 
+    ? discountedPrice / (1 - product.discount_amount / 100)
+    : product.price;
+  const savingsAmount = hasDiscount ? originalPrice - discountedPrice : 0;
 
   const handleProductClick = () => {
     // Track product click event (non-blocking)
@@ -31,8 +39,26 @@ export const ProductCard = ({ product, source = 'all-products', position, layout
       fetch(`http://localhost:8000/events/product-click?${params}`)
         .catch(err => console.log('Event tracking failed:', err));
     }
-    // Navigate with source info for ProductViewedEvent
-    navigate(`/product/${product._id || product.product_id}`, { state: { source } });
+    // Navigate with product data and source info - no need to fetch from API
+    navigate(`/product/${product._id || product.product_id}`, { 
+      state: { 
+        source,
+        product: {
+          _id: product._id || product.product_id,
+          name: product.name,
+          price: product.price,
+          image_url: imageUrl,
+          description: product.description,
+          category: product.category,
+          brand: product.brand,
+          vendor: product.vendor || product.metadata?.vendor || 'Unknown',
+          has_discount: hasDiscount,
+          discount_amount: product.discount_amount,
+          original_price: originalPrice,
+          stock: product.stock_quantity || 0
+        }
+      } 
+    });
   };
 
   const handleAddToWishlist = async (e) => {
@@ -121,16 +147,27 @@ export const ProductCard = ({ product, source = 'all-products', position, layout
             e.target.src = 'https://placehold.co/300x300/e2e8f0/64748b?text=No+Image';
           }}
         />
-        {product.has_discount && product.discount_amount && (
+        {hasDiscount && (
           <div className="absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10">
-            SAVE {product.discount_amount.toFixed(3)} DT
+            -{product.discount_amount}%
           </div>
         )}
       </div>
       
       <div className={layout === 'horizontal' ? 'p-4 flex-1 flex flex-col justify-between' : 'p-5 flex-1 flex flex-col'}>
         <div className={layout === 'horizontal' ? '' : 'flex-1'}>
-          <div className={`font-bold text-emerald-600 uppercase tracking-wide ${layout === 'horizontal' ? 'text-xs mb-1' : 'text-xs mb-2'}`}>{product.category}</div>
+          {/* Match Reason Badge */}
+          {product.match_reason && (
+            <div className="flex items-center gap-1.5 mb-2 text-emerald-600">
+              <Sparkles size={14} className="flex-shrink-0" />
+              <span className="text-xs font-semibold">{product.match_reason}</span>
+            </div>
+          )}
+          {product.category && (
+            <div className={`font-bold text-emerald-600 uppercase tracking-wide ${layout === 'horizontal' ? 'text-xs mb-1' : 'text-xs mb-2'}`}>
+              {product.category.split('-')[1] || product.category}
+            </div>
+          )}
           <h3 className={`font-bold text-slate-900 leading-tight ${layout === 'horizontal' ? 'text-base mb-1 line-clamp-1' : 'text-lg mb-2'}`}>{product.name}</h3>
           <p className={`text-slate-500 line-clamp-2 ${layout === 'horizontal' ? 'text-xs mb-2' : 'text-sm mb-4'}`}>{product.description}</p>
         </div>
@@ -138,10 +175,10 @@ export const ProductCard = ({ product, source = 'all-products', position, layout
         <div className={`flex items-center justify-between gap-3 ${layout === 'vertical' ? 'pt-4 border-t border-slate-50 mt-auto' : ''}`}>
           <div>
             <span className="text-xs text-slate-400 block">Price</span>
-            {product.has_discount ? (
+            {hasDiscount ? (
               <div className="flex items-center gap-2">
-                <span className={`font-bold text-emerald-600 ${layout === 'horizontal' ? 'text-xl' : 'text-lg'}`}>{product.price?.toFixed(3)} DT</span>
-                <span className="text-sm text-slate-400 line-through">{product.original_price?.toFixed(3)} DT</span>
+                <span className={`font-bold text-emerald-600 ${layout === 'horizontal' ? 'text-xl' : 'text-lg'}`}>{discountedPrice?.toFixed(3)} DT</span>
+                <span className="text-sm text-slate-400 line-through">{originalPrice?.toFixed(3)} DT</span>
               </div>
             ) : (
               <span className={`font-bold text-slate-900 ${layout === 'horizontal' ? 'text-xl' : 'text-lg'}`}>{product.price?.toFixed(3)} DT</span>
