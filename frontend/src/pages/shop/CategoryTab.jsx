@@ -5,6 +5,7 @@ import { ProductGrid } from '../../components/shop/ProductGrid';
 import { ProductSection } from '../../components/shop/ProductSection';
 import { SearchAndFilters } from '../../components/shop/SearchAndFilters';
 import { ErrorScreen } from '../../components/ErrorScreen';
+import { MONGO_API, SEARCH_API } from '../../utils/apiConfig';
 
 // Define subcategories for each category (must match CategorySidebar)
 const CATEGORY_SUBCATEGORIES = {
@@ -128,7 +129,7 @@ export const CategoryTab = ({ category }) => {
   const [retryCount, setRetryCount] = useState(0); // increment to retry fetches
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const API_URL = 'http://192.168.1.128:8002';
+  const API_URL = SEARCH_API;
   const toast = useToast();
   // Used to prevent unnecessary refetch when we have a restored snapshot
   const skipFetchRef = useRef(false);
@@ -213,7 +214,7 @@ export const CategoryTab = ({ category }) => {
       try {
         // Fetch products for each subcategory
         for (const subcategory of subcategories) {
-          const response = await fetch(`http://192.168.1.128:8000/products/${subcategory}`);
+          const response = await fetch(`${MONGO_API}/products/${subcategory}`);
           if (response.ok) {
             const data = await response.json();
             // Transform products

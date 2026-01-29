@@ -4,6 +4,7 @@ import { ProductSection } from '../../components/shop/ProductSection';
 import { ErrorScreen } from '../../components/ErrorScreen';
 import { useToast } from '../../context/ToastContext';
 import { Navigate } from 'react-router-dom';
+import { MONGO_API, SEARCH_API } from '../../utils/apiConfig';
 
 export const ShopTab = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -14,7 +15,7 @@ export const ShopTab = () => {
   const toast = useToast();
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const API_URL = 'http://192.168.1.128:8002';
+  const API_URL = SEARCH_API;
 
   useEffect(() => {
     if (user._id) {

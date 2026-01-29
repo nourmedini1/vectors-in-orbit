@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect, useContext } from 'react';
+import { MONGO_API } from '../utils/apiConfig';
 
 const CartContext = createContext();
 
@@ -19,7 +20,7 @@ export const CartProvider = ({ children }) => {
   // In production, this would come from authentication
   const userId = 'demo_user_001';
 
-  const API_BASE_URL = 'http://localhost:8000/api';
+  const API_BASE_URL = `${MONGO_API}/api`; 
 
   // Fetch cart
   const fetchCart = async () => {

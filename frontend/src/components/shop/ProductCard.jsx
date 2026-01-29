@@ -5,6 +5,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { StoreContext } from '../../context/StoreContext';
 import { useToast } from '../../context/ToastContext';
 import { Button } from '../ui/Button';
+import { MONGO_API } from '../../utils/apiConfig';
 
 export const ProductCard = ({ product, source = 'all-products', position, layout = 'vertical' }) => {
   const { addToCart } = useContext(StoreContext);
@@ -84,7 +85,7 @@ export const ProductCard = ({ product, source = 'all-products', position, layout
     setIsAddingToWishlist(true);
     
     try {
-      const response = await fetch('http://localhost:8000/api/wishlist/add/product', {
+      const response = await fetch(`${MONGO_API}/api/wishlist/add/product`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -109,7 +110,7 @@ export const ProductCard = ({ product, source = 'all-products', position, layout
           session_id: `session_${user._id}`
         });
 
-        fetch(`http://localhost:8000/events/wishlist-add?${params}`).catch(err => console.log('Event tracking failed:', err));
+        fetch(`${MONGO_API}/events/wishlist-add?${params}`).catch(err => console.log('Event tracking failed:', err));
       } else {
         const error = await response.json();
         toast.error(error.detail || 'Failed to add to wishlist');

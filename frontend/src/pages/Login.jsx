@@ -6,6 +6,7 @@ import { Button } from '../components/ui/Button';
 import { Navbar } from '../components/Navbar';
 import { StoreContext } from '../context/StoreContext';
 import { useToast } from '../context/ToastContext';
+import { MONGO_API } from '../utils/apiConfig';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -51,7 +52,7 @@ const Login = () => {
     }
 
     try {
-      const endpoint = isLogin ? 'http://localhost:8000/api/auth/login' : 'http://localhost:8000/api/auth/register';
+      const endpoint = isLogin ? `${MONGO_API}/api/auth/login` : `${MONGO_API}/api/auth/register`; 
       
       // Truncate password to 72 bytes max for bcrypt
       const truncatedPassword = formData.password.slice(0, 72);

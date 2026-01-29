@@ -6,6 +6,7 @@ import { Button } from '../../components/ui/Button';
 import { useToast } from '../../context/ToastContext';
 import { ErrorScreen } from '../../components/ErrorScreen';
 import { Navigate } from 'react-router-dom';
+import { MONGO_API } from '../../utils/apiConfig';
 
 const SmartWishlist = () => {
   const [wishes, setWishes] = useState([]);
@@ -18,7 +19,7 @@ const SmartWishlist = () => {
   const [retryCount, setRetryCount] = useState(0);
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const API_URL = 'http://localhost:8000';
+  const API_URL = MONGO_API;
 
   // Form State - UPDATED
   const [formData, setFormData] = useState({

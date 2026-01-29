@@ -1,4 +1,5 @@
 import { createContext, useState, useContext } from 'react';
+import { MONGO_API } from '../utils/apiConfig';
 
 const OrderContext = createContext();
 
@@ -15,7 +16,7 @@ export const OrderProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const API_BASE_URL = 'http://localhost:8000/api';
+  const API_BASE_URL = `${MONGO_API}/api`;
   const userId = 'demo_user_001';
 
   // Fetch user orders

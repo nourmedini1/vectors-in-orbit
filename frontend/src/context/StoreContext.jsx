@@ -1,10 +1,11 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { useToast } from './ToastContext';
+import { MONGO_API } from '../utils/apiConfig';
 
 export const StoreContext = createContext();
 
-const API_URL = "http://localhost:8000";
+const API_URL = MONGO_API;
 
 const getUserId = () => {
   const user = JSON.parse(localStorage.getItem('user') || '{}');

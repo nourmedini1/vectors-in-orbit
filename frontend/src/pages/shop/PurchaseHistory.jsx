@@ -3,6 +3,7 @@ import { Package, RefreshCw, CheckCircle, XCircle, Filter, AlertCircle, X } from
 import { Navbar } from '../../components/Navbar';
 import { useToast } from '../../context/ToastContext';
 import { Navigate } from 'react-router-dom';
+import { MONGO_API } from '../../utils/apiConfig';
 
 const PurchaseHistory = () => {
   const [purchases, setPurchases] = useState([]);
@@ -14,7 +15,7 @@ const PurchaseHistory = () => {
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const userId = user._id;
-  const API_URL = 'http://localhost:8000';
+  const API_URL = MONGO_API;
 
   useEffect(() => {
     if (userId) {

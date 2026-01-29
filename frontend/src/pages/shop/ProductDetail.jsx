@@ -6,6 +6,7 @@ import { StoreContext } from '../../context/StoreContext';
 import { useContext } from 'react';
 import { useToast } from '../../context/ToastContext';
 import { ErrorScreen } from '../../components/ErrorScreen';
+import { MONGO_API } from '../../utils/apiConfig';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -29,7 +30,7 @@ const ProductDetail = () => {
   const [fetchError, setFetchError] = useState(null);
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const API_URL = 'http://localhost:8000';
+  const API_URL = MONGO_API;
 
   const normalizeProduct = (p) => {
     if (!p) return null;
@@ -87,7 +88,7 @@ const ProductDetail = () => {
   const fetchProduct = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:8000/api/products/${id}`);
+      const response = await fetch(`${MONGO_API}/api/products/${id}`);
       if (!response.ok) throw new Error('Product not found');
       const data = await response.json();
       setProduct(data);

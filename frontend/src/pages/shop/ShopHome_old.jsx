@@ -6,6 +6,7 @@ import { StoreContext } from '../../context/StoreContext';
 import { Navbar } from '../../components/Navbar';
 import { Button } from '../../components/ui/Button';
 import { useToast } from '../../context/ToastContext';
+import { MONGO_API } from '../../utils/apiConfig';
 
 const ProductCard = ({ product, source = 'all-products', position }) => {
   const { addToCart } = useContext(StoreContext);
@@ -48,7 +49,7 @@ const ProductCard = ({ product, source = 'all-products', position }) => {
     setIsAddingToWishlist(true);
     
     try {
-      const response = await fetch('http://localhost:8000/api/wishlist/add/product', {
+      const response = await fetch(`${MONGO_API}/api/wishlist/add/product`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -175,7 +176,7 @@ const ShopHome = () => {
   const [selectedSubcategories, setSelectedSubcategories] = useState([]); // Multi-select subcategory filter
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const API_URL = 'http://localhost:8000';
+  const API_URL = MONGO_API;
   const location = useLocation();
 
   // Handle URL query params for tab navigation

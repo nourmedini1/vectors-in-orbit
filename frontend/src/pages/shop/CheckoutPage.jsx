@@ -7,6 +7,7 @@ import { ShippingForm } from '../../components/checkout/ShippingForm';
 import { PaymentForm } from '../../components/checkout/PaymentForm';
 import { OrderConfirmation } from '../../components/checkout/OrderConfirmation';
 import { useToast } from '../../context/ToastContext';
+import { MONGO_API } from '../../utils/apiConfig';
 
 const CheckoutPage = () => {
   const { cart, fetchCart } = useContext(StoreContext);
@@ -70,7 +71,7 @@ const CheckoutPage = () => {
         orderPayload.product_ids = items.map(item => item.product_id);
       }
 
-      const orderResponse = await fetch('http://localhost:8000/api/orders/create', {
+      const orderResponse = await fetch(`${MONGO_API}/api/orders/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderPayload)
@@ -85,7 +86,7 @@ const CheckoutPage = () => {
       
       // Then create purchase records for each item
       const purchasePromises = items.map(item => 
-        fetch('http://localhost:8000/api/purchases', {
+        fetch(`${MONGO_API}/api/purchases`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
