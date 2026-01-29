@@ -9,4 +9,6 @@ const getEnv = (name, defaultUrl) => {
 };
 
 export const MONGO_API = getEnv('MONGO_API', 'http://localhost:8000');
+export const PRODUCTS_API = getEnv('PRODUCTS_API', 'http://localhost:8008');
 export const SEARCH_API = getEnv('SEARCH_API', 'http://localhost:8002');
+
