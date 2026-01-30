@@ -116,9 +116,9 @@ Qdrant is **never written to synchronously by the search engine**. All updates h
 
 ---
 
-## Background Agents (ADK-Style Autonomous Workers)
+## Background Agents (ADK Agents)
 
-The system relies on **autonomous background agents** that operate continuously and independently from user queries. These agents follow an **ADK-inspired design**: each agent has a single responsibility, clear inputs (events), and explicit side effects (state updates).
+The system relies on **autonomous background agents** that operate continuously and independently from user queries. Each agent has a single responsibility, clear inputs (events), and explicit side effects (state updates).
 
 These agents are critical to achieving low latency and deep personalization.
 
