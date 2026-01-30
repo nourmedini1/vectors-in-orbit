@@ -1,0 +1,24 @@
+# RL Training Pipeline Requirements
+
+# Core RL framework
+d3rlpy>=2.0.0
+
+# Numerical computing
+numpy>=1.24.0
+scipy>=1.10.0
+
+# Data handling
+pandas>=2.0.0
+
+# Configuration
+pydantic>=2.0.0
+
+# Logging and monitoring
+tqdm>=4.65.0
+
+# Deep learning (for d3rlpy backend)
+torch>=2.0.0
+
+# Optional: GPU support
+# If you have CUDA installed, d3rlpy will automatically use it
+# Install CUDA-enabled PyTorch: pip install torch --index-url https://download.pytorch.org/whl/cu118
