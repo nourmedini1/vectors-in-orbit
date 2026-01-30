@@ -253,7 +253,7 @@ class RerankingLayer:
             reason = self._generate_dynamic_reason(meta, multipliers_map, user_context_for_reason)
 
             results.append({
-                "product_id": str(c.id), 
+                "product_id": str(c.payload.get("product_id", c.id)), 
                 "name": meta.get("name"), 
                 "price": price, 
                 "image_url": meta.get("image_url"), 

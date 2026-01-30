@@ -1,165 +1,26 @@
 import os
-import sys
+from datetime import datetime
+from typing import List, Optional
+from abc import ABC, abstractmethod
 from dotenv import load_dotenv
 
-load_dotenv()
+from qdrant_client.models import PointStruct
 
-import requests
-import torch
-import numpy as np
-from datetime import datetime
-from typing import List, Dict, Any, Optional
-from abc import ABC, abstractmethod
-from PIL import Image
+import sys
+import logging
+# Ensure id_helpers is importable in different contexts
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+try:
+    from id_helpers import get_point_id
+except ImportError:
+    from ..id_helpers import get_point_id
 
-repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if repo_root not in sys.path:
-    sys.path.insert(0, repo_root)
-from id_helpers import get_point_id
+from .config import config
+from .helpers import helpers, ensure_product_collections
 
-from qdrant_client import QdrantClient
-from qdrant_client.models import (
-    PointStruct, VectorParams, Distance, Filter, FieldCondition, MatchValue,
-    ScalarQuantization, ScalarQuantizationConfig, ScalarType,
-    HnswConfigDiff
-)
-from transformers import CLIPProcessor, CLIPModel
-from sentence_transformers import SentenceTransformer
+logger = logging.getLogger(__name__)
 
-# ==========================================
-# 1. CONFIGURATION & HELPERS
-# ==========================================
 
-class Config:
-    def __init__(self) -> None:
-        self.qdrant_host = os.getenv("QDRANT_HOST", "localhost")
-        self.qdrant_port = int(os.getenv("QDRANT_PORT", 6333))
-        
-        # Dimensions matching Search Engine config
-        self.text_embed_dim = int(os.getenv("TEXT_EMBED_DIM", 1024))
-        self.visual_embed_dim = int(os.getenv("VISUAL_EMBED_DIM", 512))
-
-        self.clip_model_id = os.getenv("CLIP_MODEL_ID", "laion/CLIP-ViT-B-32-laion2B-s34B-b79K")
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
-
-        self.qdrant = QdrantClient(host=self.qdrant_host, port=self.qdrant_port)
-        try:
-            self.text_model = SentenceTransformer("BAAI/bge-m3", device=self.device)
-        except Exception as e:
-            print(f"Warning: Text Model load failed: {e}")
-            self.text_model = None
-
-        try:
-            self.clip_model = CLIPModel.from_pretrained(self.clip_model_id).to(self.device)
-            self.clip_processor = CLIPProcessor.from_pretrained(self.clip_model_id)
-        except Exception as e:
-            print(f"Warning: CLIP Model load failed: {e}")
-            self.clip_model = None
-
-class Helpers:
-    def __init__(self, config: Config) -> None:
-        self.config = config
-
-    def is_null(self, value: Any) -> bool:
-        return value is None or (isinstance(value, str) and not value.strip())
-
-    def get_text_embedding(self, text: str) -> List[float]:
-        if self.is_null(text) or not self.config.text_model:
-            return [0.0] * self.config.text_embed_dim
-        try:
-            embedding = self.config.text_model.encode(text)
-            return embedding.tolist()
-        except Exception:
-            return [0.0] * self.config.text_embed_dim
-
-    def get_image_embedding(self, image_url: str) -> List[float]:
-        if self.is_null(image_url) or not self.config.clip_model:
-            return [0.0] * self.config.visual_embed_dim
-        try:
-            resp = requests.get(image_url, stream=True, timeout=5)
-            resp.raise_for_status()
-            img = Image.open(resp.raw)
-            inputs = self.config.clip_processor(images=img, return_tensors="pt").to(self.config.device)
-            with torch.no_grad():
-                outputs = self.config.clip_model.get_image_features(**inputs)
-            outputs = outputs / outputs.norm(p=2, dim=-1, keepdim=True)
-            return outputs.squeeze().tolist()
-        except Exception:
-            return [0.0] * self.config.visual_embed_dim
-
-    def get_product_point(self, product_id: str) -> PointStruct:
-        point_id = get_point_id(product_id)
-        try:
-            res = self.config.qdrant.retrieve(
-                collection_name="products",
-                ids=[point_id],
-                with_vectors=True,
-                with_payload=True
-            )
-            if res: return res[0]
-        except: pass
-        
-        # Return Default Schema if not found
-        return PointStruct(
-            id=point_id,
-            vector={
-                "text_vector": [0.0] * self.config.text_embed_dim,
-                "visual_vector": [0.0] * self.config.visual_embed_dim,
-                "typical_user_vector": [0.0] * self.config.text_embed_dim
-            },
-            payload={
-                "product_id": product_id,
-                "metadata": {}, 
-                "stats": {"purchase_count": 0, "view_count": 0, "add_to_cart_count": 0, "return_count": 0, "hesitation_count": 0},
-                "scores": {"desirability_score": 0.5, "affordability_score": 0.5},
-                "warnings": {"quality_flag": False},
-                "review_data": {"extracted_tags": [], "sentiment_score": 0.0}
-            }
-        )
-
-    def get_user_long_term_taste(self, user_id: str) -> Optional[List[float]]:
-        user_uuid = get_point_id(user_id)
-        try:
-            res = self.config.qdrant.retrieve(
-                collection_name="users",
-                ids=[user_uuid],
-                with_vectors=["long_term_taste"]
-            )
-            if res: return res[0].vector.get("long_term_taste")
-        except: pass
-        return None
-
-config = Config()
-helpers = Helpers(config)
-
-def ensure_product_collections():
-    # SCALABILITY OPTIMIZATIONS
-    # 1. Quantization: Int8 for RAM efficiency
-    quantization_config = ScalarQuantization(
-        scalar=ScalarQuantizationConfig(
-            type=ScalarType.INT8,
-            always_ram=True,
-            quantile=0.99,
-        )
-    )
-    # 2. HNSW: Tuned for read-heavy workload
-    hnsw_config = HnswConfigDiff(m=16, ef_construct=100, full_scan_threshold=1000)
-
-    if not config.qdrant.collection_exists("products"):
-        print("Creating products collection...")
-        config.qdrant.create_collection(
-            collection_name="products",
-            vectors_config={
-                # on_disk=True allows massive catalogs > RAM size
-                "text_vector": VectorParams(size=config.text_embed_dim, distance=Distance.COSINE, on_disk=True),
-                "visual_vector": VectorParams(size=config.visual_embed_dim, distance=Distance.COSINE, on_disk=True),
-                "typical_user_vector": VectorParams(size=config.text_embed_dim, distance=Distance.COSINE, on_disk=True),
-            },
-            quantization_config=quantization_config,
-            hnsw_config=hnsw_config
-        )
-    else:
-        print("products collection already exists.")
 
 # ==========================================
 # 2. TOOLS
@@ -168,33 +29,10 @@ def ensure_product_collections():
 class Tool(ABC):
     @abstractmethod
     def execute(self, *args, **kwargs): pass
-    def build_prompt(self) -> str: pass
 
 
 class UpsertProductProfile(Tool):
-    def build_prompt(self):
-        return """
-<tool name='UpsertProductProfile'>
-    <when to use>ProductAdded OR ProductUpdated events.</when to use>
-    <purpose>Initializes or updates vectors and metadata. Handles partial updates gracefully.</purpose>
-    <note>Pass 'None' for fields that haven't changed.</note>
-    <params>
-        <param name='product_id' type='str'>Unique product ID</param>
-        <param name='name' type='str' nullable='true'>Product Name</param>
-        <param name='description' type='str' nullable='true'>Description</param>
-        <param name='image_url' type='str' nullable='true'>Image URL</param>
-        <param name='category' type='str' nullable='true'>Category</param>
-        <param name='brand' type='str' nullable='true'>Brand Name (Infer if missing)</param>
-        <param name='gender' type='str' nullable='true'>Target Gender (Men, Women, Unisex, Kids)</param>
-        <param name='condition' type='str' nullable='true'>Condition (New, Used, Refurbished)</param>
-        <param name='price' type='float' nullable='true'>Price</param>
-        <param name='stock_quantity' type='int' nullable='true'>Stock Count</param>
-        <param name='region' type='str' nullable='true'>Region Code (e.g., TN)</param>
-        <param name='tags' type='list' nullable='true'>List of tags</param>
-        <param name='is_discounted' type='bool' nullable='true'>Is item on sale?</param>
-    </params>
-</tool>
-"""
+    
 
     def execute(self, product_id: str, name: Optional[str] = None, description: Optional[str] = None, 
                 image_url: Optional[str] = None, category: Optional[str] = None, 
@@ -263,17 +101,7 @@ class UpsertProductProfile(Tool):
 
 
 class EvolveTypicalUser(Tool):
-    def build_prompt(self):
-        return """
-<tool name='EvolveTypicalUser'>
-    <when to use>PurchaseMadeEvent</when to use>
-    <purpose>Updates the 'typical_user_vector' by averaging it with the buyer's taste profile.</purpose>
-    <params>
-        <param name='product_id' type='str'>Product ID</param>
-        <param name='user_id' type='str'>Buyer User ID</param>
-    </params>
-</tool>
-"""
+    
     def execute(self, product_id: str, user_id: str):
         try:
             buyer_vec = helpers.get_user_long_term_taste(user_id)
@@ -310,7 +138,6 @@ class EvolveTypicalUser(Tool):
 
 
 class TrackInteraction(Tool):
-    def build_prompt(self): return "<tool name='TrackInteraction'><when to use>AddToCart, RemoveFromCart, PurchaseMade</when><purpose>Update stats & desirability</purpose><params><param name='product_id' type='str'/><param name='interaction_type' type='str'>(view, add_to_cart, purchase, return, hesitation)</param><param name='desirability_delta' type='float'>(-1.0 to 1.0)</param></params></tool>"
 
     def execute(self, product_id: str, interaction_type: str, desirability_delta: float):
         try:
@@ -329,7 +156,6 @@ class TrackInteraction(Tool):
 
 
 class LogReviewInsights(Tool):
-    def build_prompt(self): return "<tool name='LogReviewInsights'><when to use>ReviewSubmittedEvent</when><purpose>Extract keywords, adjust score</purpose><params><param name='product_id' type='str'/><param name='sentiment_score' type='float'>(-1.0 to 1.0)</param><param name='extracted_tags' type='list'/><param name='is_quality_issue' type='bool'/></params></tool>"
 
     def execute(self, product_id: str, sentiment_score: float, extracted_tags: List[str], is_quality_issue: bool):
         try:
@@ -343,7 +169,6 @@ class LogReviewInsights(Tool):
         except Exception as e: return f"error: {e}"
 
 class ProcessReturnImpact(Tool):
-    def build_prompt(self): return "<tool name='ProcessReturnImpact'><when to use>ReturnRefundEvent</when><purpose>Penalize score, negative learning</purpose><params><param name='product_id' type='str'/><param name='user_id' type='str'/><param name='is_taste_mismatch' type='bool'/></params></tool>"
 
     def execute(self, product_id: str, user_id: str, is_taste_mismatch: bool):
         try:

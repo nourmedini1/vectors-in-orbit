@@ -13,7 +13,9 @@ from .events import (
 	WishlistAddedEvent,
 	WishlistRemovedEvent,
 )
-from .tools import Config, Helpers, ensure_collections
+from .tools import ensure_collections
+from .config import config
+from .helpers import helpers
 
 __all__ = [
 	"AddToCartEvent",

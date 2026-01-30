@@ -1,21 +1,38 @@
-import asyncio, json, os, sys, uuid
-from dotenv import load_dotenv
+import asyncio
+import json
+import uuid
+import logging
+import sys
+import os
+
 from aiokafka import AIOKafkaConsumer
 from google.adk.sessions import InMemorySessionService
 from google.adk.runners import Runner
 from google.genai import types
-
-load_dotenv(override=True)
-repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if repo_root not in sys.path: sys.path.insert(0, repo_root)
-
+from dotenv import load_dotenv
+# Import your local modules
 from user_profiler.agent import agent
 from user_profiler.events import *
-from user_profiler.tools import ensure_collections
+from user_profiler.helpers import ensure_collections
 
+load_dotenv(override=True)
+
+
+# --- LOGGING SETUP ---
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    handlers=[logging.StreamHandler(sys.stdout)]
+)
+logger = logging.getLogger(__name__)
+
+# --- CONFIGURATION ---
 KAFKA_TOPIC = "user-events"
-KAFKA_BOOTSTRAP_SERVERS = "localhost:9092"
+KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
+# CRITICAL: A unique group ID ensures this agent gets its own copy of messages
+CONSUMER_GROUP = "user_profiler_group_01"
 
+# Ensure Qdrant collections exist before starting
 ensure_collections()
 
 EVENT_MAP = {
@@ -32,63 +49,79 @@ EVENT_MAP = {
 }
 
 async def process_event(event_data: dict, runner: Runner, session_service):
+    """
+    Parses the event, creates a session, and runs the ADK Agent.
+    """
+    
     event_type = event_data.get("event_type")
     payload = event_data.get("payload", {})
     
-    # We use a unique session ID for EVERY event to prevent context bloating.
-    # The agent is stateless (reasoning engine); state is persisted in Qdrant.
+    # Generate a unique session ID for this specific event processing
+    # This keeps the context window clean for the agent.
     session_id = str(uuid.uuid4())
-    user_id = "profiler_agent" 
+    user_id = "profiler_agent"
 
     if event_type in EVENT_MAP:
         try:
+            # 1. Validate Payload
             event_obj = EVENT_MAP[event_type](**payload)
-            print(f"\n[Kafka] Received {event_type} (Session: {session_id})")
-            
-            # Ensure Session
+            logger.info(f"Processing {event_type} | Session: {session_id}")
+
+            # 2. Create Session
             await session_service.create_session(app_name=agent.name, user_id=user_id, session_id=session_id)
 
-            # Run Agent with Retry Logic for Rate Limits
-            query_text = event_obj.model_dump_json()
+            # 3. Construct Message
+            query_text = f"Event Type: {event_type}\nData: {event_obj.model_dump_json()}"
             content = types.Content(role='user', parts=[types.Part(text=query_text)])
-            
+
+            # 4. Run Agent with Retry Logic (for API Rate Limits)
             max_retries = 3
             current_retry = 0
             
             while current_retry <= max_retries:
                 try:
                     async for response in runner.run_async(user_id=user_id, session_id=session_id, new_message=content):
+                        # Log the final textual response from the LLM
                         if response.is_final_response():
                             if response.content and response.content.parts:
-                                print(f"<<< Agent Output: {response.content.parts[0].text}")
+                                logger.info(f"Agent Insight: {response.content.parts[0].text}")
                             elif response.actions and response.actions.escalate:
-                                print(f"<<< Agent Error: {response.error_message}")
-                            break
-                    break # Success
+                                logger.error(f"Agent Escalation: {response.error_message}")
+                            break # Finish processing this event
+                    break # Success, exit retry loop
+
                 except Exception as e:
+                    # Handle API Rate Limits
                     if "429" in str(e) or "Rate limit" in str(e) or "rate_limited" in str(e):
                         wait_time = 15 * (current_retry + 1)
-                        print(f"⚠️ Rate Limit Hit ({e}). Retrying in {wait_time}s... (Attempt {current_retry + 1}/{max_retries})")
+                        logger.warning(f"Rate Limit Hit. Retrying in {wait_time}s... (Attempt {current_retry + 1}/{max_retries})")
                         await asyncio.sleep(wait_time)
                         current_retry += 1
                         if current_retry > max_retries:
-                            print(f"❌ Dropping event {event_type} after max retries.")
+                            logger.error(f"Dropping event {event_type} after max retries.")
                     else:
-                        raise e
+                        raise e # Raise other errors immediately
 
         except Exception as e:
-            print(f"Error processing {event_type}: {e}")
+            logger.error(f"Error processing {event_type}: {e}")
     else:
-        print(f"Unknown event type: {event_type}")
+        # Ignore events not in our map (e.g., catalog events)
+        logger.debug(f"Skipping unrelated event: {event_type}")
 
 async def consume():
+    print(f"[DEBUG] Connecting to broker: {KAFKA_BOOTSTRAP_SERVERS}")
+    print(f"[DEBUG] Subscribing to topic: {KAFKA_TOPIC} as group: {CONSUMER_GROUP}")
+
+    # Initialize Consumer with explicit Group ID
     consumer = AIOKafkaConsumer(
         KAFKA_TOPIC,
         bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
-        value_deserializer=lambda m: json.loads(m.decode('utf-8'))
+        group_id=CONSUMER_GROUP,
+        value_deserializer=lambda m: json.loads(m.decode('utf-8')),
+        auto_offset_reset='earliest' # Start from beginning if this is a new group
     )
-    
-    # Initialize Agent Infrastructure
+
+    # Initialize Agent components
     session_service = InMemorySessionService()
     runner = Runner(
         agent=agent,
@@ -96,11 +129,23 @@ async def consume():
         session_service=session_service
     )
 
-    await consumer.start()
-    print("--- Agent Listening on Kafka Topic ---")
+    while True:
+        try:
+            await consumer.start()
+            print("✅ Connected to Kafka!")
+            break # Exit loop if successful
+        except Exception as e:
+            print(f"⏳ Kafka not ready yet ({e}). Retrying in 5 seconds...")
+            await asyncio.sleep(5)
+    # --- RETRY LOGIC END --
+    logger.info(f"--- User Profiler Listening on {KAFKA_TOPIC} ---")
+
     try:
         async for msg in consumer:
+            logger.info(f"Message received [Partition {msg.partition}]: {msg.value}")
             await process_event(msg.value, runner, session_service)
+    except Exception as e:
+        logger.critical(f"Consumer crashed: {e}")
     finally:
         await consumer.stop()
 

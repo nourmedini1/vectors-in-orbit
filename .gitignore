@@ -16,5 +16,4 @@ data/
 qdrant_data/
 qdrant_data_export/
 
-# Frontend
-frontend/
+

@@ -1,232 +1,57 @@
-import os, sys, torch, requests
-from abc import ABC, abstractmethod
+import os
+import sys
+import uuid
 from datetime import datetime, timedelta
-from typing import List, Dict, Any, Optional
+from abc import ABC, abstractmethod
 from dotenv import load_dotenv
-from PIL import Image
-from uuid import uuid4
-from qdrant_client import QdrantClient
-from qdrant_client.models import PointStruct, VectorParams, Distance, Filter, FieldCondition, MatchValue, ScalarQuantization, ScalarQuantizationConfig, ScalarType, HnswConfigDiff
-from transformers import CLIPProcessor, CLIPModel
-from sentence_transformers import SentenceTransformer
 
-load_dotenv()
-repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if repo_root not in sys.path: sys.path.insert(0, repo_root)
-from id_helpers import get_point_id
+from qdrant_client.models import (
+    PointStruct, Filter, FieldCondition, MatchValue, 
+    
+)
 
-class Config:
-    def __init__(self) -> None:
-        self.qdrant_host = os.getenv("QDRANT_HOST", "localhost")
-        self.qdrant_port = int(os.getenv("QDRANT_PORT", 6333))
-        self.text_embed_dim = int(os.getenv("TEXT_EMBED_DIM", 1024))
-        self.visual_embed_dim = int(os.getenv("VISUAL_EMBED_DIM", 512))
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.qdrant = QdrantClient(host=self.qdrant_host, port=self.qdrant_port)
-        
-        try: self.text_model = SentenceTransformer("BAAI/bge-m3", device=self.device)
-        except Exception: self.text_model = None
-
-        self.clip_model, self.clip_processor, self.clip_load_error = None, None, None
-        try:
-            self.clip_model = CLIPModel.from_pretrained(os.getenv("CLIP_MODEL_ID", "laion/CLIP-ViT-B-32-laion2B-s34B-b79K")).to(self.device)
-            self.clip_processor = CLIPProcessor.from_pretrained(os.getenv("CLIP_MODEL_ID", "laion/CLIP-ViT-B-32-laion2B-s34B-b79K"))
-        except Exception as e: self.clip_load_error = e
-
-class Helpers:
-    def __init__(self, config: Config) -> None: self.config = config
-
-    def get_text_embedding(self, text: str) -> Optional[List[float]]:
-        if not text or not text.strip() or not self.config.text_model: return None
-        try: return self.config.text_model.encode(text).tolist()
-        except: return None
-
-    def get_image_embedding(self, image_url: str) -> Optional[List[float]]:
-        if not image_url or not image_url.strip() or not self.config.clip_model or not self.config.clip_processor: return None
-        try:
-            response = requests.get(image_url, stream=True, timeout=5)
-            image = Image.open(response.raw)
-            inputs = self.config.clip_processor(images=image, return_tensors="pt").to(self.config.device)
-            with torch.no_grad():
-                outputs = self.config.clip_model.get_image_features(**inputs)
-            return (outputs / outputs.norm(p=2, dim=-1, keepdim=True)).squeeze().tolist()
-        except: return None
-
-    @staticmethod
-    def is_null(value: Any) -> bool:
-        """Helper to check if a value is effectively null for tools."""
-        if value is None: return True
-        if isinstance(value, str) and (value.strip() == "" or value.lower() == "none"): return True
-        return False
-
-    def user_point_id(self, user_id: str) -> str:
-        return get_point_id(user_id)
-
-    def upsert_user(self, user_id: str, vector: Dict[str, Any], payload: Dict[str, Any]) -> None:
-        point_id = self.user_point_id(user_id)
-        payload["user_id"] = user_id
-        self.config.qdrant.upsert(
-            collection_name="users",
-            points=[PointStruct(id=point_id, vector=vector, payload=payload)]
-        )
-
-    def get_user_point(self, user_id: str, with_vectors: bool = False) -> PointStruct:
-        if self.is_null(user_id):
-            raise ValueError("user_id is required.")
-
-        point_id = self.user_point_id(user_id)
-        try:
-            res = self.config.qdrant.retrieve(
-                collection_name="users",
-                ids=[point_id],
-                with_payload=True,
-                with_vectors=with_vectors
-            )
-            if res:
-                return res[0]
-        except Exception as e:
-            raise RuntimeError(f"DB Retrieve Error: {e}") from e
-
-        return PointStruct(
-            id=point_id,
-            vector={
-                "long_term_taste": [0.0] * self.config.text_embed_dim,
-                "negative_taste": [0.0] * self.config.text_embed_dim
-            },
-            payload={
-                "user_id": user_id,
-                "financials": {
-                    "category_stats": {},
-                    "global_ltv": 0.0,
-                    "global_discount_affinity": 0.0,
-                    "installment_affinity": 0.0,
-                    "luxury_affinity": 0.0
-                },
-                "preferences": {"brand_affinity": {}, "size_affinity": {}},
-                "demographics": {},
-                "traits": [],
-                "life_events": [],
-                "dislikes": [],
-                "seasonality": {"active_months": [], "is_holiday_shopper": False}
-            }
-        )
-
-    @staticmethod
-    def update_rolling_avg(current_avg: float, count: int, new_val: float) -> float:
-        if count < 0:
-            count = 0
-        if current_avg is None:
-            current_avg = 0.0
-        return ((current_avg * count) + new_val) / (count + 1)
+# Shared imports handling
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+try:
+    from id_helpers import get_point_id
+except ImportError:
+    from ..id_helpers import get_point_id
 
 
-config = Config()
-helpers = Helpers(config)
-
-
-# ==========================================
-# 4. INIT UTILS (OPTIMIZED)
-# ==========================================
-
-def ensure_collections():
-    # Optimization Configuration
-    # 1. Quantization: Compresses vectors to Int8 (4x RAM savings)
-    # 2. Rescoring: Ensures high accuracy by using original vectors for top-k candidates
-    quantization_config = ScalarQuantization(
-        scalar=ScalarQuantizationConfig(
-            type=ScalarType.INT8,
-            always_ram=True,  # Quantized index stays in RAM for speed
-            quantile=0.99,    # Limits outlier impact on quantization
-        )
-    )
-
-    # HNSW Tuning: Balance between indexing speed and search recall
-    hnsw_config = HnswConfigDiff(
-        m=32,               # Links per node (Higher = better accuracy, more RAM)
-        ef_construct=200,   # Depth of search during index build
-    )
-
-    if not config.qdrant.collection_exists("users"):
-        print("Creating users collection...")
-        config.qdrant.create_collection(
-            collection_name="users",
-            vectors_config={
-                "long_term_taste": VectorParams(
-                    size=config.text_embed_dim, 
-                    distance=Distance.COSINE,
-                    on_disk=True # Keep heavy float32 vectors on disk, RAM has int8 index
-                ),
-                "negative_taste": VectorParams(
-                    size=config.text_embed_dim, 
-                    distance=Distance.COSINE,
-                    on_disk=True
-                ),
-            },
-            quantization_config=quantization_config,
-            hnsw_config=hnsw_config
-        )
-    else:
-        print("users collection already exists.")
-
-    if not config.qdrant.collection_exists("user_intents"):
-        print("Creating user_intents collection...")
-        config.qdrant.create_collection(
-            collection_name="user_intents",
-            vectors_config={
-                "intent_vector": VectorParams(
-                    size=config.text_embed_dim, 
-                    distance=Distance.COSINE
-                ),
-                "visual_vector": VectorParams(
-                    size=config.visual_embed_dim, 
-                    distance=Distance.COSINE
-                )
-            },
-            quantization_config=quantization_config,
-            hnsw_config=hnsw_config
-        )
-    else:
-        print("user_intents collection already exists.")
-
+from .config import config
+from .helpers import helpers, ensure_collections
 
 
 
 class Tool(ABC):
-
     @abstractmethod
-    def execute(self, *args, **kwargs):
-        pass
-
-    def build_prompt(self) -> str:
-        pass
-
-    def _nullable_note(self) -> str:
-        return "   <note>Parameters can be null; only act on non-null values.</note>"
-
+    def execute(self, *args, **kwargs): pass
 
 class ReinforcePositiveTaste(Tool):
 
-    def build_prompt(self):
-        prompt_parts = [
-            "<tool name='ReinforcePositiveTaste'>",
-            "   <when to use>",
-            "       When the event is PurchaseMadeEvent OR AddToCartEvent OR ReviewSubmittedEvent with positive sentiment",
-            "   </when to use>",
-            "   <purpose>To make the positive taste embedded vector more aligned with this preference </purpose>",
-            self._nullable_note(),
-            "   <params>",
-            "       <param name='user_id' type='str' nullable='true'>The unique identifier of the user</param>",
-            "       <param name='concept_text' type='str' nullable='true'>A textual description of the concept to reinforce</param>",
-            "       <param name='weight' type='float' nullable='true'>A weight factor indicating the strength of reinforcement</param>",
-            "   </params>",
-            "</tool>"
-        ]
-        return "\n".join(prompt_parts)
 
-    def execute(self, user_id: str, concept_text: str, weight: float):
+    def execute(self, user_id: str, weight: float, product_id: str = None, concept_text: str = None):
         try:
-            if helpers.is_null(user_id) or helpers.is_null(concept_text) or weight is None:
+            if helpers.is_null(user_id) or weight is None:
                 return "error: missing required params for ReinforcePositiveTaste"
+
+            if helpers.is_null(concept_text) and not helpers.is_null(product_id):
+                 # Fetch product
+                 try:
+                    p_id = get_point_id(product_id)
+                    res = config.qdrant.retrieve(
+                        collection_name="products",
+                        ids=[p_id],
+                        with_payload=True
+                    )
+                    if res:
+                        payload = res[0].payload
+                        concept_text = payload.get("description") or payload.get("name") or payload.get("metadata", {}).get("name")
+                 except Exception as ex:
+                    return f"error: failed to retrieve product {product_id}: {ex}"
+
+            if helpers.is_null(concept_text):
+                return "error: concept_text was null and could not be inferred"
 
             user = helpers.get_user_point(user_id, with_vectors=True)
             current_vec = user.vector.get("long_term_taste", [0.0] * config.text_embed_dim)
@@ -245,28 +70,29 @@ class ReinforcePositiveTaste(Tool):
 
 class LearnNegativeTaste(Tool):
 
-    def build_prompt(self):
-        prompt_parts = [
-            "<tool name='LearnNegativeTaste'>",
-            "   <when to use>",
-            "       When the event is RemoveFromCartEvent OR ReviewSubmittedEvent with negative sentiment",
-            "   </when to use>",
-            "   <purpose>To adjust the user's taste vector away from the negative preference and the dislikes list</purpose>",
-            self._nullable_note(),
-            "   <params>",
-            "       <param name='user_id' type='str' nullable='true'>The unique identifier of the user</param>",
-            "       <param name='concept_text' type='str' nullable='true'>A textual description of the concept to avoid</param>",
-            "       <param name='reason_category' type='str' nullable='true'>The category of the reason for dislike</param>",
-            "       <param name='weight' type='float' nullable='true'>A weight factor indicating the strength of avoidance</param>",
-            "   </params>",
-            "</tool>"
-        ]
-        return "\n".join(prompt_parts)
 
-    def execute(self, user_id: str, concept_text: str, weight: float, reason_category: str):
+    def execute(self, user_id: str, weight: float, reason_category: str, product_id: str = None, concept_text: str = None):
         try:
-            if helpers.is_null(user_id) or helpers.is_null(concept_text) or weight is None or helpers.is_null(reason_category):
+            if helpers.is_null(user_id) or weight is None or helpers.is_null(reason_category):
                 return "error: missing required params for LearnNegativeTaste"
+
+            if helpers.is_null(concept_text) and not helpers.is_null(product_id):
+                 # Fetch product
+                 try:
+                    p_id = get_point_id(product_id)
+                    res = config.qdrant.retrieve(
+                        collection_name="products",
+                        ids=[p_id],
+                        with_payload=True
+                    )
+                    if res:
+                        payload = res[0].payload
+                        concept_text = payload.get("description") or payload.get("name") or payload.get("metadata", {}).get("name")
+                 except Exception as ex:
+                    return f"error: failed to retrieve product {product_id}: {ex}"
+
+            if helpers.is_null(concept_text):
+                 return "error: concept_text was null and could not be inferred"
 
             user = helpers.get_user_point(user_id, with_vectors=True)
             current_neg = user.vector.get("negative_taste", [0.0] * config.text_embed_dim)
@@ -289,27 +115,32 @@ class LearnNegativeTaste(Tool):
 
 class UpdateBrandAffinity(Tool):
 
-    def build_prompt(self):
-        prompt_parts = [
-            "<tool name='UpdateBrandAffinity'>",
-            "   <when to use>",
-            "       PurchaseMade (+1.0) OR FilterApplied (+0.5) OR SearchPerformed (Brand specific)",
-            "   </when to use>",
-            "   <purpose>Updates payload.preferences.brand_affinity by incrementing the counter for a brand</purpose>",
-            self._nullable_note(),
-            "   <params>",
-            "       <param name='user_id' type='str' nullable='true'>The unique identifier of the user</param>",
-            "       <param name='brand_name' type='str' nullable='true'>The brand to increment</param>",
-            "       <param name='increment' type='float' nullable='true'>The increment value</param>",
-            "   </params>",
-            "</tool>"
-        ]
-        return "\n".join(prompt_parts)
-
-    def execute(self, user_id: str, brand_name: str, increment: float):
+    def execute(self, user_id: str, increment: float, product_id: str = None, brand_name: str = None):
         try:
-            if helpers.is_null(user_id) or helpers.is_null(brand_name) or increment is None:
+            if helpers.is_null(user_id) or increment is None:
                 return "error: missing required params for UpdateBrandAffinity"
+
+            if helpers.is_null(brand_name) and not helpers.is_null(product_id):
+                # Retrieve product to get brand
+                try:
+                    p_id = get_point_id(product_id)
+                    res = config.qdrant.retrieve(
+                        collection_name="products",
+                        ids=[p_id],
+                        with_payload=True
+                    )
+                    if res:
+                        meta = res[0].payload.get("metadata", {})
+                        brand_name = meta.get("brand") or meta.get("brand_name")
+                        
+                        if not brand_name:
+                            brand_name = res[0].payload.get("brand")
+
+                except Exception as ex:
+                    return f"error: failed to retrieve product {product_id}: {ex}"
+
+            if helpers.is_null(brand_name):
+                 return "error: brand_name not provided and could not be inferred from product_id"
 
             user = helpers.get_user_point(user_id, with_vectors=True)
             payload = user.payload
@@ -321,28 +152,12 @@ class UpdateBrandAffinity(Tool):
             payload["preferences"]["brand_affinity"][brand_name] = current_val + increment
 
             helpers.upsert_user(user_id, user.vector, payload)
-            return "success: brand affinity updated"
+            return f"success: brand affinity updated for {brand_name}"
         except Exception as e:
             return f"error: {e}"
 
 
 class UpdateSizeAffinity(Tool):
-
-    def build_prompt(self):
-        prompt_parts = [
-            "<tool name='UpdateSizeAffinity'>",
-            "   <when to use>",
-            "       PurchaseMade OR FilterApplied",
-            "   </when to use>",
-            "   <purpose>Updates payload.preferences.size_affinity by tracking most frequent sizes</purpose>",
-            self._nullable_note(),
-            "   <params>",
-            "       <param name='user_id' type='str' nullable='true'>The unique identifier of the user</param>",
-            "       <param name='size_code' type='str' nullable='true'>Size code (e.g., M, L, 42)</param>",
-            "   </params>",
-            "</tool>"
-        ]
-        return "\n".join(prompt_parts)
 
     def execute(self, user_id: str, size_code: str):
         try:
@@ -366,21 +181,6 @@ class UpdateSizeAffinity(Tool):
 
 class AddPsychographicTrait(Tool):
 
-    def build_prompt(self):
-        prompt_parts = [
-            "<tool name='AddPsychographicTrait'>",
-            "   <when to use>",
-            "       SearchPerformed (Contextual) OR PurchaseMade (Specific Category) OR ReviewSubmitted (Self-disclosure)",
-            "   </when to use>",
-            "   <purpose>Appends a unique tag to payload.traits</purpose>",
-            self._nullable_note(),
-            "   <params>",
-            "       <param name='user_id' type='str' nullable='true'>The unique identifier of the user</param>",
-            "       <param name='trait' type='str' nullable='true'>Psychographic trait (e.g., Gamer, Parent)</param>",
-            "   </params>",
-            "</tool>"
-        ]
-        return "\n".join(prompt_parts)
 
     def execute(self, user_id: str, trait: str):
         try:
@@ -401,23 +201,6 @@ class AddPsychographicTrait(Tool):
 
 
 class LogLifeEvent(Tool):
-
-    def build_prompt(self):
-        prompt_parts = [
-            "<tool name='LogLifeEvent'>",
-            "   <when to use>",
-            "       SearchPerformed (e.g., 'wedding gift') OR WishlistAdded (e.g., 'baby crib')",
-            "   </when to use>",
-            "   <purpose>Appends to payload.life_events with timestamp and expiry</purpose>",
-            self._nullable_note(),
-            "   <params>",
-            "       <param name='user_id' type='str' nullable='true'>The unique identifier of the user</param>",
-            "       <param name='event_name' type='str' nullable='true'>Name of the life event</param>",
-            "       <param name='expiry_days' type='int' nullable='true'>Days until event expires</param>",
-            "   </params>",
-            "</tool>"
-        ]
-        return "\n".join(prompt_parts)
 
     def execute(self, user_id: str, event_name: str, expiry_days: int):
         try:
@@ -444,23 +227,6 @@ class LogLifeEvent(Tool):
 
 class UpdateDemographics(Tool):
 
-    def build_prompt(self):
-        prompt_parts = [
-            "<tool name='UpdateDemographics'>",
-            "   <when to use>",
-            "       ProfileUpdated OR ProfileCreated",
-            "   </when to use>",
-            "   <purpose>Updates payload.demographics fields (Region, Age, Gender, Device, Status)</purpose>",
-            self._nullable_note(),
-            "   <params>",
-            "       <param name='user_id' type='str' nullable='true'>The unique identifier of the user</param>",
-            "       <param name='field' type='str' nullable='true'>Demographic field name</param>",
-            "       <param name='value' type='str' nullable='true'>Demographic value</param>",
-            "   </params>",
-            "</tool>"
-        ]
-        return "\n".join(prompt_parts)
-
     def execute(self, user_id: str, field: str, value: str):
         try:
             if helpers.is_null(user_id) or helpers.is_null(field) or helpers.is_null(value):
@@ -479,26 +245,6 @@ class UpdateDemographics(Tool):
 
 
 class ProcessTransactionStats(Tool):
-
-    def build_prompt(self):
-        prompt_parts = [
-            "<tool name='ProcessTransactionStats'>",
-            "   <when to use>",
-            "       PurchaseMade",
-            "   </when to use>",
-            "   <purpose>Updates payload.financials rolling averages and affinities</purpose>",
-            self._nullable_note(),
-            "   <params>",
-            "       <param name='user_id' type='str' nullable='true'>The unique identifier of the user</param>",
-            "       <param name='amount' type='float' nullable='true'>Transaction amount</param>",
-            "       <param name='category' type='str' nullable='true'>Product category</param>",
-            "       <param name='is_discount' type='bool' nullable='true'>Whether discounted</param>",
-            "       <param name='is_luxury' type='bool' nullable='true'>Whether luxury item</param>",
-            "       <param name='is_installment' type='bool' nullable='true'>Whether installment payment</param>",
-            "   </params>",
-            "</tool>"
-        ]
-        return "\n".join(prompt_parts)
 
     def execute(self, user_id: str, amount: float, category: str, is_discount: bool, is_luxury: bool, is_installment: bool):
         try:
@@ -535,27 +281,28 @@ class ProcessTransactionStats(Tool):
 
 class FlagPriceHesitation(Tool):
 
-    def build_prompt(self):
-        prompt_parts = [
-            "<tool name='FlagPriceHesitation'>",
-            "   <when to use>",
-            "       RemoveFromCart OR WishlistRemoved (without buying)",
-            "   </when to use>",
-            "   <purpose>Increments hesitation_count if item_price > category_avg_spend</purpose>",
-            self._nullable_note(),
-            "   <params>",
-            "       <param name='user_id' type='str' nullable='true'>The unique identifier of the user</param>",
-            "       <param name='category' type='str' nullable='true'>Product category</param>",
-            "       <param name='item_price' type='float' nullable='true'>Price of removed item</param>",
-            "   </params>",
-            "</tool>"
-        ]
-        return "\n".join(prompt_parts)
-
-    def execute(self, user_id: str, category: str, item_price: float):
+    def execute(self, user_id: str, item_price: float, category: str = None, product_id: str = None):
         try:
-            if helpers.is_null(user_id) or helpers.is_null(category) or item_price is None:
+            if helpers.is_null(user_id) or item_price is None:
                 return "error: missing required params for FlagPriceHesitation"
+
+            if helpers.is_null(category) and not helpers.is_null(product_id):
+                 # Fetch product
+                 try:
+                    p_id = get_point_id(product_id)
+                    res = config.qdrant.retrieve(
+                        collection_name="products",
+                        ids=[p_id],
+                        with_payload=True
+                    )
+                    if res:
+                        payload = res[0].payload
+                        category = payload.get("category") or payload.get("metadata", {}).get("category")
+                 except Exception as ex:
+                    return f"error: failed to retrieve product {product_id}: {ex}"
+
+            if helpers.is_null(category):
+                return "error: category was null and could not be inferred"
 
             user = helpers.get_user_point(user_id, with_vectors=True)
             payload = user.payload
@@ -576,24 +323,6 @@ class FlagPriceHesitation(Tool):
 
 
 class SetAspirationalBudget(Tool):
-
-    def build_prompt(self):
-        prompt_parts = [
-            "<tool name='SetAspirationalBudget'>",
-            "   <when to use>",
-            "       WishlistAdded (with budget fields) OR FilterApplied (Price range)",
-            "   </when to use>",
-            "   <purpose>Updates payload.financials.category_stats.<category>.wishlist_budget</purpose>",
-            self._nullable_note(),
-            "   <params>",
-            "       <param name='user_id' type='str' nullable='true'>The unique identifier of the user</param>",
-            "       <param name='category' type='str' nullable='true'>Product category</param>",
-            "       <param name='min_budget' type='float' nullable='true'>Minimum budget</param>",
-            "       <param name='max_budget' type='float' nullable='true'>Maximum budget</param>",
-            "   </params>",
-            "</tool>"
-        ]
-        return "\n".join(prompt_parts)
 
     def execute(self, user_id: str, category: str, min_budget: float, max_budget: float):
         try:
@@ -619,22 +348,6 @@ class SetAspirationalBudget(Tool):
 
 class UpdateSeasonality(Tool):
 
-    def build_prompt(self):
-        prompt_parts = [
-            "<tool name='UpdateSeasonality'>",
-            "   <when to use>",
-            "       PurchaseMade",
-            "   </when to use>",
-            "   <purpose>Adds month to payload.seasonality.active_months and checks Holiday Shopper flag</purpose>",
-            self._nullable_note(),
-            "   <params>",
-            "       <param name='user_id' type='str' nullable='true'>The unique identifier of the user</param>",
-            "       <param name='month' type='int' nullable='true'>Month number (1-12)</param>",
-            "   </params>",
-            "</tool>"
-        ]
-        return "\n".join(prompt_parts)
-
     def execute(self, user_id: str, month: int):
         try:
             if helpers.is_null(user_id) or month is None:
@@ -657,24 +370,6 @@ class UpdateSeasonality(Tool):
 
 
 class SetActiveSearchIntent(Tool):
-
-    def build_prompt(self):
-        prompt_parts = [
-            "<tool name='SetActiveSearchIntent'>",
-            "   <when to use>",
-            "       SearchPerformed",
-            "   </when to use>",
-            "   <purpose>Upserts to user_intents (type: active_search) and deletes previous active searches for this user</purpose>",
-            self._nullable_note(),
-            "   <params>",
-            "       <param name='user_id' type='str' nullable='true'>The unique identifier of the user</param>",
-            "       <param name='raw_query' type='str' nullable='true'>Original search query</param>",
-            "       <param name='expanded_keywords' type='str' nullable='true'>Expanded keywords</param>",
-            "       <param name='filters' type='dict' nullable='true'>Applied filters</param>",
-            "   </params>",
-            "</tool>"
-        ]
-        return "\n".join(prompt_parts)
 
     def execute(self, user_id: str, raw_query: str, expanded_keywords: str, filters: dict):
         try:
@@ -699,7 +394,7 @@ class SetActiveSearchIntent(Tool):
                 )
             )
 
-            intent_id = str(uuid4())
+            intent_id = str(uuid.uuid4())
             config.qdrant.upsert(
                 collection_name="user_intents",
                 points=[PointStruct(
@@ -722,26 +417,6 @@ class SetActiveSearchIntent(Tool):
 
 
 class AddPassiveWishlistIntent(Tool):
-
-    def build_prompt(self):
-        prompt_parts = [
-            "<tool name='AddPassiveWishlistIntent'>",
-            "   <when to use>",
-            "       WishlistAdded",
-            "   </when to use>",
-            "   <purpose>Upserts to user_intents (type: passive_wishlist) with urgency, budget info, AND visual embeddings</purpose>",
-            self._nullable_note(),
-            "   <params>",
-            "       <param name='user_id' type='str' nullable='true'>The unique identifier of the user</param>",
-            "       <param name='product_desc' type='str' nullable='true'>Product description</param>",
-            "       <param name='image_url' type='str' nullable='true'>URL of the product image</param>",
-            "       <param name='urgency_days' type='int' nullable='true'>Urgency window in days</param>",
-            "       <param name='budget_min' type='float' nullable='true'>Minimum budget willing to spend</param>",
-            "       <param name='budget_max' type='float' nullable='true'>Maximum budget willing to spend</param>",
-            "   </params>",
-            "</tool>"
-        ]
-        return "\n".join(prompt_parts)
 
     def execute(self, user_id: str, product_desc: str, image_url: str, urgency_days: int, budget_min: float, budget_max: float):
         try:
@@ -789,23 +464,6 @@ class AddPassiveWishlistIntent(Tool):
 
 
 class FulfillIntent(Tool):
-
-    def build_prompt(self):
-        prompt_parts = [
-            "<tool name='FulfillIntent'>",
-            "   <when to use>",
-            "       PurchaseMade",
-            "   </when to use>",
-            "   <purpose>Marks matching user_intents as fulfilled to stop recommending purchased items</purpose>",
-            self._nullable_note(),
-            "   <params>",
-            "       <param name='user_id' type='str' nullable='true'>The unique identifier of the user</param>",
-            "       <param name='product_id' type='str' nullable='true'>Purchased product ID</param>",
-            "       <param name='category' type='str' nullable='true'>Product category</param>",
-            "   </params>",
-            "</tool>"
-        ]
-        return "\n".join(prompt_parts)
 
     def execute(self, user_id: str, product_id: str, category: str):
         try:

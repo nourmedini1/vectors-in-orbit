@@ -1,5 +1,6 @@
 # server.py
 from contextlib import asynccontextmanager
+import asyncio
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import uuid
@@ -31,8 +32,12 @@ QDRANT_PORT = int(os.getenv("QDRANT_PORT", 6333))
 # Initialize client for reading
 qdrant_client = QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT)
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Wait for Kafka to be ready
+    print("[INFO] Waiting 15 seconds for Kafka to be ready...")
+    await asyncio.sleep(20)
     await broker.start()
     yield
     await broker.stop()
@@ -79,20 +84,13 @@ async def get_products_by_category(category: str):
         # Clean up the output format
         cleaned_products = []
         for record in records:
-            payload = record.payload
-            # Flatten structure for frontend if necessary, or keep as is
-            product_data = {
-                "id": payload.get("product_id"),
-                "name": payload.get("metadata", {}).get("name"),
-                "description": payload.get("metadata", {}).get("description"),
-                "price": payload.get("metadata", {}).get("price"),
-                "image": payload.get("metadata", {}).get("image_url"),
-                "category": payload.get("metadata", {}).get("category"),
-                "tags": payload.get("metadata", {}).get("tags", []),
-                "is_discounted": payload.get("metadata", {}).get("is_discounted", False),
-                # Include stats if useful for frontend
-                "rating": payload.get("scores", {}).get("desirability_score", 0.5)
-            }
+            # Directly use the payload from Qdrant
+            product_data = record.payload
+            
+            # Ensure ID is included if missing in payload but present in record
+            if "product_id" not in product_data:
+                product_data["product_id"] = record.id
+
             cleaned_products.append(product_data)
 
         return {"count": len(cleaned_products), "products": cleaned_products}
@@ -176,6 +174,14 @@ async def review_submit(event: ReviewSubmittedEvent):
     if not event.timestamp: event.timestamp = datetime.datetime.now().isoformat()
     await broker.send_event("ReviewSubmittedEvent", event.model_dump())
     return {"status": "sent"}
+
+@app.post("/events/return")
+async def return_refund(event: ReturnRefundEvent):
+    if not event.timestamp: event.timestamp = datetime.datetime.now().isoformat()
+    await broker.send_event("ReturnRefundEvent", event.model_dump())
+    return {"status": "sent"}
+
+
 
 if __name__ == "__main__":
     import uvicorn

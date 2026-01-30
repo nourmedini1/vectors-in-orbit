@@ -1,5 +1,6 @@
 # kafka_broker.py
 import asyncio
+import os
 import json
 from aiokafka import AIOKafkaProducer
 
@@ -7,8 +8,7 @@ from aiokafka import AIOKafkaProducer
 TOPIC_USER_EVENTS = "user-events"       # High volume: clicks, cart, purchase
 TOPIC_CATALOG_EVENTS = "catalog-events" # Low volume: product admin
 
-KAFKA_BOOTSTRAP_SERVERS = "localhost:9092"
-
+KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
 class KafkaBroker:
     def __init__(self):
         self.producer = None

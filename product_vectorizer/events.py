@@ -10,6 +10,7 @@ class AddToCartEvent(BaseModel):
     price: Optional[float] = None
     currency: Optional[str] = None
     store_id: Optional[str] = None
+    is_from_search: Optional[bool] = None
 
 class PurchaseMadeEvent(BaseModel):
     user_id: Optional[str] = None
