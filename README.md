@@ -1,279 +1,399 @@
-# Context-Aware E-Commerce Recommendation System  
-## Using Vector Search (Qdrant) and Reinforcement Learning
+# Nexus AI Store – Hybrid Search & Recommendation Engine
+
+## Project Overview
+Nexus AI Store is an end-to-end, production-oriented **hybrid search and recommendation platform** designed for modern e-commerce. It combines **semantic vector search, visual similarity, lexical retrieval (BM25), intent classification, and deep context-aware reranking** to deliver results that are not only relevant, but situationally intelligent.
+
+The core objective of the project is to demonstrate how **event-driven architectures and CQRS**, combined with **vector databases (Qdrant)** and **multi-signal reranking**, can dramatically improve:
+- Search relevance
+- Latency under load
+- Personalization depth
+- System scalability and evolvability
+
+This project was built and deployed for a hackathon, with an emphasis on **engineering rigor**, **reproducibility**, and **real-world constraints**.
+
+Live platform: http://nexusblockbyblock.francecentral.cloudapp.azure.com/
 
 ---
 
-## 1. Overview
+## Core Objectives
 
-This project proposes a next-generation recommendation system for an e-commerce platform that combines **fast and scalable vector search** with **reinforcement learning (RL)** to deliver personalized, affordable, explainable, and business-aware product recommendations.
-
-The system builds a deep, evolving understanding of each user through:
-- Explicit signals (demographics, budgets, wishlists, urgency)
-- Implicit behavioral signals (navigation, filtering, add-to-cart, purchases)
-- Market and competitor signals (availability, pricing, stock velocity)
-
-User and product information is represented as **multimodal vector embeddings** and indexed in **Qdrant**, enabling low-latency similarity search at scale.  
-On top of this retrieval layer, **reinforcement learning optimizes decision-making over time**, learning which recommendation strategy maximizes long-term user satisfaction and business value rather than short-term clicks alone.
-
-The result is a system that does not only recommend *relevant* products, but also decides **what to show, when to show it, and under which pricing or promotional strategy**.
+1. Build a hybrid search engine that goes beyond keyword matching
+2. Separate ingestion, profiling, and querying concerns using CQRS
+3. Use event-driven pipelines to eliminate synchronous bottlenecks
+4. Implement a transparent, explainable reranking system
+5. Achieve low-latency search while maintaining rich personalization
 
 ---
 
-## 2. Problem Statement
+## High-Level Architecture
 
-Traditional e-commerce recommender systems suffer from several limitations:
+The platform follows a **distributed, event-driven microservice architecture**.
 
-- They rely heavily on past purchases and clicks, ignoring **explicit user intent** such as budgets, urgency, or wishlists.
-- They optimize for short-term engagement rather than **long-term user satisfaction and retention**.
-- They struggle to balance **relevance vs affordability**, often recommending products users desire but cannot realistically purchase.
-- They lack adaptability to **dynamic market conditions** such as stock availability, competitor pricing, or regional demand.
-- They provide limited explainability and transparency for recommendations.
+Key principles:
+- **CQRS**: Write paths (data ingestion, profiling) are fully decoupled from read paths (search & recommendation)
+- **Event-driven**: Kafka is used as the backbone for asynchronous communication
+- **Stateless query services**: Search latency is not impacted by writes
 
-There is a need for a system that:
-- Understands *who the user is*, *what they want*, and *what they can afford*
-- Adapts recommendations over time based on feedback
-- Scales efficiently to large catalogs and user bases
-- Generates actionable business insights, not just rankings
+### Main Components
 
----
-
-## 3. Target Users
-
-### End Users (Customers)
-- Students with limited budgets and high price sensitivity
-- Working professionals with stable purchasing power
-- Trend-driven users
-- Deal-seeking users
-- Users with specific unmet needs expressed through wishlists
-
-### Business Users (E-Commerce Platform)
-- Product and pricing teams
-- Marketing and promotion teams
-- Inventory and supply chain teams
-- Data and analytics teams
+- API Gateway
+- Search Engine (Hybrid Retrieval + Reranking)
+- Embedding Service (centralized model inference)
+- Product Vectorizer (write side)
+- User Profiler (write side)
+- Qdrant (vector read model)
+- MongoDB (transactional + analytical store)
 
 ---
 
-## 4. Use Cases
+## Why Event-Driven + CQRS
 
-### 4.1 Personalized Product Recommendation
-Recommend products tailored to each user’s:
-- Preferences
-- Purchasing power
-- Context (time, device, session intent)
+### The Problem with Synchronous Architectures
 
-Vector similarity search retrieves relevant candidates, while RL decides which items to prioritize.
+In traditional systems:
+- Product updates block search availability
+- User profiling increases query latency
+- Model inference happens inline
 
----
+This leads to:
+- High p95 latency
+- Cascading failures
+- Poor scalability
 
-### 4.2 Budget-Aware Recommendation
-The system distinguishes between:
-- Products the user likes
-- Products the user can afford
+### Our Solution
 
-This enables:
-- Cheaper alternatives
-- Discounted versions
-- Installment-based recommendations
+We **separate responsibilities**:
 
----
+**Command Side (Writes)**
+- Product ingestion
+- User behavior processing
+- Profile updates
+- Vector computation
 
-### 4.3 Wishlist-Driven Discovery
-Users can create wishlists using:
-- Text descriptions
-- Keywords
-- Images
-- Budget constraints
-- Urgency levels
+**Query Side (Reads)**
+- Hybrid retrieval
+- Reranking
+- Explanation generation
 
-The system:
-- Matches wishlist embeddings against product vectors in Qdrant
-- Suggests close alternatives
-- Monitors availability and price drops
-- Learns *when* to notify users using RL
+All writes emit **Kafka events**. Query services never wait on writes.
 
----
+### Effects
 
-### 4.4 Exploration vs Exploitation
-Reinforcement learning enables controlled exploration by occasionally recommending:
-- New products
-- Trending items
-- Slightly out-of-pattern products
-
-This avoids filter bubbles and improves discovery while respecting affordability constraints.
+- Search latency becomes stable and predictable
+- Write throughput scales independently
+- Models can evolve without query downtime
 
 ---
 
-### 4.5 Dynamic Discounts and Promotions
-When the system detects:
-- High desirability
-- Low affordability
-- Strong demand signals
+## Qdrant Integration (Deep Dive)
 
-RL agents can recommend:
-- Discounts
-- Bundles
-- Time-limited offers
+Qdrant is the **read model** of the system.
 
-Optimizing conversion while protecting margins.
+Each product is stored as a single point with:
 
----
+- `text_vector`: semantic embedding (BGE-M3)
+- `visual_vector`: CLIP image embedding
+- `payload`: rich metadata (price, brand, category, stats)
 
-### 4.6 Business & Market Insights
-By aggregating vector and interaction signals, the system provides:
-- Restocking recommendations
-- Regional demand insights
-- Competitor opportunity detection
-- Pricing strategy suggestions
+### Why Qdrant
 
----
+- Native support for multiple vectors per point
+- Fast ANN search with filtering
+- Payload-aware filtering
+- Production-ready performance
 
-## 5. High-Level Technical Approach
+### Collections
 
-### 5.1 Data Collection Layer
-
-#### Explicit Data (Opt-in)
-- Age (bucketed)
-- Sex
-- Occupation (student / working)
-- Region
-- Budgets and preferences
-
-#### Implicit Behavioral Data
-- Product views (with dwell time)
-- Add-to-cart events (strong intent signal)
-- Filtering events (category, brand, price)
-- Purchases and returns
-- Search queries
-
-All events are time-stamped and streamed for continuous updates.
+- `products`: hybrid searchable catalog
+- `users`: user preference vectors
+- `user_intents`: wishlist and soft intent vectors
 
 ---
 
-### 5.2 User Representation (Multi-Vector Profile)
+## Hybrid Retrieval Strategy
 
-Each user is modeled using **multiple complementary embeddings**:
+Retrieval is intentionally **recall-oriented**.
 
-1. **Preference / Behavioral Vector**
-   - Long-term taste (purchase history)
-   - Short-term intent (current session)
-   - Wishlist intent (explicit desire)
+### 1. Semantic Retrieval (Vector Search)
 
-2. **Financial / Affordability Vector**
-   - Typical spending range
-   - Price sensitivity
-   - Discount dependency
+We embed the query using **BGE-M3** and search `text_vector`.
 
-3. **Demographic & Context Vector**
-   - Age group
-   - Occupation
-   - Region
-   - Temporal patterns
+Strengths:
+- Handles paraphrases
+- Handles vague queries
+- Language-agnostic
 
-These vectors evolve dynamically as new events arrive.
+### 2. Visual Retrieval (Cross-Modal CLIP)
 
----
+The same query is embedded using CLIP text encoder and matched against `visual_vector`.
 
-### 5.3 Product Representation (Multimodal)
+Strengths:
+- Captures aesthetic intent
+- Works for fashion and design-heavy categories
 
-Each product is embedded using:
-- Image embeddings (visual similarity)
-- Text embeddings (title, description, specs)
-- Structured metadata (category, brand)
-- Review sentiment embeddings
-- Market signals (price, stock, competitor data)
+### 3. Lexical Retrieval (BM25)
 
-All product vectors are stored and indexed in **Qdrant**.
+BM25 is used as a **lexical baseline and safety net**.
 
----
+BM25 answers questions semantic models are bad at:
+- Exact model names ("Galaxy A56")
+- SKUs and codes
+- Very short queries
 
-### 5.4 Vector Search with Qdrant (Core Retrieval Layer)
+BM25 score is later normalized and injected into reranking.
 
-**Qdrant plays a central role in the system:**
+### Why Hybrid Matters
 
-- Stores all product embeddings
-- Supports fast approximate nearest-neighbor (ANN) search
-- Enables rich payload filtering (price, availability, region)
-- Supports hybrid search (vector + metadata)
-- Scales horizontally for large catalogs
+- Vector search alone may miss exact matches
+- BM25 alone fails on exploratory queries
 
-**Purpose of Qdrant:**
-> Answer the question: *“Which products are relevant to this user right now?”*
-
-Qdrant retrieves a shortlist of high-quality candidates efficiently and reliably.
+Hybrid retrieval guarantees **high recall**, which is critical because **precision is handled later by reranking**.
 
 ---
 
-### 5.5 Reinforcement Learning Layer (Decision Optimization)
+## Intent Classification
 
-Reinforcement learning operates **on top of vector search**, not instead of it.
+Before reranking, queries are classified using a fine-tuned **BERT intent classifier**.
 
-#### Why RL is Needed
-Vector similarity retrieves relevant items, but it does not:
-- Optimize long-term outcomes
-- Handle exploration vs exploitation
-- Adapt strategies per user
-- Learn pricing or timing policies
+### Intent Classes
 
-RL fills this gap.
+- `broad_explore`: "summer dress", "gaming laptop"
+- `use_case`: "laptop for work", "dress for party"
+- `specific_product`: "Samsung Galaxy A56 5G"
 
----
+### Why Intent Matters
 
-#### RL Formulation
+Intent directly changes scoring behavior:
 
-**State**
-- User vectors (preferences, affordability, demographics)
-- Session context
-- Candidate product features
-- Market signals (stock, discounts)
+- Budget constraints are relaxed for `specific_product`
+- Diversity penalties are disabled
+- Brand affinity is amplified
+- Exact matches are boosted
 
-**Actions**
-- Select which product(s) to display
-- Decide ranking order
-- Choose between:
-  - Full-price item
-  - Discounted item
-  - Cheaper alternative
-  - Wishlist-related suggestion
-- Trigger promotions or notifications
-
-**Rewards**
-- +1 Purchase
-- +0.4 Add-to-cart
-- +0.2 Wishlist add
-- −0.5 Bounce
-- −1 Return
-- Long-term rewards for repeat visits
+This prevents classic failures such as:
+- Hiding expensive items when the user clearly wants a specific product
+- Over-diversifying when precision is expected
 
 ---
 
-#### RL Techniques Used
-- Contextual bandits for stable online learning
-- Offline RL for safe experimentation
-- Policy learning for personalization strategies
+## Context-Aware Reranking (Core Innovation)
 
-RL answers:
-> *“What is the best action to take now, given the user, context, and business goals?”*
+Reranking is **multiplicative, not additive**.
+
+### Why Multiplicative Scoring
+
+Additive scoring allows strong signals to cancel each other out. For example, a strong brand affinity could mask a severe dislike or an obvious budget mismatch.
+
+Multiplicative scoring enforces **hard consistency**:
+- A strong negative signal always penalizes the final score
+- A strong contextual signal (life event, wishlist) always dominates
+- No single heuristic can overpower the system arbitrarily
+
+### Base Formula
+
+Let:
+- s0 be the base relevance score from hybrid retrieval
+- mi be independent contextual multipliers
+
+FinalScore = s0 × Π(mi)
+
+This means relevance is **gated by context**, not adjusted cosmetically.
+
+---
+
+## Pseudo-Mathematical Scoring Breakdown
+
+Below is a simplified but faithful representation of the reranking logic.
+
+### Step 1: Base Retrieval Score
+
+Each product p receives a base score:
+
+s0(p) = max(semantic_score, visual_score, bm25_score)
+
+This guarantees high recall and protects exact matches.
 
 ---
 
-### 5.6 Explainability & Transparency
-Each recommendation is accompanied by:
-- Similarity reasoning (via Qdrant neighbors)
-- Affordability fit
-- Popularity or trend signals
-- Logged decision traces for auditing
+### Step 2: Contextual Multipliers
+
+For each candidate product p, we compute:
+
+- m_life(p): life event relevance
+- m_wish(p): wishlist and soft intent similarity
+- m_brand(p): brand loyalty
+- m_trait(p): trait–category alignment
+- m_season(p): seasonal relevance
+- m_budget(p): budget compatibility
+- m_market(p): market quality feedback
+- m_neg(p): negative taste / dislike penalty
+
+Each multiplier is bounded:
+
+mi(p) ∈ [0.1, 3.5]
+
+This prevents score explosions while preserving dominance when justified.
 
 ---
 
-## 6. Final Vision
+### Step 3: Intent-Aware Adjustments
 
-This project demonstrates how **vector search and reinforcement learning complement each other**:
+Let I be the classified intent:
 
-- **Qdrant** ensures fast, scalable, high-quality retrieval
-- **Reinforcement learning** ensures adaptive, goal-driven decision-making
+- I = specific_product
+- I = use_case
+- I = broad_explore
 
-Together, they form a recommendation system that understands users not only by what they clicked, but by **what they want, what they can afford, and how their needs evolve over time**.
+Intent directly alters the multiplier set:
+
+- If I = specific_product:
+  - m_budget(p) = 1.0
+  - diversity penalties disabled
+
+- If I = broad_explore:
+  - diversity and seasonal multipliers amplified
+
+This avoids penalizing precision queries with exploratory heuristics.
 
 ---
+
+### Step 4: Final Score
+
+FinalScore(p) = s0(p) × m_life × m_wish × m_brand × m_trait × m_season × m_budget × m_market × m_neg
+
+Candidates are ranked by decreasing FinalScore.
+
+---
+
+### Step 5: Explanation Selection
+
+The dominant multiplier determines the explanation shown to the user:
+
+- High m_life → "Perfect for your upcoming plans"
+- High m_wish → "Matches your wishlist preferences"
+- High m_brand → "Because you love this brand"
+
+This guarantees **alignment between ranking and explanation**.
+
+---
+
+## Reranking Signals (Detailed)
+
+
+Each candidate is evaluated against the following signals:
+
+### Life Events
+- Time-bounded boosts
+- Urgency-aware
+- Category constrained
+
+### Wishlist & Soft Intents
+- Vector similarity to intent vectors
+- Budget-aware
+- Image-aware when applicable
+
+### Brand Affinity
+- Log-scaled loyalty boost
+- Prevents monopolization
+
+### Seasonal Awareness
+- Query season detection
+- Tag-based seasonal alignment
+- User active months
+
+### Budget & Purchasing Power
+- Category-specific anchors
+- Trait-aware elasticity
+- Intent-aware bypass
+
+### Negative Taste & Dislikes
+- Vector-level repulsion
+- Explicit dislike rules
+
+### Market Feedback
+- Return rate penalties
+- Hesitation-aware discount boosts
+
+### Cold Start Logic
+- Demographic inference
+- Popularity-weighted desirability
+
+---
+
+## Explainability
+
+Each result includes a **human-readable explanation** derived from the dominant multiplier:
+
+- "Perfect for your work-from-cafe routine"
+- "Because you love Samsung"
+- "Matches your wishlist preferences"
+
+This improves trust and user experience.
+
+---
+
+## Hosting & Deployment (Azure)
+
+The system is deployed on **Azure VM (France Central)** using Docker Compose.
+
+Benefits:
+- Simple reproducibility
+- Clear service boundaries
+- Hackathon-friendly deployment
+
+---
+
+## Installation & Run Guide
+
+Prerequisites:
+- Docker
+- Docker Compose
+
+Steps:
+
+```bash
+git clone <repository-url>
+cd nexus-ai-store
+docker compose build
+docker compose up -d
+```
+
+Access:
+- Frontend: http://localhost
+- API Gateway: http://localhost:8008
+- Search Engine: http://localhost:8002
+
+---
+
+## Technologies Used
+
+- Python 3.11
+- Qdrant (latest)
+- Kafka 7.6.1
+- MongoDB (latest)
+- Sentence-Transformers (BGE-M3)
+- CLIP ViT-B/32
+- PyTorch
+- Docker & Docker Compose
+- Azure VM
+
+---
+
+## Conclusion
+
+This project demonstrates that **search quality is not a single model problem**, but a systems problem.
+
+By combining:
+- Event-driven architecture
+- CQRS
+- Hybrid retrieval
+- Intent-aware reranking
+
+We achieved a system that is:
+- Fast
+- Explainable
+- Deeply personalized
+- Production-aligned
+
+This is not a prototype search engine. It is a scalable foundation.
 
