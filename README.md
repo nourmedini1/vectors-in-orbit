@@ -108,6 +108,119 @@ Each product is stored as a single point with:
 - `users`: user preference vectors
 - `user_intents`: wishlist and soft intent vectors
 
+Qdrant is **never written to synchronously by the search engine**. All updates happen via background agents consuming events.
+
+---
+
+## Background Agents (ADK-Style Autonomous Workers)
+
+The system relies on **autonomous background agents** that operate continuously and independently from user queries. These agents follow an **ADK-inspired design**: each agent has a single responsibility, clear inputs (events), and explicit side effects (state updates).
+
+These agents are critical to achieving low latency and deep personalization.
+
+---
+
+### Product Vectorizer Agent
+
+**Role**: Build and maintain the product read model.
+
+**Triggers**:
+- Product created
+- Product updated
+- Price change
+- Image change
+
+**Inputs**:
+- Kafka product events
+- Product metadata
+- Product images
+
+**Tools & Models**:
+- Embedding Service (BGE-M3 for text)
+- CLIP ViT-B/32 for images
+- Qdrant SDK
+
+**Processing Steps**:
+
+1. Consume product event from Kafka
+2. Generate text embedding from name + description
+3. Generate visual embedding from product image
+4. Normalize vectors
+5. Upsert into Qdrant `products` collection with payload
+
+**Why This Matters**:
+
+- Vector computation never blocks search
+- Products are always query-ready
+- Model upgrades do not require downtime
+
+---
+
+### User Profiler Agent
+
+**Role**: Build long-term and short-term user representations.
+
+**Triggers**:
+- View events
+- Click events
+- Add-to-cart
+- Purchase
+- Wishlist actions
+
+**Inputs**:
+- Kafka user interaction events
+
+**Tools & Models**:
+- Embedding Service (BGE-M3)
+- Qdrant SDK
+- MongoDB for historical aggregation
+
+**Processing Steps**:
+
+1. Aggregate recent interactions
+2. Compute short-term taste vectors
+3. Update long-term preference vectors
+4. Track negative taste and dislikes
+5. Store vectors in Qdrant `users` collection
+
+**Stored Signals**:
+
+- Long-term taste vector
+- Negative preference vector
+- Brand affinity scores
+- Category spending statistics
+
+**Why This Matters**:
+
+- Personalization is precomputed
+- Search-time logic stays lightweight
+- Cold-start and warm users handled uniformly
+
+---
+
+### Intent & Wishlist Agent
+
+**Role**: Capture soft, future-oriented intent.
+
+**Triggers**:
+- Wishlist add
+- Repeated product views
+- Budget input
+
+**Tools**:
+- BERT intent classifier
+- Embedding Service
+- Qdrant
+
+**Processing Steps**:
+
+1. Classify intent type
+2. Generate intent vector
+3. Attach budget and urgency metadata
+4. Store in `user_intents` collection
+
+These intent vectors are later matched during reranking.
+
 ---
 
 ## Hybrid Retrieval Strategy
