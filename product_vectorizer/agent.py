@@ -26,7 +26,7 @@ load_dotenv(override=True)
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-api_key = os.getenv("MISTRAL_API_KEY","tNfau2ho2cCfHa1I6ZVJ7SBezlevhGLp")
+api_key = os.getenv("MISTRAL_API_KEY","")
 if not api_key:
     logger.warning("MISTRAL_API_KEY is not set")
 else:

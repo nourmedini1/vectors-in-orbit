@@ -42,7 +42,7 @@ from auth import AuthService, UserRegister, UserLogin, Token, TokenData
 # Import Kafka broker and events
 from events import (
         AddToCartEvent, RemoveFromCartEvent, PurchaseMadeEvent,
-        ProfileCreatedEvent, ReviewSubmittedEvent, WishlistAddedEvent
+        ProfileCreatedEvent, ReviewSubmittedEvent, WishlistAddedEvent,ReturnRefundEvent
     )
 
 API_GATEWAY_URL = os.environ.get("API_GATEWAY_URL", "http://localhost:8008")
@@ -335,7 +335,6 @@ async def create_review(review: CreateReviewRequest):
     try:
         review = review.dict()
         new_review = review_service.create_review(review)
-        from user_profiler.events import ReviewSubmittedEvent
         event = ReviewSubmittedEvent(
                 user_id=review["user_id"],
                 timestamp=datetime.datetime.now().isoformat(),
@@ -850,7 +849,6 @@ async def return_purchase(purchase_id: str, request: ReturnPurchaseRequest):
         result = purchase_service.return_purchase(purchase_id, request.reason)
         
 
-        from user_profiler.events import ReturnRefundEvent
         event = ReturnRefundEvent(**result["kafka_event"])
         post_with_retry(f"{API_GATEWAY_URL}/events/return", json=event.model_dump())
 
