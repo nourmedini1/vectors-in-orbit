@@ -29,6 +29,8 @@ Live platform: http://nexusblockbyblock.francecentral.cloudapp.azure.com/
 
 The platform follows a **distributed, event-driven microservice architecture**.
 
+![High-Level Architecture](Architecture&workflows/high_level_arch.png)
+
 Key principles:
 - **CQRS**: Write paths (data ingestion, profiling) are fully decoupled from read paths (search & recommendation)
 - **Event-driven**: Kafka is used as the backbone for asynchronous communication
@@ -63,6 +65,8 @@ This leads to:
 ### Our Solution
 
 We **separate responsibilities**:
+
+![CQRS Architecture](Architecture&workflows/cqrs.png)
 
 **Command Side (Writes)**
 - Product ingestion
@@ -123,6 +127,8 @@ These agents are critical to achieving low latency and deep personalization.
 ### Product Vectorizer Agent
 
 **Role**: Build and maintain the product read model.
+
+![Product Vectorizer Workflow](Architecture&workflows/product_vectorizer.png)
 
 **Triggers**:
 - Product created
@@ -226,6 +232,8 @@ These intent vectors are later matched during reranking.
 ## Hybrid Retrieval Strategy
 
 Retrieval is intentionally **recall-oriented**.
+
+![Hybrid Retrieval Pipeline](Architecture&workflows/hybrid_retreival.png)
 
 ### 1. Semantic Retrieval (Vector Search)
 
