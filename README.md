@@ -452,6 +452,93 @@ Each result includes a **human-readable explanation** derived from the dominant 
 This improves trust and user experience.
 
 ---
+---
+
+## Reinforcement Learning for Ranking Optimization
+
+Beyond static reranking heuristics, the platform includes a **Reinforcement Learning (RL) pipeline** that learns optimal ranking weights from real user interactions.
+
+### The Problem
+
+While the multiplicative reranking system is powerful, the weight values (W_COLLAB_POS, W_TRAIT, W_BRAND, etc.) are manually tuned. Different user contexts may benefit from different weight distributions.
+
+### The Solution
+
+We built an **offline RL training pipeline** using **Conservative Q-Learning (CQL)** that:
+- Learns personalized ranking weights from logged search sessions
+- Optimizes for conversion rate and revenue
+- Remains conservative to avoid unsafe exploration
+
+---
+
+### Workflow 1: Search Logs Generation
+
+![Logs Generation Workflow](Architecture&workflows/logs_generation.png)
+
+**Process**:
+
+1. **User Simulation**: LLM-based simulator generates realistic search queries from real user profiles
+2. **Search Execution**: Query runs through V2 Search API with current ranking weights
+3. **Product Selection**: LLM selects which product to engage with (purchase/cart/wishlist)
+4. **Action Logging**: User action sent to Events API and tracked
+5. **Log Creation**: Complete episode captured (state → action → outcome)
+6. **Outcome Tracking**: Search logs updated with user action and engagement metrics
+
+**Output**: Structured JSONL logs containing:
+- User context (traits, preferences, purchase history)
+- Ranking weights used
+- Products shown and their ranks
+- User action and reward signal
+
+This creates a **rich offline dataset** without requiring live A/B tests.
+
+---
+
+### Workflow 2: RL Training Pipeline
+
+![RL Training Pipeline](Architecture&workflows/RL_Training_Pipeline.png)
+
+**Process**:
+
+1. **Load Logs**: Read collected search sessions (216+ samples)
+2. **Reward Engineering**: Compute position-weighted rewards based on user actions
+   - Purchase at rank 1 = high reward
+   - No engagement = negative reward
+3. **Feature Extraction**: Normalize state (23 dims) and action (7 dims) vectors
+4. **Train CQL Model**: Conservative Q-Learning on GPU (30 epochs)
+5. **Counterfactual Evaluation**: Estimate policy performance using Inverse Propensity Scoring
+6. **Model Export**: Save trained policy for deployment
+
+**Output**:
+- Trained RL policy: `π(user_context) → optimal_weights`
+- Performance metrics: +0.95% conversion improvement
+- Training visualizations: loss curves and policy comparisons
+
+---
+
+### Key Innovations
+
+**Conservative Q-Learning**: Unlike online RL, CQL learns from logged data without requiring live experiments. The conservative penalty ensures the learned policy stays close to proven behavior.
+
+**Counterfactual Evaluation**: We use Inverse Propensity Scoring (IPS) to estimate policy performance on unseen data, providing confidence intervals without A/B tests.
+
+**Personalized Weights**: Instead of fixed ranking weights, the RL policy predicts optimal weights for each user context in real-time.
+
+---
+
+### Integration Path
+
+The RL system is designed for **gradual deployment**:
+
+1. Train offline on collected logs
+2. Validate with counterfactual evaluation
+3. Deploy to 10% traffic (shadow mode)
+4. Monitor metrics (conversion, MRR, revenue)
+5. Scale to 100% if improvements hold
+
+This allows us to **optimize search relevance continuously** as user behavior evolves.
+
+---
 
 ## Hosting & Deployment (Azure)
 
