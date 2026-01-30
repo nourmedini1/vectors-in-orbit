@@ -13,6 +13,14 @@ This project was built and deployed for a hackathon, with an emphasis on **engin
 
 Live platform: http://nexusblockbyblock.francecentral.cloudapp.azure.com/
 
+users for testing : 
+
+email : user_sarah@gmail.com
+password : 123456
+
+email : user_meriem_mom@gmail.com
+password : 123456
+
 ---
 
 ## Core Objectives
