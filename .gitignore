@@ -10,10 +10,10 @@ wheels/
 .venv
 user_profiling/.env
 .env
+frontend/node_modules/
 
 # Ignored Data Folders
 data/
 qdrant_data/
 qdrant_data_export/
-
 

@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions
+  xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  id="Definitions_Nexus_Workflows"
+  targetNamespace="http://nexus-ai-store/bpmn">
+  <bpmn:process id="Process_Product_Vectorizer" name="Product Vectorizer Workflow" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_Product_Vectorizer">
+      <bpmn:lane id="Lane_PV_ApiGateway" name="API Gateway">
+        <bpmn:flowNodeRef>Start_PV_Product_Event</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_PV_Publish_Product_Event</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_PV_Kafka" name="Kafka">
+        <bpmn:flowNodeRef>Task_PV_Consume_Product_Event</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_PV_Vectorizer" name="Product Vectorizer Service">
+        <bpmn:flowNodeRef>Task_PV_Parse_Product_Metadata</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SubProcess_PV_Generate_Embeddings</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_PV_Normalize_Vectors</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_PV_Upsert_Qdrant</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_PV_Read_Model_Updated</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_PV_Embedding" name="Embedding Service">
+        <bpmn:flowNodeRef>Task_PV_Text_Embedding</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_PV_Image_Embedding</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_PV_Qdrant" name="Qdrant">
+        <bpmn:flowNodeRef>Task_PV_Write_Qdrant</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_PV_Product_Event" name="Product created/updated" />
+    <bpmn:task id="Task_PV_Publish_Product_Event" name="Publish ProductAdded/Updated event" />
+    <bpmn:task id="Task_PV_Consume_Product_Event" name="Consume product event" />
+    <bpmn:task id="Task_PV_Parse_Product_Metadata" name="Collect metadata + image URL" />
+    <bpmn:subProcess id="SubProcess_PV_Generate_Embeddings" name="Generate text + image embeddings">
+      <bpmn:startEvent id="Start_PV_Embedding_Subprocess" name="Embedding request" />
+      <bpmn:task id="Task_PV_Text_Embedding" name="Generate text embedding (BGE-M3)" />
+      <bpmn:task id="Task_PV_Image_Embedding" name="Generate image embedding (CLIP)" />
+      <bpmn:endEvent id="End_PV_Embedding_Subprocess" name="Embeddings ready" />
+      <bpmn:sequenceFlow id="Flow_PV_Sub_1" sourceRef="Start_PV_Embedding_Subprocess" targetRef="Task_PV_Text_Embedding" />
+      <bpmn:sequenceFlow id="Flow_PV_Sub_2" sourceRef="Task_PV_Text_Embedding" targetRef="Task_PV_Image_Embedding" />
+      <bpmn:sequenceFlow id="Flow_PV_Sub_3" sourceRef="Task_PV_Image_Embedding" targetRef="End_PV_Embedding_Subprocess" />
+    </bpmn:subProcess>
+    <bpmn:task id="Task_PV_Normalize_Vectors" name="Normalize vectors" />
+    <bpmn:task id="Task_PV_Upsert_Qdrant" name="Prepare payload + point" />
+    <bpmn:task id="Task_PV_Write_Qdrant" name="Upsert to Qdrant products collection" />
+    <bpmn:endEvent id="End_PV_Read_Model_Updated" name="Product read model updated" />
+    <bpmn:sequenceFlow id="Flow_PV_1" sourceRef="Start_PV_Product_Event" targetRef="Task_PV_Publish_Product_Event" />
+    <bpmn:sequenceFlow id="Flow_PV_2" sourceRef="Task_PV_Publish_Product_Event" targetRef="Task_PV_Consume_Product_Event" />
+    <bpmn:sequenceFlow id="Flow_PV_3" sourceRef="Task_PV_Consume_Product_Event" targetRef="Task_PV_Parse_Product_Metadata" />
+    <bpmn:sequenceFlow id="Flow_PV_4" sourceRef="Task_PV_Parse_Product_Metadata" targetRef="SubProcess_PV_Generate_Embeddings" />
+    <bpmn:sequenceFlow id="Flow_PV_5" sourceRef="SubProcess_PV_Generate_Embeddings" targetRef="Task_PV_Normalize_Vectors" />
+    <bpmn:sequenceFlow id="Flow_PV_6" sourceRef="Task_PV_Normalize_Vectors" targetRef="Task_PV_Upsert_Qdrant" />
+    <bpmn:sequenceFlow id="Flow_PV_7" sourceRef="Task_PV_Upsert_Qdrant" targetRef="Task_PV_Write_Qdrant" />
+    <bpmn:sequenceFlow id="Flow_PV_8" sourceRef="Task_PV_Write_Qdrant" targetRef="End_PV_Read_Model_Updated" />
+  </bpmn:process>
+
+  <bpmn:process id="Process_User_Profiler" name="User Profiler Workflow" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_User_Profiler">
+      <bpmn:lane id="Lane_UP_ApiLayer" name="API Gateway + Mongo Backend">
+        <bpmn:flowNodeRef>Start_UP_User_Event</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_UP_Publish_User_Event</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_UP_Kafka" name="Kafka">
+        <bpmn:flowNodeRef>Task_UP_Consume_User_Event</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_UP_Profiler" name="User Profiler Service">
+        <bpmn:flowNodeRef>Task_UP_Aggregate_Interactions</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SubProcess_UP_Compute_Taste_Vectors</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_UP_Store_User_Vectors</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_UP_Profile_Updated</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_UP_Mongo" name="MongoDB">
+        <bpmn:flowNodeRef>Task_UP_Read_History</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_UP_Embedding" name="Embedding Service">
+        <bpmn:flowNodeRef>Task_UP_Short_Term_Vector</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_UP_Long_Term_Vector</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_UP_Negative_Taste_Vector</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_UP_Qdrant" name="Qdrant">
+        <bpmn:flowNodeRef>Task_UP_Write_Qdrant</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_UP_User_Event" name="User interaction event" />
+    <bpmn:task id="Task_UP_Publish_User_Event" name="Publish interaction event" />
+    <bpmn:task id="Task_UP_Consume_User_Event" name="Consume interaction event" />
+    <bpmn:task id="Task_UP_Aggregate_Interactions" name="Aggregate recent interactions" />
+    <bpmn:task id="Task_UP_Read_History" name="Read history + stats" />
+    <bpmn:subProcess id="SubProcess_UP_Compute_Taste_Vectors" name="Compute short/long-term taste vectors">
+      <bpmn:startEvent id="Start_UP_Vector_Subprocess" name="Profile update" />
+      <bpmn:task id="Task_UP_Short_Term_Vector" name="Short-term taste vector" />
+      <bpmn:task id="Task_UP_Long_Term_Vector" name="Long-term preference vector" />
+      <bpmn:task id="Task_UP_Negative_Taste_Vector" name="Negative taste vector" />
+      <bpmn:endEvent id="End_UP_Vector_Subprocess" name="Vectors computed" />
+      <bpmn:sequenceFlow id="Flow_UP_Sub_1" sourceRef="Start_UP_Vector_Subprocess" targetRef="Task_UP_Short_Term_Vector" />
+      <bpmn:sequenceFlow id="Flow_UP_Sub_2" sourceRef="Task_UP_Short_Term_Vector" targetRef="Task_UP_Long_Term_Vector" />
+      <bpmn:sequenceFlow id="Flow_UP_Sub_3" sourceRef="Task_UP_Long_Term_Vector" targetRef="Task_UP_Negative_Taste_Vector" />
+      <bpmn:sequenceFlow id="Flow_UP_Sub_4" sourceRef="Task_UP_Negative_Taste_Vector" targetRef="End_UP_Vector_Subprocess" />
+    </bpmn:subProcess>
+    <bpmn:task id="Task_UP_Store_User_Vectors" name="Prepare user payload" />
+    <bpmn:task id="Task_UP_Write_Qdrant" name="Upsert to Qdrant users collection" />
+    <bpmn:endEvent id="End_UP_Profile_Updated" name="User profile updated" />
+    <bpmn:sequenceFlow id="Flow_UP_1" sourceRef="Start_UP_User_Event" targetRef="Task_UP_Publish_User_Event" />
+    <bpmn:sequenceFlow id="Flow_UP_2" sourceRef="Task_UP_Publish_User_Event" targetRef="Task_UP_Consume_User_Event" />
+    <bpmn:sequenceFlow id="Flow_UP_3" sourceRef="Task_UP_Consume_User_Event" targetRef="Task_UP_Aggregate_Interactions" />
+    <bpmn:sequenceFlow id="Flow_UP_4" sourceRef="Task_UP_Aggregate_Interactions" targetRef="Task_UP_Read_History" />
+    <bpmn:sequenceFlow id="Flow_UP_5" sourceRef="Task_UP_Read_History" targetRef="SubProcess_UP_Compute_Taste_Vectors" />
+    <bpmn:sequenceFlow id="Flow_UP_6" sourceRef="SubProcess_UP_Compute_Taste_Vectors" targetRef="Task_UP_Store_User_Vectors" />
+    <bpmn:sequenceFlow id="Flow_UP_7" sourceRef="Task_UP_Store_User_Vectors" targetRef="Task_UP_Write_Qdrant" />
+    <bpmn:sequenceFlow id="Flow_UP_8" sourceRef="Task_UP_Write_Qdrant" targetRef="End_UP_Profile_Updated" />
+  </bpmn:process>
+
+  <bpmn:process id="Process_Intent_Wishlist" name="Intent & Wishlist Workflow" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_Intent_Wishlist">
+      <bpmn:lane id="Lane_IW_Frontend" name="Frontend + Mongo Backend">
+        <bpmn:flowNodeRef>Start_IW_Intent_Signal</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_IW_Persist_Wishlist</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_IW_Publish_Wishlist_Event</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_IW_Kafka" name="Kafka">
+        <bpmn:flowNodeRef>Task_IW_Consume_Intent_Event</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_IW_Intent_Agent" name="Intent & Wishlist Agent">
+        <bpmn:flowNodeRef>SubProcess_IW_Classify_Intent</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_IW_Store_Intent_Vector</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_IW_Intent_Stored</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_IW_Embedding" name="Embedding Service">
+        <bpmn:flowNodeRef>Task_IW_Intent_Classifier</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_IW_Intent_Vector</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_IW_Qdrant" name="Qdrant">
+        <bpmn:flowNodeRef>Task_IW_Write_Qdrant</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_IW_Intent_Signal" name="Wishlist add / repeated views / budget input" />
+    <bpmn:task id="Task_IW_Persist_Wishlist" name="Persist wishlist item (MongoDB)" />
+    <bpmn:task id="Task_IW_Publish_Wishlist_Event" name="Publish intent event" />
+    <bpmn:task id="Task_IW_Consume_Intent_Event" name="Consume intent event" />
+    <bpmn:subProcess id="SubProcess_IW_Classify_Intent" name="Classify intent + create vector">
+      <bpmn:startEvent id="Start_IW_Intent_Subprocess" name="Intent classification" />
+      <bpmn:task id="Task_IW_Intent_Classifier" name="Classify intent (BERT/zero-shot)" />
+      <bpmn:task id="Task_IW_Intent_Vector" name="Generate intent embedding" />
+      <bpmn:endEvent id="End_IW_Intent_Subprocess" name="Intent vector ready" />
+      <bpmn:sequenceFlow id="Flow_IW_Sub_1" sourceRef="Start_IW_Intent_Subprocess" targetRef="Task_IW_Intent_Classifier" />
+      <bpmn:sequenceFlow id="Flow_IW_Sub_2" sourceRef="Task_IW_Intent_Classifier" targetRef="Task_IW_Intent_Vector" />
+      <bpmn:sequenceFlow id="Flow_IW_Sub_3" sourceRef="Task_IW_Intent_Vector" targetRef="End_IW_Intent_Subprocess" />
+    </bpmn:subProcess>
+    <bpmn:task id="Task_IW_Store_Intent_Vector" name="Attach budget/urgency metadata" />
+    <bpmn:task id="Task_IW_Write_Qdrant" name="Store in Qdrant user_intents collection" />
+    <bpmn:endEvent id="End_IW_Intent_Stored" name="Intent stored" />
+    <bpmn:sequenceFlow id="Flow_IW_1" sourceRef="Start_IW_Intent_Signal" targetRef="Task_IW_Persist_Wishlist" />
+    <bpmn:sequenceFlow id="Flow_IW_2" sourceRef="Task_IW_Persist_Wishlist" targetRef="Task_IW_Publish_Wishlist_Event" />
+    <bpmn:sequenceFlow id="Flow_IW_3" sourceRef="Task_IW_Publish_Wishlist_Event" targetRef="Task_IW_Consume_Intent_Event" />
+    <bpmn:sequenceFlow id="Flow_IW_4" sourceRef="Task_IW_Consume_Intent_Event" targetRef="SubProcess_IW_Classify_Intent" />
+    <bpmn:sequenceFlow id="Flow_IW_5" sourceRef="SubProcess_IW_Classify_Intent" targetRef="Task_IW_Store_Intent_Vector" />
+    <bpmn:sequenceFlow id="Flow_IW_6" sourceRef="Task_IW_Store_Intent_Vector" targetRef="Task_IW_Write_Qdrant" />
+    <bpmn:sequenceFlow id="Flow_IW_7" sourceRef="Task_IW_Write_Qdrant" targetRef="End_IW_Intent_Stored" />
+  </bpmn:process>
+
+  <bpmn:process id="Process_Hybrid_Search" name="Hybrid Search + Reranking Workflow" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_Hybrid_Search">
+      <bpmn:lane id="Lane_HS_Frontend" name="Frontend">
+        <bpmn:flowNodeRef>Start_HS_Search_Request</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_HS_Return_Results</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_HS_Search_API" name="Search Engine API">
+        <bpmn:flowNodeRef>Task_HS_Log_Search_Event</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SubProcess_HS_Hybrid_Retrieval</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SubProcess_HS_Intent_Classification</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_HS_Contextual_Reranking</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_HS_Generate_Explanations</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_HS_Embedding" name="Embedding Service">
+        <bpmn:flowNodeRef>Task_HS_Semantic_Embedding</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_HS_Visual_Embedding</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_HS_Intent_Embedding</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_HS_Qdrant" name="Qdrant">
+        <bpmn:flowNodeRef>Task_HS_Query_Text_Vector</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_HS_Query_Visual_Vector</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_HS_Load_User_Vectors</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_HS_Kafka" name="Kafka">
+        <bpmn:flowNodeRef>Task_HS_Send_Search_Event</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_HS_Mongo" name="MongoDB">
+        <bpmn:flowNodeRef>Task_HS_Load_User_Context</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_HS_Search_Request" name="User search request" />
+    <bpmn:task id="Task_HS_Log_Search_Event" name="Build SearchPerformedEvent" />
+    <bpmn:task id="Task_HS_Send_Search_Event" name="Publish search event" />
+    <bpmn:subProcess id="SubProcess_HS_Hybrid_Retrieval" name="Hybrid retrieval (semantic + visual + BM25)">
+      <bpmn:startEvent id="Start_HS_Retrieval_Subprocess" name="Retrieve candidates" />
+      <bpmn:task id="Task_HS_Semantic_Embedding" name="Embed query (BGE-M3)" />
+      <bpmn:task id="Task_HS_Visual_Embedding" name="Embed query (CLIP text)" />
+      <bpmn:task id="Task_HS_Query_Text_Vector" name="Vector search text_vector" />
+      <bpmn:task id="Task_HS_Query_Visual_Vector" name="Vector search visual_vector" />
+      <bpmn:task id="Task_HS_BM25" name="BM25 lexical retrieval" />
+      <bpmn:task id="Task_HS_Merge_Candidates" name="Merge recall sets" />
+      <bpmn:endEvent id="End_HS_Retrieval_Subprocess" name="Recall set ready" />
+      <bpmn:sequenceFlow id="Flow_HS_Sub_1" sourceRef="Start_HS_Retrieval_Subprocess" targetRef="Task_HS_Semantic_Embedding" />
+      <bpmn:sequenceFlow id="Flow_HS_Sub_2" sourceRef="Task_HS_Semantic_Embedding" targetRef="Task_HS_Visual_Embedding" />
+      <bpmn:sequenceFlow id="Flow_HS_Sub_3" sourceRef="Task_HS_Visual_Embedding" targetRef="Task_HS_Query_Text_Vector" />
+      <bpmn:sequenceFlow id="Flow_HS_Sub_4" sourceRef="Task_HS_Query_Text_Vector" targetRef="Task_HS_Query_Visual_Vector" />
+      <bpmn:sequenceFlow id="Flow_HS_Sub_5" sourceRef="Task_HS_Query_Visual_Vector" targetRef="Task_HS_BM25" />
+      <bpmn:sequenceFlow id="Flow_HS_Sub_6" sourceRef="Task_HS_BM25" targetRef="Task_HS_Merge_Candidates" />
+      <bpmn:sequenceFlow id="Flow_HS_Sub_7" sourceRef="Task_HS_Merge_Candidates" targetRef="End_HS_Retrieval_Subprocess" />
+    </bpmn:subProcess>
+    <bpmn:subProcess id="SubProcess_HS_Intent_Classification" name="Intent classification">
+      <bpmn:startEvent id="Start_HS_Intent_Subprocess" name="Classify intent" />
+      <bpmn:task id="Task_HS_Intent_Embedding" name="Predict intent class" />
+      <bpmn:endEvent id="End_HS_Intent_Subprocess" name="Intent ready" />
+      <bpmn:sequenceFlow id="Flow_HS_Intent_1" sourceRef="Start_HS_Intent_Subprocess" targetRef="Task_HS_Intent_Embedding" />
+      <bpmn:sequenceFlow id="Flow_HS_Intent_2" sourceRef="Task_HS_Intent_Embedding" targetRef="End_HS_Intent_Subprocess" />
+    </bpmn:subProcess>
+    <bpmn:task id="Task_HS_Load_User_Vectors" name="Load user vectors (Qdrant)" />
+    <bpmn:task id="Task_HS_Load_User_Context" name="Load user stats (MongoDB)" />
+    <bpmn:task id="Task_HS_Contextual_Reranking" name="Apply contextual multipliers + rerank" />
+    <bpmn:task id="Task_HS_Generate_Explanations" name="Pick dominant multiplier for explanation" />
+    <bpmn:endEvent id="End_HS_Return_Results" name="Return ranked results" />
+    <bpmn:sequenceFlow id="Flow_HS_1" sourceRef="Start_HS_Search_Request" targetRef="Task_HS_Log_Search_Event" />
+    <bpmn:sequenceFlow id="Flow_HS_2" sourceRef="Task_HS_Log_Search_Event" targetRef="Task_HS_Send_Search_Event" />
+    <bpmn:sequenceFlow id="Flow_HS_3" sourceRef="Task_HS_Send_Search_Event" targetRef="SubProcess_HS_Hybrid_Retrieval" />
+    <bpmn:sequenceFlow id="Flow_HS_4" sourceRef="SubProcess_HS_Hybrid_Retrieval" targetRef="SubProcess_HS_Intent_Classification" />
+    <bpmn:sequenceFlow id="Flow_HS_5" sourceRef="SubProcess_HS_Intent_Classification" targetRef="Task_HS_Load_User_Vectors" />
+    <bpmn:sequenceFlow id="Flow_HS_6" sourceRef="Task_HS_Load_User_Vectors" targetRef="Task_HS_Load_User_Context" />
+    <bpmn:sequenceFlow id="Flow_HS_7" sourceRef="Task_HS_Load_User_Context" targetRef="Task_HS_Contextual_Reranking" />
+    <bpmn:sequenceFlow id="Flow_HS_8" sourceRef="Task_HS_Contextual_Reranking" targetRef="Task_HS_Generate_Explanations" />
+    <bpmn:sequenceFlow id="Flow_HS_9" sourceRef="Task_HS_Generate_Explanations" targetRef="End_HS_Return_Results" />
+  </bpmn:process>
+
+  <bpmn:process id="Process_RL_Log_Generation" name="RL Log Generation Workflow" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_RL_Logs">
+      <bpmn:lane id="Lane_RL_Simulator" name="User Simulator">
+        <bpmn:flowNodeRef>Start_RL_Log_Run</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_RL_Generate_Query</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_RL_Select_Action</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_RL_Search_API" name="Search API">
+        <bpmn:flowNodeRef>Task_RL_Run_Search</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_RL_Events_API" name="Events API (API Gateway)">
+        <bpmn:flowNodeRef>Task_RL_Send_Action_Event</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_RL_Storage" name="Log Storage">
+        <bpmn:flowNodeRef>Task_RL_Write_Log</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_RL_Log_Stored</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_RL_Log_Run" name="Scheduled log generation" />
+    <bpmn:task id="Task_RL_Generate_Query" name="Simulate search query" />
+    <bpmn:task id="Task_RL_Run_Search" name="Execute search request" />
+    <bpmn:task id="Task_RL_Select_Action" name="Select product + action" />
+    <bpmn:task id="Task_RL_Send_Action_Event" name="Send action to Events API" />
+    <bpmn:task id="Task_RL_Write_Log" name="Store JSONL episode" />
+    <bpmn:endEvent id="End_RL_Log_Stored" name="Log stored" />
+    <bpmn:sequenceFlow id="Flow_RL_1" sourceRef="Start_RL_Log_Run" targetRef="Task_RL_Generate_Query" />
+    <bpmn:sequenceFlow id="Flow_RL_2" sourceRef="Task_RL_Generate_Query" targetRef="Task_RL_Run_Search" />
+    <bpmn:sequenceFlow id="Flow_RL_3" sourceRef="Task_RL_Run_Search" targetRef="Task_RL_Select_Action" />
+    <bpmn:sequenceFlow id="Flow_RL_4" sourceRef="Task_RL_Select_Action" targetRef="Task_RL_Send_Action_Event" />
+    <bpmn:sequenceFlow id="Flow_RL_5" sourceRef="Task_RL_Send_Action_Event" targetRef="Task_RL_Write_Log" />
+    <bpmn:sequenceFlow id="Flow_RL_6" sourceRef="Task_RL_Write_Log" targetRef="End_RL_Log_Stored" />
+  </bpmn:process>
+
+  <bpmn:process id="Process_RL_Training" name="RL Training Pipeline" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_RL_Training">
+      <bpmn:lane id="Lane_RL_Training" name="RL Training Pipeline">
+        <bpmn:flowNodeRef>Start_RL_Training</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_RL_Load_Logs</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_RL_Reward_Engineering</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_RL_Feature_Extraction</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_RL_Train_CQL</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_RL_Counterfactual_Eval</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_RL_Export_Model</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_RL_Model_Ready</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_RL_Training" name="Training job triggered" />
+    <bpmn:task id="Task_RL_Load_Logs" name="Load search logs" />
+    <bpmn:task id="Task_RL_Reward_Engineering" name="Compute rewards + positions" />
+    <bpmn:task id="Task_RL_Feature_Extraction" name="Normalize state/action vectors" />
+    <bpmn:task id="Task_RL_Train_CQL" name="Train CQL model (30 epochs)" />
+    <bpmn:task id="Task_RL_Counterfactual_Eval" name="Inverse Propensity Scoring evaluation" />
+    <bpmn:task id="Task_RL_Export_Model" name="Export policy weights" />
+    <bpmn:endEvent id="End_RL_Model_Ready" name="Policy ready for deployment" />
+    <bpmn:sequenceFlow id="Flow_RLT_1" sourceRef="Start_RL_Training" targetRef="Task_RL_Load_Logs" />
+    <bpmn:sequenceFlow id="Flow_RLT_2" sourceRef="Task_RL_Load_Logs" targetRef="Task_RL_Reward_Engineering" />
+    <bpmn:sequenceFlow id="Flow_RLT_3" sourceRef="Task_RL_Reward_Engineering" targetRef="Task_RL_Feature_Extraction" />
+    <bpmn:sequenceFlow id="Flow_RLT_4" sourceRef="Task_RL_Feature_Extraction" targetRef="Task_RL_Train_CQL" />
+    <bpmn:sequenceFlow id="Flow_RLT_5" sourceRef="Task_RL_Train_CQL" targetRef="Task_RL_Counterfactual_Eval" />
+    <bpmn:sequenceFlow id="Flow_RLT_6" sourceRef="Task_RL_Counterfactual_Eval" targetRef="Task_RL_Export_Model" />
+    <bpmn:sequenceFlow id="Flow_RLT_7" sourceRef="Task_RL_Export_Model" targetRef="End_RL_Model_Ready" />
+  </bpmn:process>
+</bpmn:definitions>
